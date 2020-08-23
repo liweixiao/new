@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 
 return [
+    // app版本
+    'app_version'          => 32,
     // +----------------------------------------------------------------------
     // | 应用设置
     // +----------------------------------------------------------------------
@@ -27,11 +29,11 @@ return [
     // 注册的根命名空间
     'root_namespace'         => [],
     // 扩展函数文件
-    'extra_file_list'        => [THINK_PATH . 'helper' . EXT],
+    'extra_file_list'        => [THINK_PATH . 'helper' . EXT,APP_PATH.'function.php'],
     // 默认输出类型
     'default_return_type'    => 'html',
     // 默认AJAX 数据返回格式,可选json xml ...
-    'default_ajax_return'    => 'json',
+    'default_ajax_return'    => 'html',
     // 默认JSONP格式返回的处理方法
     'default_jsonp_handler'  => 'jsonpReturn',
     // 默认JSONP处理方法
@@ -245,4 +247,30 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
+
+    'APP_TOKEN_TIME' => 60 * 60 * 24 , //App保持token时间 , 此处为1天
+    
+    /**
+     *  订单用户端显示按钮     
+        去支付     AND pay_status=0 AND order_status=0 AND pay_code ! ="cod"
+        取消按钮  AND pay_status=0 AND shipping_status=0 AND order_status=0 
+        确认收货  AND shipping_status=1 AND order_status=0 
+        评价      AND order_status=1 
+        查看物流  if(!empty(物流单号))   
+        退货按钮（联系客服）  所有退换货操作， 都需要人工介入   不支持在线退换货
+     */
+
+    /*分页每页显示数*/
+    'PAGESIZE' => 10,
+
+    /**假设这个访问地址是 www.tpshop.cn/home/goods/goodsInfo/id/1.html 
+     *就保存名字为 home_goods_goodsinfo_1.html     
+     *配置成这样, 指定 模块 控制器 方法名 参数名      
+     */
+    'HTML_CACHE_ARR'=> [
+    // ['mca'=>'home_Goods_goodsInfo','p'=>['id']],  
+    // ['mca'=>'home_Index_index'],  // 缓存首页静态页面
+    ],
+    // 密码加密串
+    'AUTH_CODE' => "HEHAUBAN", //安装完毕之后不要改变，否则所有密码都会出错
 ];

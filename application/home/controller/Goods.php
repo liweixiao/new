@@ -10,14 +10,10 @@
 namespace app\home\controller;
 use think\Controller;
 
-class Index extends Base {
-    public function index(){
-        return $this->fetch('index');
+class Goods extends Base {
+    public function weibo(){
+        return $this->fetch();
     }
-
-
     
-    public function test(){
-		return $this->fetch('index');
-    }
+
 }

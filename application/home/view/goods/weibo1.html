@@ -1,0 +1,162 @@
+<include file="public/header"/>
+<style type="text/css">
+    .layui-form {
+        width: 50%;
+    }
+    .layui-form-label {
+        width: 150px;
+    }
+    .layui-input-block {
+        margin-left: 180px;
+    }
+
+    
+</style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+<include file="public/nav"/>
+<include file="public/left"/>
+
+
+<!-- 主体-->
+<div class="layui-body">
+    <div class="container">
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+          <ul class="layui-tab-title">
+            <li class="layui-this">微博视频播放量</li>
+            <li class="hide">微博转发</li>
+          </ul>
+          <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <!-- 内容区域 -->
+                <form class="layui-form" method="post" action="" id="myform">
+                  <input type="hidden" name="cat_id" value="{$cat.cat_id}">
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">带有视频的短微博网址</label>
+                    <div class="layui-input-block">
+                      <input type="text" name="url" value="http://new.hehuaban.org/index.php/Home/goods/weibo/s/1.html" lay-verify="title" autocomplete="off" placeholder="请输入带有视频的短微博网址" class="layui-input">
+                    </div>
+                  </div>
+
+                  <div class="layui-inline mb15">
+                        <label class="layui-form-label">搜索选择框</label>
+                        <div class="layui-input-inline">
+                          <select name="first" lay-verify="required" lay-search="">
+                            <volist name="$tags.run_first" id="vo">
+                            <option value="{$key}">{$vo}</option>
+                            </volist>
+                          </select>
+                        </div>
+                      </div>
+
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">播放量</label>
+                    <div class="layui-input-block">
+                      <input type="number" name="task_num" value="100" lay-verify="required" lay-reqtext="播放量是必填项，岂能为空？" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                    </div>
+                  </div>
+
+                  <div class="layui-form-item">
+                    <label class="layui-form-label">开始时间</label>
+                    <div class="layui-input-inline">
+                      <input type="text" value="{:date('Y-m-d H:i')}" name="stime" id="date" lay-verify="datetime" placeholder="{:date('Y-m-d H:i')}" autocomplete="off" class="layui-input w180">
+                    </div>
+                  </div>
+
+                  <div class="layui-inline">
+                    <label class="layui-form-label">价格预计</label>
+                    <div class="layui-input-inline">
+                      <span class="gs-price">120.5</span>
+                    </div>
+                  </div>
+                  
+
+                  <div class="layui-form-item mt20">
+                    <div class="layui-input-block">
+                      <a href="JavaScript:void(0);" onClick="verifyForm();" class="layui-btn">立即提交</a>
+                      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                  </div>
+                </form>
+                <!-- 内容区域 -->
+
+            </div>
+            <div class="layui-tab-item">微博转发,敬请期待...</div>
+          </div>
+        </div> 
+
+
+    </div>
+</div>
+<!-- 主体END-->
+<script>
+$(function(){
+
+});
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  
+ //日期时间选择器
+   laydate.render({
+     elem: '#date'
+     ,format:'yyyy-MM-dd HH:mm:ss'
+     ,type: 'datetime'
+   });
+  
+  //创建一个编辑器
+  var editIndex = layedit.build('LAY_demo_editor');
+ 
+  //自定义验证规则
+  form.verify({
+    title: function(value){
+      if(value.length < 5){
+        return '标题至少得5个字符啊';
+      }
+    }
+    ,pass: [
+      /^[\S]{6,12}$/
+      ,'密码必须6到12位，且不能出现空格'
+    ]
+    ,content: function(value){
+      layedit.sync(editIndex);
+    }
+  });
+  
+});
+
+function verifyForm(){
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "{:U('home/order/create', ['s'=>$Request.get.s])}",
+        data: $('#myform').serialize(),
+        dataType: 'json',
+        success: function(result){
+            console.log(result.status);
+            layer.closeAll();
+
+            if (result.status == 1) {
+                go.successTips(result.msg);
+            } else {
+                go.errorTips(result.msg);
+            }
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+</script>
+
+
+<include file="public/footer"/>
+</div>
+<!--layui-layout END-->
+</body>
+</html>

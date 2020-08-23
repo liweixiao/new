@@ -2412,49 +2412,34 @@ if( ! function_exists('gettree')){
 
 
 /**
- * 获取region_id下所有的子集-循环方式
+ * curl获取|操作数据
  * @param $region_id区域id
  * @param $data 要返回的数据
  * @param $getLevel 表明要获取的级别是多少(即:最低要获取到这个级别)
  * @param $containSelf 表明返回的数据是否包含本身传递过来的region_id,默认包含
  * @return array
  */
-if( ! function_exists('getSubIds')){
-    function getSubIds($datas, $region_id=0, $containSelf = true){
-        static $ret = [];
-        if (empty($ret)) {
-            if ($containSelf) {
-                $ret[] = $region_id;
-            }
-        }
+if( ! function_exists('apiget')){
+    /**
+     * @param 获取商城数据
+     * @param string路径 $url 
+     * @param array $postData 请求数据
+     * @return void
+     */
+    function apiget($url='', $postData=null, $method='post', $options=[], $returnArray = true) {
+        require_once '../vendor/http/HttpCurl.php';
+        $http = new HttpCurl();
 
-        foreach ($datas as $key => $val) {
-            if ($val['parent_id'] == $region_id) {
-                $ret[]  = $val['id'];
-                getSubIds($datas, $val['id']);
-            }
+        if (strtolower($method) == 'get') {
+            $res = $http->getRequest($url, $postData, $options);
+        }else{
+            $res = $http->postRequest($url, $postData, $options);
         }
-        return $ret;
-    }
-}
-
-/**
- * 获取region_id下所有的子集-循环方式(思路：先获取已开放的城市集合,然后获取子集)
- * @param $region_id区域id
- * @param $getLevel 表明要获取的级别是多少(即:最低要获取到这个级别)
- * @param $containSelf 表明返回的数据是否包含本身传递过来的region_id,默认包含
- * @return array
- */
-if( ! function_exists('getSubRegionIds')){
-    function getSubRegionIds($region_id, $getLevel=3, $containSelf=true){
-        $res = [];
-        $regions = M('region')->where(['is_open'=>1])->cache(true)->select();
-        // ee($regions);
-        $res = getSubIds($regions, $region_id, $containSelf);//TODO这里如果开放城市多会变慢
-        // ee($res);
         return $res;
     }
 }
+
+
 
 
 

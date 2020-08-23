@@ -1,0 +1,81 @@
+<include file="public/header"/>
+<body>
+
+<!-- lauui 进度条 -->
+<!-- <fieldset class="layui-elem-field layui-field-title" style="margin: 50px 0 30px;">
+  <legend>显示进度比文本</legend>
+</fieldset>
+<div class="layui-progress" lay-showpercent="true">
+  <div class="layui-progress-bar" lay-percent="20%"></div>
+</div>
+ 
+<br>
+ 
+<div class="layui-progress" lay-showpercent="true">
+  <div class="layui-progress-bar" lay-percent="5 / 10"></div>
+</div>
+ 
+<br>
+ 
+<div class="layui-progress layui-progress-big" lay-showpercent="true">
+  <div class="layui-progress-bar" lay-percent="70%"></div>
+</div>
+ 
+<br>
+正如你上述看到的，除了百分数，还支持分数（layui 2.1.7 新增） -->
+
+
+
+
+
+<div>
+    
+    <div>
+        <img src="/static/images/v/diqiu.gif">
+    </div>
+
+
+    <div>
+        <img src="/static/images/v/taiyang.gif">
+    </div>
+</div>
+
+
+<script>
+// layui.use('element', function(){
+//   var $ = layui.jquery
+//   ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+  
+//   //触发事件
+//   var active = {
+//     setPercent: function(){
+//       //设置50%进度
+//       element.progress('demo', '50%')
+//     }
+//     ,loading: function(othis){
+//       var DISABLED = 'layui-btn-disabled';
+//       if(othis.hasClass(DISABLED)) return;
+    
+//       //模拟loading
+//       var n = 0, timer = setInterval(function(){
+//         n = n + Math.random()*10|0;  
+//         if(n>100){
+//           n = 100;
+//           clearInterval(timer);
+//           othis.removeClass(DISABLED);
+//         }
+//         element.progress('demo', n+'%');
+//       }, 300+Math.random()*1000);
+      
+//       othis.addClass(DISABLED);
+//     }
+//   };
+  
+//   $('.site-demo-active').on('click', function(){
+//     var othis = $(this), type = $(this).data('type');
+//     active[type] ? active[type].call(this, othis) : '';
+//   });
+// });
+</script>
+</body>
+</html>

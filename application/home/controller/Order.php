@@ -124,12 +124,12 @@ class Order extends Base {
         $url = $supplier['url'] . '/wb/api_order.php';
         $apikey = $supplier['apikey'];
         // ee('即将创建真实数据,慎重....');
-        // $params = ['apikey'=>$apikey, 'weibouid'=>$data['url'], 'num'=>$data['task_num'], 'type'=>$cat['cat_value'], 'first'=>$data['first'], 'starttime'=>$data['stime']];
-        // $res = apiget($url, $params);
+        $params = ['apikey'=>$apikey, 'weibouid'=>$data['url'], 'num'=>$data['task_num'], 'type'=>$cat['cat_value'], 'first'=>$data['first'], 'starttime'=>$data['stime']];
+        $res = apiget($url, $params);
         // ee($res);
 
         //调试数据
-        $res = ['ret'=>1, 'msg'=>'下单成功，消耗余额：0.3', 'id'=>'179635'];
+        // $res = ['ret'=>1, 'msg'=>'下单成功，消耗余额：0.3', 'id'=>'179635'];
         if (empty($res) || $res['ret'] != 1) {
             $res = ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员'];
             $this->ajaxReturn($res);

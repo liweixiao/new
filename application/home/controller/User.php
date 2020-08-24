@@ -35,6 +35,15 @@ class User extends Base{
         return $this->fetch();
     }
 
+    /*
+     * 充值中心
+     */
+    public function cz(){
+        $shop_info = tpCache('shop_info');
+        $this->assign('shop_info',$shop_info);
+        return $this->fetch();
+    }
+
 
     /*
      * 会员动账记录

@@ -29,7 +29,9 @@
                 <dd class="<if condition='$Request.controller eq "User" and $Request.action eq "accountlog"'>layui-this</if>">
                     <a href="{:U('Home/user/accountlog')}"><span class="iconfont icon-xiaofeijilu"></span>消费记录</a>
                 </dd>
-
+                <dd class="<if condition='$Request.controller eq "User" and $Request.action eq "cz"'>layui-this</if>">
+                    <a href="{:U('Home/user/cz')}"><span class="iconfont icon-chongzhi"></span>充值中心</a>
+                </dd>
             </dl>
         </li>
 

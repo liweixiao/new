@@ -13,18 +13,23 @@
 <div class="layui-body">
     <div class="container">
 
-        <div class="layui-form">
+        <div class="layui-form row-list">
           <table class="layui-table">
             <colgroup>
               <col width="150">
               <col width="150">
               <col width="200">
-              <col>
+              <col width="200">
+              <col width="100">
+              <col width="150">
+              <col width="120">
             </colgroup>
             <thead>
               <tr>
                 <th>订单编号</th>
-                <th>产品类型</th>
+                <th>产品名称</th>
+                <th>任务模式</th>
+                <th>目标</th>
                 <th>实时状态</th>
                 <th>开始时间</th>
                 <th>任务数量</th>
@@ -37,8 +42,10 @@
               <tr>
                 <td>{$vo.order_sn}</td>
                 <td>{$vo.goods.0.goods_name|default=''}</td>
+                <td>{$tags.run_first[$vo.first]|default=''}</td>
+                <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
                 <td>{$vo.task_status_name}</td>
-                <td>{$vo.stime}</td>
+                <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
                 <td>{$vo.task_num}</td>
                 <td>{$vo.total_amount}</td>
                 <td>

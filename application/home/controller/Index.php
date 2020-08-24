@@ -12,6 +12,7 @@ use think\Controller;
 
 class Index extends Base {
     public function index(){
+        $this->redirect('/home/user/index');
         return $this->fetch('index');
     }
 

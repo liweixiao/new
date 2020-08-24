@@ -346,6 +346,12 @@ em{font-style: normal;}
 
 }
 
+.omit{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
 .userinfo dl dt{
     display: inline-block;
     width: 500px;
@@ -361,3 +367,40 @@ em{font-style: normal;}
 .userinfo dl dt span{
     
 }
+
+.userinfo.platinfo dl dd{
+    width: 130px;
+}
+.userinfo.platinfo dl dt{
+    font-weight: normal;
+}
+
+.userinfo.platinfo dl dt span.cz-box {
+    display: inline-block;
+    width: 220px;
+    vertical-align: text-top;
+}
+.userinfo.platinfo dl dt span.cz-box img {
+    width: 100%;
+}
+.userinfo.platinfo dl dt span.cz-box .note {
+    display: block;
+    font-style: normal;
+    color: #999;
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+}
+.row-list .task_url{
+    max-width: 350px;
+    display: inline-block;
+    color: #47b3e3;
+}
+
+
+
+
+
+
+
+

@@ -97,7 +97,7 @@ class User extends Base{
         $redirect_url = Session::get('redirect_url');
         $referurl = $redirect_url ? $redirect_url : U("Home/User/index");
         $this->assign('referurl',$referurl);
-        return $this->fetch();
+        return $this->fetch('loginPage');
     }
 
 

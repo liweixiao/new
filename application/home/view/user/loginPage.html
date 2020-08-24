@@ -139,12 +139,14 @@
             go.errorTips('验证码不能为空!');
             return false;
         }
+        var layerindex = layer.load(1);//加载层
         $.ajax({
             type : 'post',
             url : '/index.php?m=Home&c=User&a=do_login&t='+Math.random(),
             data : $('#loginform').serialize(),
             dataType : 'json',
             success : function(res){
+                layer.close(layerindex);
                 if(res.status == 1){
                     $('.error-box .success-tips').show();
                     setTimeout(function(){window.location.href = res.url;}, 500);
@@ -153,7 +155,8 @@
                     verify();
                 }
             },
-            error : function(XMLHttpRequest, textStatus, errorThrown) {
+            error : function() {
+                layer.close(layerindex);
                 go.errorTips('网络失败，请刷新页面后重试');
             }
         })

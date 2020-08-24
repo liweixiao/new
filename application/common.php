@@ -1957,35 +1957,35 @@ function get_bd_url($data,$type){
 */
 function user_login($user_id) 
 {
-    $url = 'http://ip.taobao.com/service/getIpInfo.php?ip='.$_SERVER['REMOTE_ADDR'];
-    //用curl发送接收数据
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_ENCODING, 'utf8');
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $location = curl_exec($ch);
-    $location = json_decode($location);
-    curl_close($ch);
-    $ip_location = '';
-    if(!empty($location) && $location->code == 0) {
-        $ipdata = $location->data;
-        //国家
-        if ($ipdata->country != "XX") {
-            $ip_location = $ip_location . $ipdata->country;
-        }
-        //地区
-        if ($ipdata->region != "XX") {
-            $ip_location = $ip_location . $ipdata->region;
-        }
-        //城市
-        if ($ipdata->city != "XX" && $ipdata->city != $ipdata->region) {
-            $ip_location = $ip_location . $ipdata->city;
-        }
-        //县级
-        if ($ipdata->county != "XX" && $ipdata->county != $ipdata->city) {
-            $ip_location = $ip_location . $ipdata->county;
-        }
-    }
+    // $url = 'http://ip.taobao.com/service/getIpInfo.php?ip='.$_SERVER['REMOTE_ADDR'];
+    // //用curl发送接收数据
+    // $ch = curl_init($url);
+    // curl_setopt($ch, CURLOPT_ENCODING, 'utf8');
+    // curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // $location = curl_exec($ch);
+    // $location = json_decode($location);
+    // curl_close($ch);
+    // $ip_location = '';
+    // if(!empty($location) && $location->code == 0) {
+    //     $ipdata = $location->data;
+    //     //国家
+    //     if ($ipdata->country != "XX") {
+    //         $ip_location = $ip_location . $ipdata->country;
+    //     }
+    //     //地区
+    //     if ($ipdata->region != "XX") {
+    //         $ip_location = $ip_location . $ipdata->region;
+    //     }
+    //     //城市
+    //     if ($ipdata->city != "XX" && $ipdata->city != $ipdata->region) {
+    //         $ip_location = $ip_location . $ipdata->city;
+    //     }
+    //     //县级
+    //     if ($ipdata->county != "XX" && $ipdata->county != $ipdata->city) {
+    //         $ip_location = $ip_location . $ipdata->county;
+    //     }
+    // }
 
     $data = [
         'user_id' => $user_id,

@@ -25,7 +25,7 @@ class BaseLogic {
     public $tags;//所有标签
 
     public $page;//分页数据
-    public $showNum=15;//每页显示数量
+    public $showNum=10;//每页显示数量
     public $listTotal=0;//列表总数
     
     //计算订单总价

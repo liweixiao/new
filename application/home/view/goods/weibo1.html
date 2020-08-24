@@ -37,7 +37,8 @@
                   <div class="layui-form-item">
                     <label class="layui-form-label">带有视频的短微博网址</label>
                     <div class="layui-input-block">
-                      <input type="text" name="url" value="https://weibo.com/5992108763/JhmIi03yy" lay-verify="title" autocomplete="off" placeholder="请输入带有视频的短微博网址" class="layui-input">
+                        <!-- https://weibo.com/5992108763/JhmIi03yy -->
+                      <input type="text" name="url" value="" lay-verify="title" autocomplete="off" placeholder="请输入带有视频的短微博网址" class="layui-input">
                     </div>
                   </div>
 
@@ -55,7 +56,7 @@
                   <div class="layui-form-item">
                     <label class="layui-form-label">播放量</label>
                     <div class="layui-input-block">
-                      <input type="number" name="task_num" id="task_num" value="1" lay-verify="required" lay-reqtext="播放量是必填项，岂能为空？" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                      <input type="number" name="task_num" id="task_num" value="1" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
                       <span class="note">单位:万</span>
                     </div>
                   </div>
@@ -130,7 +131,7 @@ function verifyForm(){
         data: $('#myform').serialize(),
         dataType: 'json',
         success: function(result){
-            console.log(result.status);
+            // console.log(result.status);
             layer.closeAll();
 
             if (result.error == 1) {

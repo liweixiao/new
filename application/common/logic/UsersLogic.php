@@ -54,7 +54,7 @@ class UsersLogic extends BaseLogic
             $result = array('status' => -3, 'msg' => '账号异常已被锁定！！！');
         } else {
             //是否清空积分           zengmm          2018/06/05
-            $this->isEmptyingIntegral($user);
+            // $this->isEmptyingIntegral($user);
             //查询用户信息之后, 查询用户的登记昵称
             $levelId = $user['level'];
             $levelName = Db::name("user_level")->where("level_id", $levelId)->getField("level_name");

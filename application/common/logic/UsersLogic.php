@@ -439,14 +439,13 @@ class UsersLogic extends BaseLogic
 
     /**
      * 用户动账记录
-     * @param type $user_id
+     * @param type $params
      * @param type $p
      * @return type
      */
-    public function getAccountlog($user_id)
+    public function getAccountlog($params=[])
     {
         $res = [];
-
         $order_by = 'ctime desc';
         $where = [];
 

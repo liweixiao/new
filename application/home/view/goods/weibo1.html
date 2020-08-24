@@ -113,14 +113,16 @@ layui.use(['form', 'layedit', 'laydate'], function(){
      ,format: 'yyyy-MM-dd HH:mm'
    });
 
-    $('#task_num').keyup(function(){
-        var totalAmount = '';
+   //预估总价
+   $("#task_num").bind("input propertychange",function(){
+        var totalAmount = '';
         var price = $.trim($('#sale_price').val());
         var task_num = $.trim($(this).val());
         task_num = parseInt(task_num) * 10000;
         totalAmount = go.calcTotalAmount(task_num, price);
         $('.gs-price').text(totalAmount);
-    });  
+   })
+
 });
 
 function verifyForm(){

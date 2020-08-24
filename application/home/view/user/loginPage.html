@@ -106,6 +106,7 @@
 
 <!--footer-e-->
 <script type="text/javascript">
+    var safelock = false;//安全锁,防止enter点击多次
     $(function(){
         $('.text_cmu').focus(function(){
             //焦点获取
@@ -119,6 +120,7 @@
 
     function checkSubmit()
     {
+        if (safelock) return;
         var username = $.trim($('#username').val());
         var password = $.trim($('#password').val());
         var referurl = $('#referurl').val();
@@ -140,6 +142,7 @@
             return false;
         }
         var layerindex = layer.load(1);//加载层
+        safelock = true;
         $.ajax({
             type : 'post',
             url : '/index.php?m=Home&c=User&a=do_login&t='+Math.random(),
@@ -151,11 +154,13 @@
                     $('.error-box .success-tips').show();
                     setTimeout(function(){window.location.href = res.url;}, 500);
                 }else{
+                    safelock = false;
                     go.errorTips(res.msg);
                     verify();
                 }
             },
             error : function() {
+                safelock = false;
                 layer.close(layerindex);
                 go.errorTips('网络失败，请刷新页面后重试');
             }
@@ -169,6 +174,7 @@
 
     //回车提交
     $(document).keyup(function(event){
+        if (safelock) return;
         if(event.keyCode ==13){
             var isFocus=$("#verify_code").is(":focus");
             if(true==isFocus){

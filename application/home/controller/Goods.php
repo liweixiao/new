@@ -19,14 +19,21 @@ class Goods extends Base {
     }
     //平台ip121.199.15.68
     public function weibo(){
-        $cat_id = I('c', 0);//分类id
+        $goods_id = I('id', 0);//商品id
+        $row = $this->ToolsLogic->getGoodsRow($goods_id);
+        if (empty($row)) {
+            $this->error('非法请求');
+        }
+
+        $cat_id = $row['cat_id'];
         $cat = $this->ToolsLogic->getCatRow($cat_id);
         if (empty($cat)) {
-            $this->error('非法请求');
+            $this->error('抱歉，请联系管理员！');
         }
 
         $tags = $this->ToolsLogic->getAllTags('run_first', $cat_id);
         // ee($tags);
+        $this->assign('row', $row);
         $this->assign('cat', $cat);
         $this->assign('tags', $tags);
         return $this->fetch('weibo1');

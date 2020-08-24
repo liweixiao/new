@@ -626,12 +626,7 @@ function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distr
         'order_id' => $order_id,
         'order_sn' => $order_sn
     );
-//    if($desc =='积分过期清空'){
-//        $configInfo = Db::name("config")->where("name='expired_time' and inc_type='integral'")->find();
-//        $expiredTime = explode(",", $configInfo['value']);
-//        $newExpiredTime = strtotime(date("Y")."-".$expiredTime[0]."-".$expiredTime[1]);
-//        $account_log['change_time']=$newExpiredTime;
-//    }
+
     /* 更新用户信息 */
     $update_data = array(
         'user_money'        => ['exp','user_money+'.$user_money],
@@ -2277,7 +2272,7 @@ function check_user_ids_condition($userInfo=[])
  * @return mixed 数字
  */
 if( ! function_exists('fnum')){
-    function fnum($num=0, $isSplit=true, $fixed_num = 0){
+    function fnum($num=0, $isSplit=false, $fixed_num = 2){
         $res = $num;
 
         //null情况

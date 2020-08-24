@@ -31,12 +31,13 @@
           <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
                 <!-- 内容区域 -->
-                <form class="layui-form" method="post" action="" id="myform">
-                  <input type="hidden" name="cat_id" value="{$cat.cat_id}">
+                <form class="layui-form myform" method="post" action="" id="myform">
+                  <input type="hidden" name="goods_id" value="{$row.goods_id}">
+                  <input type="hidden" name="price" id="sale_price" value="{$row.sale_price}">
                   <div class="layui-form-item">
                     <label class="layui-form-label">带有视频的短微博网址</label>
                     <div class="layui-input-block">
-                      <input type="text" name="url" value="http://new.hehuaban.org/index.php/Home/goods/weibo/s/1.html" lay-verify="title" autocomplete="off" placeholder="请输入带有视频的短微博网址" class="layui-input">
+                      <input type="text" name="url" value="https://weibo.com/5992108763/JhmIi03yy" lay-verify="title" autocomplete="off" placeholder="请输入带有视频的短微博网址" class="layui-input">
                     </div>
                   </div>
 
@@ -54,28 +55,29 @@
                   <div class="layui-form-item">
                     <label class="layui-form-label">播放量</label>
                     <div class="layui-input-block">
-                      <input type="number" name="task_num" value="100" lay-verify="required" lay-reqtext="播放量是必填项，岂能为空？" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                      <input type="number" name="task_num" id="task_num" value="1" lay-verify="required" lay-reqtext="播放量是必填项，岂能为空？" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                      <span class="note">单位:万</span>
                     </div>
                   </div>
 
                   <div class="layui-form-item">
                     <label class="layui-form-label">开始时间</label>
                     <div class="layui-input-inline">
-                      <input type="text" value="{:date('Y-m-d H:i')}" name="stime" id="date" lay-verify="datetime" placeholder="{:date('Y-m-d H:i')}" autocomplete="off" class="layui-input w180">
+                      <input type="text" value="{:date('Y-m-d H:i')}" name="stime" id="stime" placeholder="{:date('Y-m-d H:i')}" autocomplete="off" class="layui-input w180" lay-key="6">
                     </div>
                   </div>
 
                   <div class="layui-inline">
                     <label class="layui-form-label">价格预计</label>
                     <div class="layui-input-inline">
-                      <span class="gs-price">120.5</span>
+                      <span class="gs-price">{$row.sale_price*10000}</span>
                     </div>
                   </div>
                   
 
                   <div class="layui-form-item mt20">
                     <div class="layui-input-block">
-                      <a href="JavaScript:void(0);" onClick="verifyForm();" class="layui-btn">立即提交</a>
+                      <a href="JavaScript:void(0);" onClick="verifyForm();" class="layui-btn">提交任务</a>
                       <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
                   </div>
@@ -95,38 +97,29 @@
 $(function(){
 
 });
+
+
 layui.use(['form', 'layedit', 'laydate'], function(){
   var form = layui.form
   ,layer = layui.layer
   ,layedit = layui.layedit
   ,laydate = layui.laydate;
   
- //日期时间选择器
+   //日期时间选择器
    laydate.render({
-     elem: '#date'
-     ,format:'yyyy-MM-dd HH:mm:ss'
+     elem: '#stime'
      ,type: 'datetime'
+     ,format: 'yyyy-MM-dd HH:mm'
    });
-  
-  //创建一个编辑器
-  var editIndex = layedit.build('LAY_demo_editor');
- 
-  //自定义验证规则
-  form.verify({
-    title: function(value){
-      if(value.length < 5){
-        return '标题至少得5个字符啊';
-      }
-    }
-    ,pass: [
-      /^[\S]{6,12}$/
-      ,'密码必须6到12位，且不能出现空格'
-    ]
-    ,content: function(value){
-      layedit.sync(editIndex);
-    }
-  });
-  
+
+    $('#task_num').keyup(function(){
+        var totalAmount = '';
+        var price = $.trim($('#sale_price').val());
+        var task_num = $.trim($(this).val());
+        task_num = parseInt(task_num) * 10000;
+        totalAmount = go.calcTotalAmount(task_num, price);
+        $('.gs-price').text(totalAmount);
+    });  
 });
 
 function verifyForm(){
@@ -140,10 +133,10 @@ function verifyForm(){
             console.log(result.status);
             layer.closeAll();
 
-            if (result.status == 1) {
-                go.successTips(result.msg);
-            } else {
+            if (result.error == 1) {
                 go.errorTips(result.msg);
+            } else {
+                go.successTips(result.msg);
             }
         },
         error: function(){

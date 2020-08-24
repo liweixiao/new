@@ -15,13 +15,14 @@ use think\Loader;
 use think\Model;
 use think\Page;
 use think\Db;
+use app\common\logic\BaseLogic;
 
 /**
  * 用户逻辑定义
  * Class UsersLogic
  * @package Home\Logic
  */
-class UsersLogic extends Model
+class UsersLogic extends BaseLogic
 {
     protected $user_id=0;
 
@@ -435,5 +436,44 @@ class UsersLogic extends Model
         return true;
     }
 
+
+    /**
+     * 用户动账记录
+     * @param type $user_id
+     * @param type $p
+     * @return type
+     */
+    public function getAccountlog($user_id)
+    {
+        $res = [];
+
+        $order_by = 'ctime desc';
+        $where = [];
+
+        //排序
+        if (!empty($params['order_by'])) {
+            $order_by = $params['order_by'];
+        }
+
+        //根据用户查找
+        if (!empty($params['user_id'])) {
+            $user_id = $params['user_id'];
+            $where['user_id'] = $user_id;
+        }
+
+        // ee($where);
+        $count = M('v_account_log')->where($where)->count();
+        // sql();
+        $page = new Page($count, $this->showNum);
+        $res = M('v_account_log')->where($where)
+                                ->order($order_by)
+                                ->limit("{$page->firstRow}, {$page->listRows}")
+                                ->select();
+                                // sql();
+        $this->page = $page;
+        $this->listTotal = $count;
+        // ee($res);
+        return $res;
+    }
 
 }

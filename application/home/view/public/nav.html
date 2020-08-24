@@ -1,16 +1,16 @@
 <div class="layui-header">
   <div class="layui-logo">新媒体管理-会员中心</div>
-  <!-- 头部区域（可配合layui已有的水平导航） -->
   <ul class="layui-nav layui-layout-left">
-    <li class="layui-nav-item"><a href="">控制台</a></li>
-    <li class="layui-nav-item"><a href="">商品管理</a></li>
-    <li class="layui-nav-item hide">
-      <a href="javascript:;">其它系统</a>
-      <dl class="layui-nav-child">
-        <dd><a href="">邮件管理</a></dd>
-        <dd><a href="">消息管理</a></dd>
-        <dd><a href="">授权管理</a></dd>
-      </dl>
+    <!-- <li class="layui-nav-item"><a href="">控制台</a></li> -->
+    <li class="layui-nav-item <if condition='$Request.controller eq "Goods"'>layui-this</if>"><a href="{:U('Home/goods/weibo',['id'=>1])}">商品管理</a></li>
+    <li class="layui-nav-item <if condition='$Request.controller eq "Order"'>layui-this</if>"><a href="{:U('Home/order/index')}">订单管理</a></li>
+    <li class="layui-nav-item">
+      <a href="javascript:;" class="<if condition='$Request.controller eq "User"'>layui-this</if>"><a href="{:U('Home/user/index')}">会员中心</a>
+<!--       <dl class="layui-nav-child hide">
+        <dd><a href="{:U('Home/user/index')}">会员信息</a></dd>
+        <dd><a href="{:U('Home/user/accountlog')}">消费记录</a></dd>
+        <dd><a href="">账户信息</a></dd>
+      </dl> -->
     </li>
   </ul>
   <ul class="layui-nav layui-layout-right">

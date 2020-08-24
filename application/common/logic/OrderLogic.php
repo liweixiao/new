@@ -111,7 +111,7 @@ class OrderLogic extends BaseLogic{
         } catch (\Exception $e) {
             // 回滚事务
             Db::rollback();
-            return ['error'=>1, 'msg'=>'抱歉，网络问题，请联系管理员'];
+            return ['error'=>1, 'msg'=>$e->getMessage()];
         }
 
         return $res;

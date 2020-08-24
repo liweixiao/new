@@ -72,6 +72,16 @@ class Order extends Base {
         $goods_id = I('goods_id', 0);//商品id
         $data = I('post.');
 
+        if (empty($data['url'])) {
+            $res = ['error'=>1, 'msg'=>'网址必须填写'];
+            $this->ajaxReturn($res);
+        }
+
+        if (empty($data['task_num']) || $data['task_num'] < 1) {
+            $res = ['error'=>1, 'msg'=>'任务数量必须大于1'];
+            $this->ajaxReturn($res);
+        }
+
         $realTaskNum = $data['task_num']*10000;
 
         //获取商品

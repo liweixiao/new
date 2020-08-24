@@ -2,7 +2,7 @@
   <div class="layui-logo">新媒体管理-会员中心</div>
   <ul class="layui-nav layui-layout-left">
     <!-- <li class="layui-nav-item"><a href="">控制台</a></li> -->
-    <li class="layui-nav-item <if condition='$Request.controller eq "Goods"'>layui-this</if>"><a href="{:U('Home/goods/weibo',['id'=>1])}">商品管理</a></li>
+    <li class="layui-nav-item <if condition='$Request.controller eq "Goods"'>layui-this</if>"><a href="{:U('Home/goods/weibo',['id'=>1])}">商品列表</a></li>
     <li class="layui-nav-item <if condition='$Request.controller eq "Order"'>layui-this</if>"><a href="{:U('Home/order/index')}">订单管理</a></li>
     <li class="layui-nav-item">
       <a href="javascript:;" class="<if condition='$Request.controller eq "User"'>layui-this</if>"><a href="{:U('Home/user/index')}">会员中心</a>

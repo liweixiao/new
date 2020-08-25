@@ -1,4 +1,4 @@
-<div class="layui-side layui-bg-black">
+<div class="left-box layui-side layui-bg-black">
   <div class="layui-side-scroll">
     <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
     <ul class="layui-nav layui-nav-tree"  lay-filter="test">
@@ -31,6 +31,9 @@
                 </dd>
                 <dd class="<if condition='$Request.controller eq "User" and $Request.action eq "cz"'>layui-this</if>">
                     <a href="{:U('Home/user/cz')}"><span class="iconfont icon-chongzhi"></span>充值中心</a>
+                </dd>
+                <dd>
+                    <a href="{:U('home/user/logout')}"><span class="iconfont icon-tuichu"></span>退出登录</a>
                 </dd>
             </dl>
         </li>

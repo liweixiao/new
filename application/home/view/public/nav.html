@@ -1,19 +1,19 @@
 <div class="layui-header">
   <div class="layui-logo">新媒体管理-会员中心</div>
-  <ul class="layui-nav layui-layout-left">
+  <ul class="layui-nav nav-pc layui-layout-left">
     <!-- <li class="layui-nav-item"><a href="">控制台</a></li> -->
     <li class="layui-nav-item <if condition='$Request.controller eq "Goods"'>layui-this</if>"><a href="{:U('Home/goods/weibo',['id'=>1])}">商品列表</a></li>
     <li class="layui-nav-item <if condition='$Request.controller eq "Order"'>layui-this</if>"><a href="{:U('Home/order/index')}">订单管理</a></li>
     <li class="layui-nav-item">
       <a href="javascript:;" class="<if condition='$Request.controller eq "User"'>layui-this</if>"><a href="{:U('Home/user/index')}">会员中心</a>
-<!--       <dl class="layui-nav-child hide">
+      <!-- <dl class="layui-nav-child hide">
         <dd><a href="{:U('Home/user/index')}">会员信息</a></dd>
         <dd><a href="{:U('Home/user/accountlog')}">消费记录</a></dd>
         <dd><a href="">账户信息</a></dd>
       </dl> -->
     </li>
   </ul>
-  <ul class="layui-nav layui-layout-right">
+  <ul class="layui-nav nav-pc layui-layout-right">
     <if condition="empty($user)">
 
     <li class="layui-nav-item">
@@ -33,4 +33,12 @@
     <li class="layui-nav-item"><a href="{:U('home/user/logout')}">退了</a></li>
     </if>
   </ul>
+
+  <!-- 手机端menu -->
+  <div class="mobile-menu" onclick="go.showMenu();">
+      <span class="iconfont icon-menu"></span>
+  </div>
+
+
+
 </div>

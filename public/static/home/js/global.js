@@ -280,6 +280,17 @@ go.calcTotalAmount = function (num, price) {
     return res;
 }
 
+//手机端展示menu
+go.showMenu = function (dom) {
+    $('.left-box').slideDown(200);
+    $(document).bind("click",function(e){
+            var target = $(e.target);
+            if(target.closest(".mobile-menu").length == 0 && target.closest(".left-box").length == 0 ){//点击id为parentId之外的地方触发
+                $('.left-box').slideUp(200);
+            }
+    })
+}
+
 
 
 

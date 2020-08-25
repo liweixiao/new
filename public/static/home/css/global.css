@@ -28,6 +28,12 @@ a:hover {
 }
 
 
+/*手机端*/
+.mobile-menu {
+    display: none;
+}
+/*手机端 end*/
+
 /*通用*/
 .c-gray{
     color: #999;
@@ -185,7 +191,7 @@ em{font-style: normal;}
     padding-top: 10px;
 }
 .layui-nav-tree .layui-nav-child a .iconfont {
-    font-size: 17px;
+    font-size: 15px;
     margin-right: 4px;
 }
 
@@ -325,14 +331,18 @@ em{font-style: normal;}
 .opt-set:hover{
     color: #47b3e3;
 }
-
+.layui-layout-admin .layui-footer {
+    z-index: 999;
+}
+.layui-layout-body {
+    overflow: auto;
+}
 /*用户信息*/
 .userinfo{
 
 }
 .userinfo dl{
-    line-height: 40px;
-    height: 40px;
+    line-height: 30px;
 }
 
 .userinfo dl dd{
@@ -369,7 +379,7 @@ em{font-style: normal;}
 }
 
 .userinfo.platinfo dl dd{
-    width: 130px;
+    width: 108px;
 }
 .userinfo.platinfo dl dt{
     font-weight: normal;

@@ -1,0 +1,140 @@
+﻿@media screen and (max-width: 800px) {
+.layui-layout-admin .layui-header .layui-nav {
+    display: none;
+}
+.nav-pc{
+    display: none;
+}
+.mobile-menu {
+    display: block;
+    position: absolute;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    /*background-color: #fff;*/
+    top: 10px;
+    text-align: center;
+    line-height: 35px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.mobile-menu .iconfont{
+    font-size: 37px;
+}
+
+.left-box {
+    display: none;
+    right: 0;
+    left: auto;
+    bottom: auto;
+}
+.left-box .layui-side-scroll {
+    height: auto;
+}
+.layui-body {
+    left: 0;
+    overflow: auto;
+}
+
+.layui-layout-admin .layui-footer {
+    left: 0;
+}
+
+.userinfo dl dt {
+    width: 50%;
+    margin-right: 0; 
+}
+
+.userinfo {
+    padding: 15px 0;
+}
+.layui-layout-admin .layui-body {
+    bottom: auto;
+    position: relative;
+    top: auto;
+}
+.userinfo.platinfo dl dt span.cz-box {
+    width: auto;
+}
+.userinfo.platinfo dl dt {
+    width: 50%;
+    margin-right: 0; 
+}
+.table-box-order {
+    min-width: 800px;
+}
+.table-box-log {
+    min-width: 600px;
+}
+
+.goods-box .layui-input-block {
+    margin-left: 0;
+}
+.goods-box .layui-form {
+    width: 100%;
+}
+.goods-box .layui-form-label {
+    width: 100%;
+    float: none;
+    text-align: left;
+    padding: 9px 0;
+}
+.goods-box .mb15 {
+    display: block;
+}
+.goods-box .layui-form-item .layui-input-inline {
+    margin: 0 0 10px 0;
+}
+ .container .goods-box input[type="text"] {
+    width: 100%;
+}
+.goods-box .layui-inline.gs-price-box {
+    display: inline-block;
+    width: 100%;
+}
+.goods-box .layui-inline.gs-price-box .layui-form-label {
+    display: inline-block;
+    width: auto;
+    vertical-align: bottom;
+    margin-right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

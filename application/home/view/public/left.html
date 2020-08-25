@@ -1,0 +1,44 @@
+<div class="left-box layui-side layui-bg-black">
+  <div class="layui-side-scroll">
+    <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+    <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+        <li data-param="goods" class="layui-nav-item">
+            <a class="" href="javascript:;">所有商品</a>
+            <dl class="layui-nav-child">
+                <dd data-param="goods|weibo"><a href="{:U('Home/goods/weibo',['id'=>1])}"><span class="iconfont icon-weibo"></span>微博</a></dd>
+                <dd data-param="goods|weixin" class="hide"><a href="javascript:;"><span class="iconfont icon-gongzhonghao"></span>微信</a></dd>
+            </dl>
+        </li>
+
+        <li data-param="order" class="layui-nav-item">
+            <a class="" href="javascript:;">订单管理</a>
+            <dl class="layui-nav-child">
+                <dd data-param="order|index" class="">
+                    <a href="{:U('Home/order/index')}"><span class="iconfont icon-Order"></span>订单列表</a>
+                </dd>
+            </dl>
+        </li>
+
+        <li class="layui-nav-item" data-param="user">
+            <a class="" href="javascript:;">会员中心</a>
+            <dl class="layui-nav-child">
+                <dd data-param="user|index" class="">
+                    <a href="{:U('Home/user/index')}"><span class="iconfont icon-user"></span>会员信息</a>
+                </dd>
+                <dd data-param="user|accountlog" class="">
+                    <a href="{:U('Home/user/accountlog')}"><span class="iconfont icon-xiaofeijilu"></span>消费记录</a>
+                </dd>
+                <dd data-param="user|cz" class="">
+                    <a href="{:U('Home/user/cz')}"><span class="iconfont icon-chongzhi"></span>充值中心</a>
+                </dd>
+                <dd data-param="user|logout" class="pb15">
+                    <a href="{:U('home/user/logout')}"><span class="iconfont icon-tuichu"></span>退出登录</a>
+                </dd>
+            </dl>
+        </li>
+
+
+      <!-- <li class="layui-nav-item"><a href="">云市场</a></li> -->
+    </ul>
+  </div>
+</div>

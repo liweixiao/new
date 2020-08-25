@@ -1,0 +1,76 @@
+<div class="layui-header">
+  <div class="layui-logo">新媒体管理-会员中心</div>
+  <ul class="layui-nav nav-pc layui-layout-left">
+    <!-- <li class="layui-nav-item"><a href="">控制台</a></li> -->
+    <li data-param="goods" class="layui-nav-item"><a href="{:U('Home/goods/weibo',['id'=>1])}">商品列表</a></li>
+    <li data-param="order" class="layui-nav-item"><a href="{:U('Home/order/index')}">订单管理</a></li>
+    <li data-param="user" class="layui-nav-item">
+      <a href="javascript:;" class=""><a href="{:U('Home/user/index')}">会员中心</a>
+      <!-- <dl class="layui-nav-child hide">
+        <dd><a href="{:U('Home/user/index')}">会员信息</a></dd>
+        <dd><a href="{:U('Home/user/accountlog')}">消费记录</a></dd>
+        <dd><a href="">账户信息</a></dd>
+      </dl> -->
+    </li>
+  </ul>
+  <ul class="layui-nav nav-pc layui-layout-right">
+    {if condition="empty($user)"}
+
+    <li class="layui-nav-item">
+      <a onclick="go.login()">登录</a>
+    </li>
+
+    {else/}
+    <li class="layui-nav-item">
+      <a href="javascript:;">
+        <img src="__STATIC__/images/avatar.jpg" class="layui-nav-img">
+        {$user.mobile|default=''}
+      </a>
+      <dl class="layui-nav-child">
+        <dd><a href="{:U('Home/order/index')}">我的订单</a></dd>
+      </dl>
+    </li>
+    <li class="layui-nav-item"><a href="{:U('home/user/logout')}">退了</a></li>
+    {/if}
+  </ul>
+
+  <!-- 手机端menu -->
+  <div class="mobile-menu" onclick="go.showMenu(this);">
+      <span class="iconfont icon-menu"></span>
+  </div>
+<script type="text/javascript">
+    $(function(){
+        //顶部nav、左侧选中
+        go.signMenuTab();
+    });
+    //手机端展示menu
+    go.showMenu = function (dom) {
+        $('.left-box').slideToggle(200);
+        $(dom).toggleClass('on');
+        $(document).bind("click",function(e){
+                var target = $(e.target);
+                if(target.closest(".mobile-menu").length == 0 && target.closest(".left-box").length == 0 ){
+                    //点击id为parentId之外的地方触发
+                    $('.left-box').slideUp(200);
+                    $(dom).removeClass('on');
+                }
+        })
+    }
+
+    //标记menu选中状态
+    go.signMenuTab = function (dom) {
+        var conAct = "{$mo.conAct}";
+        var controller = "{$mo.controller}";
+
+        //顶部导航加选中状态
+        $('ul.nav-pc li[data-param='+controller+']').addClass('layui-this');
+
+        //左侧一级加选中状态
+        $('.left-box ul.layui-nav li[data-param='+controller+']').addClass('layui-nav-itemed');
+
+        //左侧二级加选中状态
+        $('.left-box ul.layui-nav li dd[data-param="'+conAct+'"]').addClass('layui-this');
+
+    }
+</script>
+</div>

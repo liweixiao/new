@@ -1,0 +1,61 @@
+{include file="public/header"/}
+<style type="text/css">
+</style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+{include file="public/nav"/}
+{include file="public/left"/}
+
+
+<!-- 主体-->
+<div class="layui-body">
+    <div class="container">
+
+        <div class="layui-form  table-box-log">
+          <table class="layui-table">
+            <colgroup>
+              <col width="150">
+              <col width="250">
+              <col width="200">
+              <col width="200">
+              <col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>订单编号</th>
+                <th>动账时间</th>
+                <th>消费金额</th>
+                <th>备注</th>
+              </tr> 
+            </thead>
+            <tbody>
+            {volist name="rows" id="vo"}
+              <tr>
+                <td>{$vo.order_sn}</td>
+                <td>{$vo.ctime}</td>
+                <td>{$vo.user_money}</td>
+                <td>{$vo.desc}</td>
+              </tr>
+            {/volist}
+            </tbody>
+          </table>
+          {$page->show()}
+        </div>
+
+    </div>
+</div>
+<!-- 主体END-->
+<script>
+$(function(){
+
+});
+</script>
+
+
+{include file="public/footer"/}
+</div>
+<!--layui-layout END-->
+</body>
+</html>

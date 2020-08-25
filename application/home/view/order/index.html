@@ -1,0 +1,137 @@
+{include file="public/header"/}
+<style type="text/css">
+</style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+{include file="public/nav"/}
+{include file="public/left"/}
+
+
+<!-- 主体-->
+<div class="layui-body">
+    <div class="container">
+
+        <div class="layui-form row-list table-box-order">
+          <table class="layui-table">
+            <colgroup>
+              <col width="150">
+              <col width="150">
+              <col width="200">
+              <col width="200">
+              <col width="100">
+              <col width="150">
+              <col width="120">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>订单编号</th>
+                <th>产品名称</th>
+                <th>任务模式</th>
+                <th>目标</th>
+                <th>实时状态</th>
+                <th>开始时间</th>
+                <th>任务数量</th>
+                <th>金额</th>
+                <th>操作</th>
+              </tr> 
+            </thead>
+            <tbody>
+            {volist name="rows" id="vo"}
+              <tr>
+                <td>{$vo.order_sn}</td>
+                <td>{$vo.goods.0.goods_name|default=''}</td>
+                <td>{$tags.run_first[$vo.first]|default=''}</td>
+                <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
+                <td>{$vo.task_status_name}</td>
+                <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
+                <td>{$vo.task_num|fnum=true,0}</td>
+                <td>{$vo.total_amount|fnum}</td>
+                <td>
+                    {if condition="!empty($vo.task_status_name) and $vo.task_status_name neq 'ok'"}
+                        {if condition="$vo.task_status_name eq '暂停中'"}
+                        <span class="opt-set" order_id="{$vo.order_id}" type="continue" onclick="go.setOrder(this)">继续</span>
+                        {elseif condition="preg_match('/\d+\/\d+/', $vo.task_status_name) or $vo.task_status_name eq '处理中'"/}
+                        <span class="opt-set" order_id="{$vo.order_id}" type="pause" onclick="go.setOrder(this)">暂停</span>
+                        {/if}
+                    {/if}
+                </td>
+              </tr>
+            {/volist}
+            </tbody>
+          </table>
+          {$page->show()}
+        </div>
+
+    </div>
+</div>
+<!-- 主体END-->
+<script>
+$(function(){
+
+});
+
+
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  
+   //日期时间选择器
+   laydate.render({
+     elem: '#stime'
+     ,type: 'datetime'
+     ,format: 'yyyy-MM-dd HH:mm'
+   });
+
+    $('#task_num').keyup(function(){
+        var totalAmount = '';
+        var price = $.trim($('#sale_price').val());
+        var task_num = $.trim($(this).val());
+        task_num = parseInt(task_num) * 10000;
+        totalAmount = go.calcTotalAmount(task_num, price);
+        $('.gs-price').text(totalAmount);
+    });  
+});
+
+//设置订单
+var params = {};
+go.setOrder = function(dom){
+    params.order_id = $(dom).attr('order_id');
+    params.type = $(dom).attr('type');
+
+    var noteText = $(dom).text();
+    layer.confirm('确定要'+noteText+'操作吗?', function(){
+        var layerindex = layer.load(1);//加载层
+        $.ajax({
+            type: 'POST',
+            url: "{:U('home/order/setOrder')}",
+            data: params,
+            dataType: 'json',
+            success: function(result){
+                layer.closeAll();
+                if (result.error == 1) {
+                    go.errorTips(result.msg);
+                } else {
+                    go.successTips(result.msg);
+                    setTimeout(function(){location.reload()}, 500);
+                }
+            },
+            error: function(){
+                layer.closeAll();
+                layer.alert("服务器繁忙, 请联系管理员!");
+            }
+        });
+    });
+
+}
+</script>
+
+
+{include file="public/footer"/}
+</div>
+<!--layui-layout END-->
+</body>
+</html>

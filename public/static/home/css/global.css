@@ -196,6 +196,7 @@ em{font-style: normal;}
 .layui-nav-tree .layui-nav-child a .iconfont {
     font-size: 15px;
     margin-right: 4px;
+    vertical-align: middle;
 }
 
 .gs-price{

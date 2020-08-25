@@ -25,6 +25,12 @@
 
 .left-box {
     display: none;
+    right: 0;
+    left: auto;
+    bottom: auto;
+}
+.left-box .layui-side-scroll {
+    height: auto;
 }
 .layui-body {
     left: 0;

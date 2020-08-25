@@ -32,6 +32,9 @@ a:hover {
 .mobile-menu {
     display: none;
 }
+.mobile-menu.on span {
+    color: #009688;
+}
 /*手机端 end*/
 
 /*通用*/

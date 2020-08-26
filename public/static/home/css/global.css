@@ -382,6 +382,9 @@ em{font-style: normal;}
     
 }
 
+.userinfo.platinfo{
+    width: 100%;
+}
 .userinfo.platinfo dl dd{
     width: 108px;
 }
@@ -411,8 +414,13 @@ em{font-style: normal;}
     color: #47b3e3;
 }
 
+.order_sn.layui-input-block {
+    margin-left: 0;
+}
 
-
+.order_sn.layui-input-block input[type=text] {
+    border:1px solid #009688;
+}
 
 
 

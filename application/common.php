@@ -2616,12 +2616,14 @@ if( ! function_exists('add_account_log')){
 
         $account_log = [
             'user_id'     => $params['user_id'],
-            'user_money'  => $params['change_money'],
+            'user_money'  => $params['change_money'] ?? 0,
             'change_time' => time(),
+            'order_sn'    => $params['order_sn'] ?? '',
             'desc'        => $params['desc'] ?? '',
             'order_id'    => $params['order_id'] ?? 0,
             'operator'    => $params['operator'] ?? 0,
             'type'        => $params['type'] ?? 1,//类型-默认是下单消费
+            'is_show'     => $params['is_show'] ?? 1,//是否展示,默认用户提交支付凭证单号的时候是不显示给客户看的
         ];
 
         $result = db('account_log')->insert($account_log);

@@ -450,6 +450,7 @@ class UsersLogic extends BaseLogic
         $res = [];
         $order_by = 'change_time desc';
         $where = [];
+        $where['is_show'] = 1;
 
         //排序
         if (!empty($params['order_by'])) {

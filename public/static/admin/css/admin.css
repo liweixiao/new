@@ -29,6 +29,17 @@ a:hover {
 .pagebox .pagination{
     /*text-align: right;*/
 }
+
+.sdiv .qsbox {
+    border: 1px solid #D7D7D7;
+    border-radius: 4px;
+    margin-right: 7px;
+    font-size: 12px;
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 6px;
+}
 /*后端-end*/
 
 

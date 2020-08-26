@@ -97,7 +97,7 @@ class User extends Common {
             $account_log = [
                 'user_id'      => $user_id,
                 'change_money' => $recharge,
-                'desc'         => '用户充值',
+                'desc'         => '用户充值-管理员',
                 'operator'     => $this->user_id,
                 'type'         => 2,//充值
             ];
@@ -117,6 +117,47 @@ class User extends Common {
             $this->assign('info', $info);
         }
         $this->ajaxReturn($res);
+    }
+
+    /*
+     * 会员动账记录
+     */
+    public function user_account_log(){
+        $params = I('get.');//请求参数
+
+        $order_by = 'change_time desc';
+        $where = [];
+
+        //排序
+        if (!empty($params['order_by'])) {
+            $order_by = $params['order_by'];
+        }
+
+        //根据订单号查找
+        if (!empty($params['order_sn'])) {
+            $order_sn = $params['order_sn'];
+            $where['order_sn'] = $order_sn;
+        }
+
+        //根据类型(充值|消费)
+        if (!empty($params['type'])) {
+            $type = $params['type'];
+            $where['type'] = $type;
+        }
+
+        //根据会员账号查找
+        if (!empty($params['keyword'])) {
+            $keyword = $params['keyword'];
+            $where['mobile|order_sn'] = ['like', "%{$keyword}%"];
+        }
+
+        $rows = db("v_account_log")->where($where)->order($order_by)->paginate($this->showNum);
+        // sql();
+        // ee($rows->render());
+
+        $this->assign('rows', $rows);
+        // ee($rows);
+        return $this->fetch();
     }
 
 }

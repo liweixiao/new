@@ -689,7 +689,54 @@ class User extends Base{
     }
 
 
+    /*
+     * 会员充值凭证保存(主要写到充值记录里面)
+     */
+    public function save_pay_order() {
+        $res = ['error'=>0, 'msg'=>'提交成功！充值到账3-10分钟。'];
+        $order_sn = input('order_sn');
 
+
+        if (empty($order_sn)) {
+            $res = ['error'=>1, 'msg'=>'抱歉,订单号不能为空'];
+            $this->ajaxReturn($res);
+        }
+
+        $row = db('users')->find($this->user_id);
+        if (empty($row)) {
+            $res = ['error'=>1, 'msg'=>'抱歉，用户不存在'];
+            $this->ajaxReturn($res);
+        }
+
+        if ($row['is_lock'] == 1) {
+            $res = ['error'=>1, 'msg'=>'抱歉，当前您的账户被冻结！无法提交。请联系管理员'];
+            $this->ajaxReturn($res);
+        }
+
+        // 启动事务
+        Db::startTrans();
+        try{
+            //添加充值记录
+            $account_log = [
+                'user_id'      => $this->user_id,
+                'order_sn'     => $order_sn,
+                'is_show'      => 0,//这个默认是不显示的
+                'change_money' => $recharge,
+                'desc'         => '用户充值-用户',
+                'type'         => 2,//充值
+            ];
+            $result_log = add_account_log($account_log);
+
+            // 提交事务
+            Db::commit();
+        }catch(\Exception $e) {
+           // 回滚事务
+           Db::rollback();
+           return ['error'=>1, 'msg'=>$e->getMessage()];
+        }
+
+        $this->ajaxReturn($res);
+    }
 
 
 

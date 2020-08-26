@@ -477,5 +477,107 @@ em{font-style: normal;}
     overflow-x: scroll;
 }
 
+.popbox {
+    position: relative;
+    background: #fff;
+    margin: 0 auto;
+    padding: 50px 70px 40px;
+    color: #444;
+    border-radius: 5px;
+}
+
+.popbox .i-close {
+    right: 10px;
+    top: 10px;
+    position: absolute;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    background-position: -52px -64px;
+    display: inline-block;
+    vertical-align: top;
+}
+.popbox .nh-title {
+    font-size: 16px;
+    color: #666;
+    line-height: 30px;
+}
+.popbox .nh-explain {
+    line-height: 22px;
+    padding-bottom: 10px;
+    font-size: 12px;
+    color: #aaa;
+    line-height: 25px;
+}
+.popbox .inputbox {
+    border: 1px solid #e7e7e7;
+    position: relative;
+    padding: 0;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 30px;
+}
+.popbox .inputbox input{
+    height: 30px;
+}
+.popbox .layui-btn{
+    display: block;
+}
+
+
+
+
+.imgico {
+    display: inline-block;
+    vertical-align: top;
+}
+.popbox .i-phone {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+}
+.popbox .i-phone .iconfont {
+    color: #ff6d6f;
+    font-size: 20px;
+}
+.popbox .telinput {
+    display: block;
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    border: 0;
+    font-size: 14px;
+    outline: 0;
+    background: 0;
+}
+
+.popbox .okBtn {
+    display: block;
+    height: 42px;
+    line-height: 42px;
+    background: #ff4d45;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.popbox .error-box{
+    height: 20px;
+}
+.popbox .error-tips {
+    color: #ff4d45;
+    padding-top: 10px;
+}
+
+.popbox .success-tips {
+    color: green;
+    padding-top: 10px;
+}
+.popbox .success-tips .iconfont{
+    
+}
 
 

@@ -87,4 +87,11 @@ class Common extends Controller {
         } 
     }
 
+    /*
+     * 数据返回
+     */
+    public function ajaxReturn($data){
+        exit(json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
 }

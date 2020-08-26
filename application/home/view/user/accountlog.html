@@ -34,7 +34,7 @@
             {volist name="rows" id="vo"}
               <tr>
                 <td>{$vo.order_sn}</td>
-                <td>{$vo.ctime}</td>
+                <td>{$vo.change_time|date='Y-m-d H:i:s',###}</td>
                 <td>{$vo.user_money}</td>
                 <td>{$vo.desc}</td>
               </tr>

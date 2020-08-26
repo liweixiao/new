@@ -2582,20 +2582,12 @@ if( ! function_exists('gettree')){
 
 
 /**
- * curl获取|操作数据
- * @param $region_id区域id
- * @param $data 要返回的数据
- * @param $getLevel 表明要获取的级别是多少(即:最低要获取到这个级别)
- * @param $containSelf 表明返回的数据是否包含本身传递过来的region_id,默认包含
- * @return array
+ * @param 获取商城数据
+ * @param string路径 $url 
+ * @param array $postData 请求数据
+ * @return void
  */
 if( ! function_exists('apiget')){
-    /**
-     * @param 获取商城数据
-     * @param string路径 $url 
-     * @param array $postData 请求数据
-     * @return void
-     */
     function apiget($url='', $postData=null, $method='post', $options=[], $returnArray = true) {
         require_once '../vendor/http/HttpCurl.php';
         $http = new HttpCurl();
@@ -2606,6 +2598,37 @@ if( ! function_exists('apiget')){
             $res = $http->postRequest($url, $postData, $options);
         }
         return $res;
+    }
+}
+
+/**
+ * 生成用户账户记录
+ * @param array $params
+ * @return array
+ */
+if( ! function_exists('add_account_log')){
+    function add_account_log($params=[]) {
+        $account_log = [];
+
+        if (empty($params['user_id'])) {
+            return false;
+        }
+
+        $account_log = [
+            'user_id'     => $params['user_id'],
+            'user_money'  => $params['change_money'],
+            'change_time' => time(),
+            'desc'        => $params['desc'] ?? '',
+            'order_id'    => $params['order_id'] ?? 0,
+            'operator'    => $params['operator'] ?? 0,
+            'type'        => $params['type'] ?? 1,//类型-默认是下单消费
+        ];
+
+        $result = db('account_log')->insert($account_log);
+        if (!$result) {
+            return false;
+        }
+        return true;
     }
 }
 

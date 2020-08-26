@@ -1,0 +1,47 @@
+{__NOLAYOUT__}
+<div class="popbox">
+    <form class="addmoney" id="addmoney" method="post">
+        <input type="text" name="user_id" value="{$row.user_id}" class="hide">
+        <i class="imgico i-close"></i>
+        <p class="nh-title">会员<b>【{$row.mobile}】</b>充值</p>
+        <div class="inputbox">
+            <input type="number" class="telinput" name="recharge" id="recharge" placeholder="填写充值金额" value="">
+        </div>
+        <span class="layui-btn layui-btn-normal mt20" onClick="checkSubmit();">确定充值</span>
+    </form>
+</div>
+
+<script type="text/javascript">
+$(function(){
+
+})
+function checkSubmit(){
+    var recharge = $.trim($('.addmoney #recharge').val());
+
+    if(recharge < 0){
+        go.errorTips('充值金额不能小于0');
+        return false;
+    }
+    var layerindex = layer.load(1);
+    $.ajax({
+        type : 'POST',
+        url : "{:U('Admin/user/do_addmoney')}",
+        data : $('#addmoney').serialize(),
+        dataType : 'json',
+        success : function(res){
+            layer.close(layerindex);
+            if(res.error == 1){
+                layer.msg(res.msg);
+            }else{
+                layer.msg(res.msg);
+                setTimeout(function(){location.reload()}, 1000);
+            }
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown) {
+            layer.close(layerindex);
+            go.errorTips('网络失败，请刷新页面后重试');
+        }
+    })
+}
+
+</script>

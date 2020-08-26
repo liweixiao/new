@@ -47,6 +47,7 @@ go.filterNum = function (dom, type){
     }
 }
 
+
 go.successTips = function(msg){
 	msg = msg ? msg : '操作成功';
 	layer.alert(msg, {
@@ -191,6 +192,33 @@ go.calcTotalAmount = function (num, price) {
     res = num*price;
     res = res.toFixed(2);
     return res;
+}
+
+//提交用户反馈
+go.addmoney = function(user_id){
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "/Admin/user/addmoney",
+        data: {user_id:user_id},
+        dataType: 'html',
+        success: function(html){
+            layer.closeAll();
+            if (html == 'error') return;
+            layer.open({
+              type: 1,
+              title: false,
+              area: ['auto', 'auto'],
+              closeBtn: 1,
+              shadeClose: false,
+              content: html
+            });
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
 }
 
 //手机端展示menu

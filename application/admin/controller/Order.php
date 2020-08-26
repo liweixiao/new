@@ -22,7 +22,7 @@ class Order extends Common {
     public function list() {
         $OrderLogic = new OrderLogic();
         $where = [];
-        $this->showNum = 2;
+        // $this->showNum = 2;
         $rows = db("v_order")->where($where)->order('order_id desc')->paginate($this->showNum);
         // ee($rows->render());
         foreach ($rows as $key => $row) {

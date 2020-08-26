@@ -36,11 +36,11 @@ go.gotop = function (time) {
 
 /**
  * 格式化数字
- * @param type 类型 int整数, float小数
+ * @param only_keep_int 是否只保留整数
  * @return int|float
  */
-go.filterNum = function (dom, type){
-    if (type) {
+go.filterNum = function (dom, only_keep_int){
+    if (only_keep_int) {
         dom.value=dom.value.replace(/[^\d]/g,'');
     }else{
         dom.value=dom.value.replace(/[^\d.]/g,'');

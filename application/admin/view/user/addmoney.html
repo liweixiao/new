@@ -5,7 +5,7 @@
         <i class="imgico i-close"></i>
         <p class="nh-title">会员<b>【{$row.mobile}】</b>充值</p>
         <div class="inputbox">
-            <input type="number" class="telinput" name="recharge" id="recharge" placeholder="填写充值金额" value="">
+            <input type="text" class="telinput" name="recharge" id="recharge" placeholder="填写充值金额" value="" onkeyup="go.filterNum(this)">
         </div>
         <span class="layui-btn layui-btn-normal mt20" onClick="checkSubmit();">确定充值</span>
     </form>

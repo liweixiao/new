@@ -56,7 +56,7 @@
                   <div class="layui-form-item">
                     <label class="layui-form-label">播放量</label>
                     <div class="layui-input-block">
-                      <input type="number" name="task_num" id="task_num" value="1" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                      <input type="text" name="task_num" id="task_num" value="1" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
                       <span class="note">单位:万</span>
                     </div>
                   </div>
@@ -118,7 +118,7 @@ layui.use(['form', 'layedit', 'laydate'], function(){
         var totalAmount = '';
         var price = $.trim($('#sale_price').val());
         var task_num = $.trim($(this).val());
-        task_num = parseInt(task_num) * 10000;
+        task_num = parseFloat(task_num) * 10000;
         totalAmount = go.calcTotalAmount(task_num, price);
         $('.gs-price').text(totalAmount);
    })

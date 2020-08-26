@@ -473,6 +473,9 @@ em{font-style: normal;}
 .manage-stat .infobox-container {
      text-align: left; 
 }
+.table-box{
+    overflow-x: scroll;
+}
 
 
 

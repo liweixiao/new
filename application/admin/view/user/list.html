@@ -1,5 +1,10 @@
 <div class="page-content">
-
+    <div class="col-sm-6 pull-right">
+        <span class="btn btn-sm btn-primary pull-right" onclick="javascript:window.location.href='info'">
+            添加
+            <i class="icon-reply icon-only"></i>
+        </span>
+    </div>
     <div class="page-header">
         <h1>
             {:model('menu')->getName()} 
@@ -10,7 +15,7 @@
         <div class="col-xs-12">
             <!-- PAGE CONTENT BEGINS -->
             <div class="row">
-                <div class="col-xs-12 row-list table-box">
+                <div class="col-xs-12 table-box">
                     <table id="simple-table" class="table  table-bordered table-hover">
                         <thead>
                             <tr>
@@ -21,19 +26,14 @@
                                     </label>
                                 </th>
                                 <th>序号</th>
-                                <th>订单编号</th>
-                                <th>销售金额</th>
-                                <th>成本金额</th>
-                                <th>客户名称</th>
-                                <th>商品名称</th>
-                                <th>任务模式</th>
-                                <th>目标</th>
-                                <th>实时状态</th>
-                                <th>任务数量</th>
-
-                                <th><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>开始时间</th>
+                                <th>会员账号</th>
+                                <th>余额</th>
+                                <th>累计充值</th>
+                                <th>累计消费</th>
+                                <th>注册时间</th>
+                                <th>状态</th>
+                                <th>上次登录</th>
                                 <th>管理员操作</th>
-
                             </tr>
                         </thead>
 
@@ -46,17 +46,14 @@
                                         <span class="lbl"></span>
                                     </label>
                                 </td>
-                                <td>{$vo.order_id}</td>
-                                <td>{$vo.order_sn}</td>
-                                <td>{$vo.total_amount|fnum}</td>
-                                <td>{$vo.total_cost|fnum}</td>
+                                <td>{$vo.user_id}</td>
                                 <td>{$vo.mobile}</td>
-                                <td>{$vo.goods.0.goods_name|default=''}</td>
-                                <td>{$tags.run_first[$vo.first]|default=''}</td>
-                                <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
-                                <td>{$vo.task_status_name}</td>
-                                <td>{$vo.task_num|fnum=true,0}</td>
-                                <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
+                                <td>{$vo.user_money}</td>
+                                <td>{$vo.total_money_add}</td>
+                                <td>{$vo.total_money_use}</td>
+                                <td>{$vo.ctime}</td>
+                                <td>{$vo.is_lock_name}</td>
+                                <td>{$vo.last_login}</td>
                                 <td>
                                     <div class="hidden-sm hidden-xs btn-group">
 
@@ -71,9 +68,11 @@
                                                 <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                             </span>
                                         </a>
+
                                     </div>
 
                                 </td>
+                                
                             </tr>
                             {/volist}    
                         </tbody>

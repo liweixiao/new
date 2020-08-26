@@ -28,7 +28,12 @@ class BaseLogic {
     public $showNum=10;//每页显示数量
     public $listTotal=0;//列表总数
     
-    //计算订单总价
+    /**
+     * 计算订单总销售价
+     * @param int $num 购买数量
+     * @param number $price 商品销售价
+     * @return number
+     */
     public function getTotalAmount($num=0, $price=0){
         $res = 0;
         if (empty($num)) {
@@ -41,6 +46,27 @@ class BaseLogic {
 
         $res = $num*$price;
         $res = fnum($res, 0, 2);
+        return $res;
+    }
+
+    /**
+     * 计算订单总成本价
+     * @param int $num 购买数量
+     * @param number $price 商品成本价
+     * @return number
+     */
+    public function getTotalCost($num=0, $price=0){
+        $res = 0;
+        if (empty($num)) {
+            return $res;
+        }
+        if (empty($price)) {
+            return $res;
+        }
+        $num = (int)$num;
+
+        $res = $num*$price;
+        $res = fnum($res, 0, 4);
         return $res;
     }
 

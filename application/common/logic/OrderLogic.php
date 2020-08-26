@@ -78,6 +78,10 @@ class OrderLogic extends BaseLogic{
             return ['error'=>1, 'msg'=>'抱歉，余额不足，请充值.'];
         }
 
+        
+        //计算订单总成本价
+        $total_cost = $this->getTotalCost($data['task_num'], $goodsRow['cost_price']);
+
         // 启动事务
         Db::startTrans();
         try{
@@ -85,8 +89,11 @@ class OrderLogic extends BaseLogic{
             $data['ctime'] = $ctime;
             $data['ip'] = $request->ip();
 
-            //订单总价
+            //订单总销售价
             $data['total_amount'] = $total_amount;
+
+            //订单总成本价
+            $data['total_cost'] = $total_cost;
 
             $order_id = Db::name("order")->insertGetId($data);
 

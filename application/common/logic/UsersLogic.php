@@ -45,6 +45,7 @@ class UsersLogic extends BaseLogic
             return array('status' => 0, 'msg' => '请填写账号或密码');
         }
 
+        $ctime = date('Y-m-d H:i:s');
         $user = Db::name('users')->where("mobile", $username)->whereOr('email', $username)->find();
         if (!$user) {
             $result = array('status' => -1, 'msg' => '账号不存在!');
@@ -64,7 +65,7 @@ class UsersLogic extends BaseLogic
                 $save_data['token'] = md5(time().mt_rand(1,999999999));
                 $user['token'] = $save_data['token'];
             }
-            $save_data['last_login'] = time();
+            $save_data['last_login'] = $ctime;
             db('users')->where("user_id", $user['user_id'])->save($save_data);
             user_login($user['user_id']);//登录日志
             $result = array('status' => 1, 'msg' => '登陆成功', 'result' => $user);
@@ -83,7 +84,7 @@ class UsersLogic extends BaseLogic
             $configInfo = Db::name("config")->where("name='expired_time' and inc_type='integral'")->find();
             $expiredTime = explode(",", $configInfo['value']);
             $newExpiredTime = strtotime(date("Y")."-".$expiredTime[0]."-".$expiredTime[1]);
-            if($user["last_login"] < $newExpiredTime && time() >= $newExpiredTime){
+            if(strtotime($user["last_login"]) < $newExpiredTime && time() >= $newExpiredTime){
                 accountLog($user['user_id'], 0, -$user['pay_points'], '积分过期清空');
             }
         }
@@ -106,6 +107,7 @@ class UsersLogic extends BaseLogic
             $map['email_validated'] = 1;
             $map['email'] = $username; //邮箱注册
         }
+        $ctime = date('Y-m-d H:i:s');
 
         if(check_mobile($username)){
             $is_validated = 1;
@@ -140,7 +142,7 @@ class UsersLogic extends BaseLogic
         }else{
             $map['password'] = $password;
         }
-        $map['reg_time'] = time();
+        $map['ctime'] = date('Y-m-d H:i:s');
         $third_oauth = session('third_oauth');
         $switch = tpCache('distribut.switch');
         // 成为合伙人条件  
@@ -150,7 +152,7 @@ class UsersLogic extends BaseLogic
         
         $map['push_id'] = $push_id; //推送id
         $map['token'] = md5(time().mt_rand(1,999999999));
-        $map['last_login'] = time();
+        $map['last_login'] = $ctime;
         $user_level =Db::name('user_level')->where('amount = 0')->find(); //折扣
         $map['discount'] = !empty($user_level) ? $user_level['discount']/100 : 1;  //新注册的会员都不打折
         $user_id = Db::name('users')->insertGetId($map);

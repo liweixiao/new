@@ -25,9 +25,7 @@ class Menu extends Common {
     /*
      * 查看
      */
-
     public function info() {
-
 
         $id = input('id');
         if ($id) {
@@ -50,7 +48,12 @@ class Menu extends Common {
         if ($data['parentid'] == null) {
             $data['parentid'] = 0;
         }
-        $res = model('menu')->allowField(true)->save($data);
+
+        if (!empty($data['id'])) {
+            $this->error('操作失败,id应该为空');
+        }
+        // ee($data);
+        $res = model('menu')->allowField(true)->insert($data);
         if ($res) {
             $this->success('操作成功', url('index'));
         } else {

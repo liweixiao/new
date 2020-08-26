@@ -18,7 +18,7 @@ class Goods extends Base {
 
     }
     //平台ip121.199.15.68
-    public function weibo(){
+    public function detail(){
         $goods_id = I('id', 0);//商品id
         $row = $this->ToolsLogic->getGoodsRow($goods_id);
         if (empty($row)) {

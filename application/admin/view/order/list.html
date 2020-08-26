@@ -1,0 +1,92 @@
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            {:model('menu')->getName()} 
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <div class="row">
+                <div class="col-xs-12 row-list">
+                    <table id="simple-table" class="table  table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="center">
+                                    <label class="pos-rel">
+                                        <input type="checkbox" class="ace" />
+                                        <span class="lbl"></span>
+                                    </label>
+                                </th>
+                                <th>序号</th>
+                                <th>订单编号</th>
+                                <th>销售金额</th>
+                                <th>成本金额</th>
+                                <th>客户名称</th>
+                                <th>商品名称</th>
+                                <th>任务模式</th>
+                                <th>目标</th>
+                                <th>实时状态</th>
+                                <th>任务数量</th>
+
+                                <th><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>开始时间</th>
+                                <th>管理员操作</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {volist name="rows" id="vo"}
+                            <tr>
+                                <td class="center">
+                                    <label class="pos-rel">
+                                        <input type="checkbox" class="ace" />
+                                        <span class="lbl"></span>
+                                    </label>
+                                </td>
+                                <td>{$vo.order_id}</td>
+                                <td>{$vo.order_sn}</td>
+                                <td>{$vo.total_amount|fnum}</td>
+                                <td>{$vo.total_cost|fnum}</td>
+                                <td>{$vo.mobile}</td>
+                                <td>{$vo.goods.0.goods_name|default=''}</td>
+                                <td>{$tags.run_first[$vo.first]|default=''}</td>
+                                <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
+                                <td>{$vo.task_status_name}</td>
+                                <td>{$vo.task_num|fnum=true,0}</td>
+                                <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+
+                                        <a href='{:url("info","id=$vo[id]")}' 
+                                           <span class="btn btn-xs btn-info">
+                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                            </span>
+                                        </a>
+
+                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[id]\")}', '确认要删除『 id={$vo.id} 』这条记录吗？');"
+                                           <span class="btn btn-xs btn-danger" >
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            {/volist}    
+                        </tbody>
+                    </table>
+                    <div class="pagebox">{$rows->render()}</div>
+                   
+                </div><!-- /.span -->
+            </div><!-- /.row -->
+             
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->
+
+
+

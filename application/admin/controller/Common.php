@@ -16,13 +16,14 @@ class Common extends Controller {
 
     protected $user_id;
     protected $user_name;
+    public $page;//分页数据
+    public $showNum=10;//每页显示数量
 
     public function __construct(\think\Request $request = null) {
 
         parent::__construct($request);
         if (!session('user_id')) {
-
-            $this->error('请登陆', 'login/index', '', 0);
+            $this->redirect('login/index');
         }
 
         $this->user_id = session('user_id');
@@ -30,7 +31,7 @@ class Common extends Controller {
 
         //权限检查
         if (!$this->_checkAuthor($this->user_id)) {
-            $this->error('你无权限操作');
+            $this->error('暂无无权限操作');
         }
 
         //记录日志

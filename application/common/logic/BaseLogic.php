@@ -123,6 +123,51 @@ class BaseLogic {
         return $res;
     }
 
+    //获取分类列表
+    public function getCatList($parent_id=0){
+        $where = ['is_show'=>1];
+        if (!empty($parent_id)) {
+            $where['parent_id'] = $parent_id;
+        }
+        $field = 'cat_id, cat_name, parent_id, level, icon';
+        $res = M('goods_cat')->field($field)->where($where)->order('sort')->select();
+        return $res;
+    }
+
+    /**
+     * 获取子分类ids
+     * @param int $parent_id 父分类id
+     * @return array $res 一位数组
+     */
+    public function getSubCatIds($parent_id=0){
+        $res = [];
+        if (empty($parent_id)) {
+            return $res;
+        }
+
+        $where = ['is_show'=>1];
+        $where['parent_id'] = $parent_id;
+
+        $res = db('goods_cat')->where($where)->column('cat_id');
+        return $res;
+    }
+
+    //获取分类树结构
+    public function getCatTree(){
+        $res = [];
+        $datas = $this->getCatList();
+
+        //整理格式
+        $tempArr = [];
+        foreach ($datas as $row) {
+            $tempArr[$row['cat_id']] = $row;
+        }
+
+        //生成tree
+        $res = gettree($tempArr, 'parent_id', 'cat_id');
+        return $res;
+    }
+
     //获取商品
     public function getGoodsRow($goods_id=0, $user_id=0){
         $where = ['is_show'=>1, 'goods_id'=>$goods_id];
@@ -133,6 +178,17 @@ class BaseLogic {
         if ($goodsUserPrice) {
             $res['sale_price'] = $goodsUserPrice;
         }
+        return $res;
+    }
+
+    //获取当前分类ids下面所有商品-暂时用于导航-不分页
+    public function getCatGoodsList($cat_ids=[]){
+        if (empty($cat_ids)) {
+            $cat_ids = 1;
+        }
+
+        $where['cat_id'] = ['IN', $cat_ids];
+        $res = db('goods')->where($where)->select();
         return $res;
     }
 

@@ -1,0 +1,125 @@
+{include file="public/header"/}
+<style type="text/css">
+    .layui-form {
+        width: 50%;
+    }
+    .layui-form-label {
+        width: 150px;
+    }
+    .layui-input-block {
+        margin-left: 180px;
+    }
+
+    
+</style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+{include file="public/nav"/}
+{include file="public/left"/}
+
+
+<!-- 主体-->
+<div class="layui-body">
+    <div class="container">
+        <div class="layui-tab layui-tab-brief mb15">
+            <ul class="layui-tab-title">
+              <li class="layui-this">{$cat.cat_name}</li>
+            </ul>
+        </div>
+
+        <div class="layui-container  goods-list">
+            <!-- 内容区域 -->
+            <div class="layui-row layui-col-space15">
+            {volist name="rows" id="vo"}
+                <div class="layui-col-xs6 layui-col-md3 goods-item">
+                    <div class="cat-box">
+                        <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
+                        <div class="img-box">
+                            <img src="__STATIC__/images{$vo.logo}">
+                        </div>
+                        </a>
+
+                        <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
+                        <div class="item-content">
+                            <h3>{$vo.goods_name}</h3>
+                            <p>{$vo.desc}</p>
+                            <span class="layui-btn layui-btn-fluid">立即购买</span>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+                
+            {/volist}
+            </div>
+            <!-- 内容区域 -->
+
+        </div>
+
+
+    </div>
+</div>
+<!-- 主体END-->
+<script>
+$(function(){
+
+});
+
+
+layui.use(['form', 'layedit', 'laydate'], function(){
+  var form = layui.form
+  ,layer = layui.layer
+  ,layedit = layui.layedit
+  ,laydate = layui.laydate;
+  
+   //日期时间选择器
+   laydate.render({
+     elem: '#stime'
+     ,type: 'datetime'
+     ,format: 'yyyy-MM-dd HH:mm'
+   });
+
+   //预估总价
+   $("#task_num").bind("input propertychange",function(){
+        var totalAmount = '';
+        var price = $.trim($('#sale_price').val());
+        var task_num = $.trim($(this).val());
+        task_num = parseFloat(task_num);
+        totalAmount = go.calcTotalAmount(task_num, price);
+        $('.gs-price').text(totalAmount);
+   })
+
+});
+
+function verifyForm(){
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "{:U('home/order/create', ['s'=>$Request.get.s])}",
+        data: $('#myform').serialize(),
+        dataType: 'json',
+        success: function(result){
+            // console.log(result.status);
+            layer.closeAll();
+
+            if (result.error == 1) {
+                go.errorTips(result.msg);
+            } else {
+                go.successTips(result.msg);
+            }
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+</script>
+
+
+{include file="public/footer"/}
+</div>
+<!--layui-layout END-->
+</body>
+</html>

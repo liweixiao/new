@@ -25,8 +25,7 @@
     <div class="container">
         <div class="layui-tab layui-tab-brief goods-box" lay-filter="docDemoTabBrief">
           <ul class="layui-tab-title">
-            <li class="layui-this">微博视频播放量</li>
-            <li class="hide">微博转发</li>
+            <li class="layui-this">{$cat.cat_name}</li>
           </ul>
           <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
@@ -35,15 +34,15 @@
                   <input type="hidden" name="goods_id" value="{$row.goods_id}">
                   <input type="hidden" name="price" id="sale_price" value="{$row.sale_price}">
                   <div class="layui-form-item">
-                    <label class="layui-form-label">带有视频的短微博网址</label>
+                    <label class="layui-form-label">{$row.desc_url}</label>
                     <div class="layui-input-block">
                         <!-- https://weibo.com/5992108763/JhmIi03yy -->
-                      <input type="text" name="url" value="" lay-verify="title" autocomplete="off" placeholder="请输入带有视频的短微博网址" class="layui-input">
+                      <input type="text" name="url" value="" lay-verify="title" autocomplete="off" placeholder="{$row.desc_url}" class="layui-input">
                     </div>
                   </div>
 
                   <div class="layui-inline mb15">
-                        <label class="layui-form-label">搜索选择框</label>
+                        <label class="layui-form-label">执行优先级选择</label>
                         <div class="layui-input-inline">
                           <select name="first" lay-verify="required" lay-search="">
                             {volist name="$tags.run_first" id="vo"}
@@ -54,24 +53,26 @@
                       </div>
 
                   <div class="layui-form-item">
-                    <label class="layui-form-label">播放量</label>
+                    <label class="layui-form-label">任务量</label>
                     <div class="layui-input-block">
-                      <input type="text" name="task_num" id="task_num" value="1" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
-                      <span class="note">单位:万</span>
+                      <input type="text" name="task_num" id="task_num" value="{$row.min_num}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                      <span class="note">{$row.desc_task}</span>
                     </div>
                   </div>
 
                   <div class="layui-form-item">
                     <label class="layui-form-label">开始时间</label>
-                    <div class="layui-input-inline">
+                    <div class="layui-input-block">
                       <input type="text" value="{:date('Y-m-d H:i')}" name="stime" id="stime" placeholder="{:date('Y-m-d H:i')}" autocomplete="off" class="layui-input w180" lay-key="6">
+                      <span class="note">{$row.desc_stime}</span>
+
                     </div>
                   </div>
 
                   <div class="layui-inline gs-price-box">
                     <label class="layui-form-label">价格预计</label>
                     <div class="layui-input-inline">
-                      <span class="gs-price">{$row.sale_price|fnum}</span>
+                      <span class="gs-price">{$row.sale_price*$row.min_num|fnum}</span>
                     </div>
                   </div>
                   
@@ -82,11 +83,19 @@
                       <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
                   </div>
+
+                    <div class="layui-form-item mt20">
+                        <div class="layui-input-block desc_info">
+                            <pre>{$row.desc_info}</pre>
+                        </div>
+                    </div>
+
+
+
+
                 </form>
                 <!-- 内容区域 -->
-
             </div>
-            <div class="layui-tab-item">微博转发,敬请期待...</div>
           </div>
         </div> 
 

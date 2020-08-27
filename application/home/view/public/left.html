@@ -5,7 +5,10 @@
         <li data-param="goods" class="layui-nav-item">
             <a class="" href="javascript:;">所有商品</a>
             <dl class="layui-nav-child">
-                <dd data-param="goods|detail"><a href="{:U('Home/goods/detail',['id'=>1])}"><span class="iconfont icon-weibo"></span>微博</a></dd>
+                {volist name="catTree" id="vo"}
+                <dd data-param="goods|list"><a href="{:U('Home/goods/list',['id'=>$vo.cat_id])}"><span class="iconfont {$vo.icon}"></span>{$vo.cat_name}</a></dd>
+                {/volist}
+
                 <dd data-param="goods|weixin" class="hide"><a href="javascript:;"><span class="iconfont icon-gongzhonghao"></span>微信</a></dd>
             </dl>
         </li>

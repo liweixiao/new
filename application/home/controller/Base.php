@@ -50,7 +50,12 @@ class Base extends Controller {
         $mo['conAct'] = strtolower("{$controllerName}|{$actionName}");
         $mo['controller'] = strtolower($controllerName);//控制器名称
 
+        //分类树
+        $BaseLogic = new \app\common\logic\BaseLogic();
+        $this->catTree = $BaseLogic->getCatTree();
+        // ee($this->catTree);
 
+        $this->assign('catTree', $this->catTree);
         $this->assign('mo',$mo);
         $this->assign('user',$user);
         $this->assign('username',$user['nickname'] ?? '');

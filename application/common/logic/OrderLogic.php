@@ -50,7 +50,7 @@ class OrderLogic extends BaseLogic{
         }
 
         //获取商品配置(第三方配置)
-        $goodsCfg = db('goods_config')->where(['goods_id'=>$goodsRow['goods_id']])->find();
+        $goodsCfg = db('goods_config')->where(['goods_id'=>$goodsRow['goods_config_id']])->find();
         if (empty($goodsCfg)) {
             return ['error'=>1, 'msg'=>'抱歉，商品配置有误，请您联系管理员'];
         }
@@ -162,7 +162,8 @@ class OrderLogic extends BaseLogic{
             // $res_api = ['ret'=>1, 'msg'=>'下单成功，消耗余额：0.3', 'id'=>'179635'];
             if (empty($res_api) || $res_api['ret'] != 1) {
                 Db::rollback();// 回滚事务
-                return ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员'];
+                $msg = $res_api['msg'] ?? '抱歉，系统异常，请联系管理员';
+                return ['error'=>1, 'msg'=>$msg];
             }
 
             //更新out_id

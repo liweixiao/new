@@ -50,7 +50,7 @@
                                 <td>{$vo.id}</td>
                                 <td><a href="#">{$vo.username}</a></td>
                                 <td>{eq name="vo['id']" value="1"}超级管理员{else/}{$vo.groups}{/eq}</td>
-                                <td class="hidden-480">{:long2ip($vo.lastloginip)}</td>
+                                <td class="hidden-480">{$vo.lastloginip}</td>
                                 <td>{:date('Y-m-d H:i:s',$vo['lastlogintime'])}</td>
 
                                 <td class="hidden-480">

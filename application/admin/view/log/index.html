@@ -43,7 +43,7 @@
                                 <td>{$vo.id}</td>
                                 <td><a href="#">{$vo.username}</a></td>
                                 <td>{$vo.c}/{$vo.a}{$vo.querystring}</td>
-                                <td class="hidden-480"><a href="http://ip138.com/ips138.asp?ip={:long2ip($vo.ip)}" target="_blank">{:long2ip($vo.ip)}</a></td>
+                                <td class="hidden-480"><a href="http://ip138.com/ips138.asp?ip={$vo.ip}" target="_blank">{$vo.ip}</a></td>
                                 <td>{:date('Y-m-d H:i:s',$vo.time)}</td>
                                 
                             </tr>

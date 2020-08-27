@@ -57,7 +57,7 @@ class Admin extends \think\Model {
         
         if ($type == 1) {
             $data['lastlogintime'] = time();
-            $data['lastloginip'] = ip2long(request()->ip());
+            $data['lastloginip'] = request()->ip();
         } elseif ($type == 2) {
             $data['updatetime'] = time();
         }

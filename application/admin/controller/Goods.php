@@ -21,7 +21,7 @@ class Goods extends Common {
 
     public function list() {
         $where = [];
-        $rows = db("v_goods")->where($where)->order('goods_id desc')->paginate($this->showNum);
+        $rows = db("v_goods")->where($where)->order('goods_id')->paginate($this->showNum);
         // ee($rows->render());
         $this->assign('rows', $rows);
         return $this->fetch();

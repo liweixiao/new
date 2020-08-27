@@ -68,9 +68,9 @@ class Order extends Base {
     //创建订单-平台ip121.199.15.68
     public function create(){
         $res = ['error'=>0, 'msg'=>'恭喜，提交成功'];
-        $cat_id = I('cat_id', 0);//分类id
-        $goods_id = I('goods_id', 0);//商品id
-        $data = I('post.');
+        $cat_id = input('cat_id', 0);//分类id
+        $goods_id = input('goods_id', 0);//商品id
+        $data = input('post.');
 
         if (empty($data['url'])) {
             $res = ['error'=>1, 'msg'=>'网址必须填写'];
@@ -82,6 +82,8 @@ class Order extends Base {
             $this->ajaxReturn($res);
         }
 
+        $data['url'] = trim($data['url']);
+        $data['task_num'] = trim($data['task_num']);
 
         //获取商品
         $row = $this->ToolsLogic->getGoodsRow($goods_id);

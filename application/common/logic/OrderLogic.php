@@ -93,6 +93,10 @@ class OrderLogic extends BaseLogic{
         $this->final_price = $goodsRow['sale_price'];
         //计算订单总价
         $total_amount = $this->getTotalAmount($data['task_num'], $goodsRow['goods_id'], $user_id);//注意，这里有会员价修改final_price
+        //销售额为0,默认不允许下单,防止商品销售价没有填写问题
+        if ($total_amount <= 0) {
+            return ['error'=>1, 'msg'=>'抱歉，暂未定商品销售价，请联系管理员'];
+        }
         //检查用户余额是否充足
         if ($total_amount > $userInfo['user_money']) {
             return ['error'=>1, 'msg'=>'抱歉，余额不足，请充值.'];

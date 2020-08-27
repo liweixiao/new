@@ -99,6 +99,26 @@ class Index extends Common {
         $this->assign('data', $data);
         return $this->fetch();
     }
+
+    /**
+     * ajax 修改指定表数据字段  一般修改状态 比如 是否推荐 是否开启 等 图标切换的
+     * table,id_name,id_value,field,value
+     */
+    public function changeTableVal(){
+        $res = ['error'=>0, 'msg'=>'操作成功'];
+        $table = I('table'); // 表名
+        $id_name = I('id_name'); // 表主键id名
+        $id_value = I('id_value'); // 表主键id值
+        $field  = I('field'); // 修改哪个字段
+        $value  = I('value'); // 修改字段值
+
+        $result = db($table)->where([$id_name => $id_value])->update(array($field=>$value)); // 根据条件保存修改的数据
+        if (!$result) {
+            $res =  ['error'=>1, 'msg'=>'更新失败'];
+            $this->ajaxReturn($res);
+        }
+        $this->ajaxReturn($res);
+    }
     
     
 }

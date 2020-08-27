@@ -24,39 +24,63 @@ use app\common\logic\BaseLogic;
  */
 class OrderLogic extends BaseLogic{
 
-    //创建订单
+    //创建订单(逻辑改为先在自己平台下单,成功后在第三方平台下单,若第三方失败则回滚数据)
     public function createOrder($params = []){
         $res = ['error'=>0, 'msg'=>'恭喜，提交成功！'];
         $ctime = date('Y-m-d H:i:s');
         $data = [];
         $request = \think\Request::instance();
-        $user = session('user') ?? [];
+        $user_id = $params['user_id'] ?? 0;//传过来的用户id
 
         //会员未登录
-        if (empty($user)) {
-            return ['error'=>1, 'msg'=>'抱歉，请先登录'];
+        if (empty($user_id)) {
+            return ['error'=>1, 'msg'=>'抱歉，暂未登录'];
         }
 
-        $userInfo = $this->get_user_info($user['user_id']);
+        $userInfo = $this->get_user_info($user_id);
 
         if (empty($userInfo)) {
             return ['error'=>1, 'msg'=>'抱歉，会员不存在，请联系管理员.'];
         }
 
-        //如果第三方订单id为获取到
-        if (empty($params['out_id'])) {
-            return ['error'=>1, 'msg'=>'订单提交失败，请联系管理员'];
+        //获取商品信息
+        $goodsRow = $this->getGoodsRow($params['goods_id']);
+        if (empty($goodsRow)) {
+            return ['error'=>1, 'msg'=>'抱歉，产品不存在，请联系管理员'];
         }
 
+        //获取商品配置(第三方配置)
+        $goodsCfg = db('goods_config')->where(['goods_id'=>$goodsRow['goods_id']])->find();
+        if (empty($goodsCfg)) {
+            return ['error'=>1, 'msg'=>'抱歉，商品配置有误，请您联系管理员'];
+        }
+        //检测配置-创建订单地址是否配置
+        if (empty($goodsCfg['url_create_order'])) {
+            return ['error'=>1, 'msg'=>'抱歉，商品配置异常，请您联系管理员!'];
+        }
+
+        //获取商品分类
+        $cat = $this->getCatRow($goodsRow['cat_id']);
+        if (empty($cat)) {
+            return ['error'=>1, 'msg'=>'抱歉，产品分类不存在，请联系管理员！'];
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($goodsRow['supplier_id']);
+        if (empty($supplier)) {
+            return ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员！'];
+        }
+
+
         //可供检测重复提交数据使用
-        $data['cat_id']       = $params['cat_id'] ?? 0;
-        $data['user_id']      = $user_id = $user['user_id'] ?? 0;
+        $data['cat_id']       = $goodsRow['cat_id'] ?? 0;
+        $data['user_id']      = $user_id;
         $data['url']          = $params['url'] ?? '';
-        $data['out_id']       = $params['out_id'] ?? 0;//外部订单id??
+        $data['out_id']       = $params['out_id'] ?? 0;//外部订单id-改为后面更新了
         $data['first']        = $params['first'] ?? '';//优先级
         $data['stime']        = $params['stime'] ?? 0;//开始时间
         $data['task_num']     = $params['task_num'] ?? 0;//下单数量
-        $data['supplier_id']  = $params['supplier_id'] ?? 0;//供应商id??
+        $data['supplier_id']  = $goodsRow['supplier_id'] ?? 0;//供应商id??
         $data['goods_id']     = $params['goods_id'] ?? 0;//商品id
 
 
@@ -65,14 +89,10 @@ class OrderLogic extends BaseLogic{
             return ['error'=>1, 'msg'=>'请勿重复提交,您可以修改开始时间后再次提交'];
         }
 
-        //获取商品信息
-        $goodsRow = $this->getGoodsRow($data['goods_id']);
-        if (empty($goodsRow)) {
-            return ['error'=>1, 'msg'=>'抱歉，产品不存在，请联系管理员'];
-        }
-
+        //最终成交价
+        $this->final_price = $goodsRow['sale_price'];
         //计算订单总价
-        $total_amount = $this->getTotalAmount($data['task_num'], $goodsRow['sale_price']);
+        $total_amount = $this->getTotalAmount($data['task_num'], $goodsRow['goods_id'], $user_id);//注意，这里有会员价修改final_price
         //检查用户余额是否充足
         if ($total_amount > $userInfo['user_money']) {
             return ['error'=>1, 'msg'=>'抱歉，余额不足，请充值.'];
@@ -96,6 +116,10 @@ class OrderLogic extends BaseLogic{
             $data['total_cost'] = $total_cost;
 
             $order_id = Db::name("order")->insertGetId($data);
+            if (!$order_id) {
+                Db::rollback();// 回滚事务
+                return ['error'=>1, 'msg'=>'抱歉，创建订单数据失败，请联系管理员'];
+            }
 
             //生成订单商品
             $goods['order_id']    = $order_id;
@@ -103,21 +127,52 @@ class OrderLogic extends BaseLogic{
             $goods['goods_name']  = $goodsRow['goods_name'];
             $goods['goods_sn']    = $goodsRow['goods_sn'];
             $goods['goods_num']   = $data['task_num'];
-            $goods['final_price'] = $goodsRow['sale_price'];//成交价格
+            $goods['unit']        = $goodsRow['unit'];
+            $goods['final_price'] = $this->final_price;//成交价格
             $goods['cost_price']  = $goodsRow['cost_price'];//成本价
             $goods['ctime']       = $ctime;
             $goods_id = Db::name("order_goods")->insertGetId($goods);
 
             //用户表相关信息记录-总消费金额变动
-            M('users')->where(['user_id'=>$user_id])->setInc('total_money_use', $data['total_amount']);
+            $result = M('users')->where(['user_id'=>$user_id])->setInc('total_money_use', $data['total_amount']);
+            if (!$result) {
+                Db::rollback();// 回滚事务
+                return ['error'=>1, 'msg'=>'抱歉，更新用户消费记录失败，请联系管理员'];
+            }
 
             //用户动账记录&&会员现有金额变动
-            accountLog($user_id, -$data['total_amount'], 0,  '用户下单', 0, $order_id);//此处会自动更新users表的user_money(用户现有资金)变动
+            $result = accountLog($user_id, -$data['total_amount'], 0,  '用户下单', 0, $order_id);//此处会自动更新users表的user_money(用户现有资金)变动
+            if (!$result) {
+                Db::rollback();// 回滚事务
+                return ['error'=>1, 'msg'=>'抱歉，更新用户消费日志失败，请联系管理员'];
+            }
+
+            //生成第三方数据
+            $url_api = $goodsCfg['url_create_order'];
+            $apikey = $supplier['apikey'];
+            $postdatas = ['apikey'=>$apikey, 'weibouid'=>$params['url'], 'num'=>$params['task_num'], 'type'=>$cat['cat_value'], 'first'=>$params['first'], 'starttime'=>$params['stime']];
+            $res_api = apiget($url_api, $postdatas);
+            // ee($res_api);
+
+            //调试数据
+            // $res_api = ['ret'=>1, 'msg'=>'下单成功，消耗余额：0.3', 'id'=>'179635'];
+            if (empty($res_api) || $res_api['ret'] != 1) {
+                Db::rollback();// 回滚事务
+                return ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员'];
+            }
+
+            //更新out_id
+            $updateOrder = ['out_id'=>$res_api['id']];
+            $res_update = db("order")->where('order_id', $order_id)->update($updateOrder);
+            if (!$res_update) {
+                Db::rollback();// 回滚事务
+                return ['error'=>1, 'msg'=>'抱歉，更新订单数据失败，请联系管理员'];
+            }
+
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
-            // 回滚事务
-            Db::rollback();
+            Db::rollback();// 回滚事务
             return ['error'=>1, 'msg'=>$e->getMessage()];
         }
 

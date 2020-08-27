@@ -46,7 +46,7 @@
                 <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
                 <td>{$vo.task_status_name}</td>
                 <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
-                <td>{$vo.task_num|fnum=true,0}</td>
+                <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
                 <td>{$vo.total_amount|fnum}</td>
                 <td>
                     {if condition="!empty($vo.task_status_name) and $vo.task_status_name neq 'ok'"}
@@ -90,7 +90,7 @@ layui.use(['form', 'layedit', 'laydate'], function(){
         var totalAmount = '';
         var price = $.trim($('#sale_price').val());
         var task_num = $.trim($(this).val());
-        task_num = parseInt(task_num) * 10000;
+        task_num = parseInt(task_num);
         totalAmount = go.calcTotalAmount(task_num, price);
         $('.gs-price').text(totalAmount);
     });  

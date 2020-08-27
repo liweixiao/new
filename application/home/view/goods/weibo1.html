@@ -71,7 +71,7 @@
                   <div class="layui-inline gs-price-box">
                     <label class="layui-form-label">价格预计</label>
                     <div class="layui-input-inline">
-                      <span class="gs-price">{$row.sale_price*10000}</span>
+                      <span class="gs-price">{$row.sale_price|fnum}</span>
                     </div>
                   </div>
                   
@@ -118,7 +118,7 @@ layui.use(['form', 'layedit', 'laydate'], function(){
         var totalAmount = '';
         var price = $.trim($('#sale_price').val());
         var task_num = $.trim($(this).val());
-        task_num = parseFloat(task_num) * 10000;
+        task_num = parseFloat(task_num);
         totalAmount = go.calcTotalAmount(task_num, price);
         $('.gs-price').text(totalAmount);
    })

@@ -82,7 +82,6 @@ class Order extends Base {
             $this->ajaxReturn($res);
         }
 
-        $realTaskNum = $data['task_num']*10000;
 
         //获取商品
         $row = $this->ToolsLogic->getGoodsRow($goods_id);
@@ -90,20 +89,8 @@ class Order extends Base {
             $res = ['error'=>1, 'msg'=>'非法请求'];
             $this->ajaxReturn($res);
         }
-
-        //获取商品分类
-        $cat = $this->ToolsLogic->getCatRow($row['cat_id']);
-        if (empty($cat)) {
-            $res = ['error'=>1, 'msg'=>'非法请求！'];
-            $this->ajaxReturn($res);
-        }
-
-        //获取供应商
-        $supplier = $this->ToolsLogic->getSupplier($row['supplier_id']);
-        if (empty($supplier)) {
-            $res = ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员！'];
-            $this->ajaxReturn($res);
-        }
+        
+        $realTaskNum = $data['task_num'];//注意这里不用乘1万了
 
         $userInfo = $this->ToolsLogic->get_user_info($this->user_id);
         if (empty($userInfo)) {
@@ -112,33 +99,15 @@ class Order extends Base {
         }
 
         //余额是否充足检测
-        //计算订单总价
-        $total_amount = $this->ToolsLogic->getTotalAmount($realTaskNum, $row['sale_price']);
+        $total_amount = $this->ToolsLogic->getTotalAmount($realTaskNum, $row['goods_id'], $this->user_id);//计算订单总价
         //检查用户余额是否充足
         if ($total_amount > $userInfo['user_money']) {
             $res = ['error'=>1, 'msg'=>"抱歉，余额不足，当前余额为：<b>{$userInfo['user_money']}</b>"];
             $this->ajaxReturn($res);
         }
 
-        // ee($data);
-        $url = $supplier['url'] . '/wb/api_order.php';
-        $apikey = $supplier['apikey'];
-        // ee('即将创建真实数据,慎重....');
-        $params = ['apikey'=>$apikey, 'weibouid'=>$data['url'], 'num'=>$data['task_num'], 'type'=>$cat['cat_value'], 'first'=>$data['first'], 'starttime'=>$data['stime']];
-        $res = apiget($url, $params);
-        // ee($res);
-
-        //调试数据
-        // $res = ['ret'=>1, 'msg'=>'下单成功，消耗余额：0.3', 'id'=>'179635'];
-        if (empty($res) || $res['ret'] != 1) {
-            $res = ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员'];
-            $this->ajaxReturn($res);
-        }
-
         //写入数据
-        $data['out_id'] = $res['id'];//TODO-下单返回的id
-        $data['cat_id'] = $row['cat_id'];//商品分类id
-        $data['supplier_id'] = $cat['supplier_id'];//供应商id
+        $data['user_id'] = $this->user_id;//用户id
         $data['task_num'] = $realTaskNum;//下单数量
         $res = $this->OrderLogic->createOrder($data);
         if ($res['error']) {

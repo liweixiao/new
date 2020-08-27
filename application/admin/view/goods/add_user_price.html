@@ -1,0 +1,65 @@
+{__NOLAYOUT__}
+<div class="row popbox normal popbox-big">
+    <div class="col-xs-12">
+        <!-- PAGE CONTENT BEGINS -->
+        <form id="myform" class="form-horizontal"  method="post">
+            <input type="text" name="goods_id" value="{$row.goods_id}" class="hide">
+            <input type="hidden" name="goods_user_id" value="{$goods_user.goods_user_id}">
+
+            <div class="form-group mt15">
+                <dl>
+                    <dd class="opt selectUser">
+                        <input type="text" name="user_name" id="user_name" class="input-txt w120" placeholder="用户昵称搜索" value="{$row.nickname|default=''}" />
+                        <select name="user_id" class="users_box" onchange="go.search_user_change(this);">
+                            <option value="0">选择用户</option>
+                            <if condition="$goods_user.user_id gt 0">
+                                <option value="{$goods_user.user_id}" selected="selected">{$goods_user.mobile}</option>
+                            </if>
+                        </select>
+                        <a href="javascript:void(0);" onclick="go.search_user(this);" class="btn btn-primary btn-xs sbutton" ><i class="fa fa-search"></i>搜索</a>
+                    </dd>
+                </dl>
+            </div>
+
+
+            <div class="form-group mt15">
+                <input type="text" class="col-xs-10 sale_price" value="{$goods_user.sale_price|fnum}" onkeyup="go.filterNum(this)"  placeholder="请输入价格" name="sale_price"/>
+            </div>
+
+            <div class="form-group mt15">
+                <span class="layui-btn layui-btn-normal mt20" onClick="checkSubmit();">确定提交</span>
+            </div>    
+        </form>
+        <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<script type="text/javascript">
+function checkSubmit(){
+    var sale_price = $.trim($('.popbox .sale_price').val());
+
+    if(sale_price < 0){
+        go.errorTips('价格不能小于0');
+        return false;
+    }
+    var layerindex = layer.load(1);
+    $.ajax({
+        type : 'POST',
+        url : "{:U('Admin/goods/do_add_user_price')}",
+        data : $('#myform').serialize(),
+        dataType : 'json',
+        success : function(res){
+            layer.close(layerindex);
+            if(res.error == 1){
+                layer.msg(res.msg);
+            }else{
+                layer.msg(res.msg);
+                setTimeout(function(){location.reload()}, 1000);
+            }
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown) {
+            layer.close(layerindex);
+            go.errorTips('网络失败，请刷新页面后重试');
+        }
+    })
+}
+</script>

@@ -27,32 +27,70 @@ class BaseLogic {
     public $page;//分页数据
     public $showNum=10;//每页显示数量
     public $listTotal=0;//列表总数
+
+    /**
+     * 获取商品会员价
+     * @param int $goods_id 商品id
+     * @param int $user_id 用户id
+     * @return number
+     */
+    public function getGoodsUserPrice($goods_id=0, $user_id=0){
+        $res = 0;
+        if (empty($goods_id)) {
+            return $res;
+        }
+        if (empty($user_id)) {
+            return $res;
+        }
+        $where = ['goods_id'=>$goods_id, 'user_id'=>$user_id];
+        $goodsUserRow = db('goods_user')->where($where)->find();
+        if (!empty($goodsUserRow) && $goodsUserRow['sale_price'] > 0) {
+            $res = $goodsUserRow['sale_price'];
+        }
+        return $res;
+    }
+
     
     /**
      * 计算订单总销售价
      * @param int $num 购买数量
-     * @param number $price 商品销售价
+     * @param int $goods_id 商品id
+     * @param int $user_id 用户id
      * @return number
      */
-    public function getTotalAmount($num=0, $price=0){
-        $res = 0;
+    public function getTotalAmount($num=0, $goods_id=0, $user_id=0){
+        $res = 0;//返回销售总价、会员真实购买价
         if (empty($num)) {
             return $res;
         }
-        if (empty($price)) {
+        if (empty($goods_id)) {
             return $res;
         }
         $num = (int)$num;
 
-        $res = $num*$price;
-        $res = fnum($res, 0, 2);
+        //查找商品销售价
+        $goodsRow = db('goods')->field('goods_id, sale_price')->where('goods_id', $goods_id)->find();
+        if (empty($goodsRow)) {
+            return $res;
+        }
+        $price = $goodsRow['sale_price'];
+
+        //如果设置了会员价
+        if ($user_id) {
+            $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id);
+            if ($goodsUserPrice) {
+                $this->final_price = $price = $goodsUserPrice;//修改最终成交价格为会员价
+            }
+        }
+
+        $res = fnum($num*$price, 0, 2);
         return $res;
     }
 
     /**
      * 计算订单总成本价
      * @param int $num 购买数量
-     * @param number $price 商品成本价
+     * @param number $price 商品成本价格
      * @return number
      */
     public function getTotalCost($num=0, $price=0){
@@ -86,9 +124,15 @@ class BaseLogic {
     }
 
     //获取商品
-    public function getGoodsRow($goods_id=0){
+    public function getGoodsRow($goods_id=0, $user_id=0){
         $where = ['is_show'=>1, 'goods_id'=>$goods_id];
         $res = M('goods')->where($where)->find();
+
+        //是否有会员价?
+        $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id);
+        if ($goodsUserPrice) {
+            $res['sale_price'] = $goodsUserPrice;
+        }
         return $res;
     }
 

@@ -20,7 +20,7 @@ class Goods extends Base {
     //平台ip121.199.15.68
     public function detail(){
         $goods_id = I('id', 0);//商品id
-        $row = $this->ToolsLogic->getGoodsRow($goods_id);
+        $row = $this->ToolsLogic->getGoodsRow($goods_id, $this->user_id);
         if (empty($row)) {
             $this->error('非法请求');
         }

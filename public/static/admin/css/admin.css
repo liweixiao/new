@@ -40,6 +40,13 @@ a:hover {
     line-height: 30px;
     padding: 0 6px;
 }
+.page-header span.sub{
+    color: #999;
+    font-size: 13px;
+}
+.to-see{
+    color: #47b3e3;
+}
 /*后端-end*/
 
 
@@ -488,6 +495,18 @@ em{font-style: normal;}
     overflow-x: scroll;
 }
 
+.popbox.normal{
+    padding: 40px;
+}
+
+.popbox.popbox-big{
+    min-width: 400px;
+}
+
+.popbox.popbox-big .sbutton{
+    vertical-align: baseline;
+}
+
 .popbox {
     position: relative;
     background: #fff;
@@ -591,4 +610,7 @@ em{font-style: normal;}
     
 }
 
+.layui-btn-normal {
+    background-color: #47b3e3;
+}
 

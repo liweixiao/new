@@ -813,8 +813,8 @@ function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distr
     if(($user_money+$pay_points+$distribut_money) == 0)return false;
     $update = Db::name('users')->where("user_id = $user_id")->save($update_data);
     if($update){
-        M('account_log')->add($account_log);
-        return true;
+        $result = M('account_log')->add($account_log);
+        return $result ? true : false;
     }else{
         return false;
     }

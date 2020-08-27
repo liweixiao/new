@@ -56,6 +56,21 @@ class User extends Common {
         return $this->fetch();
     }
 
+    /**
+     * 搜索用户名
+     */
+    public function search_user()
+    {
+        $search_key = trim(input('search_key'));
+        if ($search_key == '') $this->ajaxReturn(['status' => -1, 'msg' => '请按要求输入！！']);
+        $where = ['nickname|mobile' => ['like', "%$search_key%"]];
+        $list = db('users')->field('user_id, mobile as nickname')->where($where)->select();
+        if ($list) {
+            $this->ajaxReturn(['status' => 1, 'msg' => '获取成功', 'result' => $list]);
+        }
+        $this->ajaxReturn(['status' => -1, 'msg' => '未查询到相应数据！！']);
+    }
+
     /*
      * 会员充值
      */

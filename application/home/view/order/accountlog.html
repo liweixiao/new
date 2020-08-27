@@ -83,7 +83,7 @@ layui.use(['form', 'layedit', 'laydate'], function(){
         var totalAmount = '';
         var price = $.trim($('#sale_price').val());
         var task_num = $.trim($(this).val());
-        task_num = parseInt(task_num) * 10000;
+        task_num = parseInt(task_num);
         totalAmount = go.calcTotalAmount(task_num, price);
         $('.gs-price').text(totalAmount);
     });  

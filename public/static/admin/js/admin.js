@@ -194,13 +194,70 @@ go.calcTotalAmount = function (num, price) {
     return res;
 }
 
-//提交用户反馈
+//用户充值-页面
 go.addmoney = function(user_id){
     var layerindex = layer.load(1);//加载层
     $.ajax({
         type: 'POST',
         url: "/Admin/user/addmoney",
         data: {user_id:user_id},
+        dataType: 'html',
+        success: function(html){
+            layer.closeAll();
+            if (html == 'error') return;
+            layer.open({
+              type: 1,
+              title: false,
+              area: ['auto', 'auto'],
+              closeBtn: 1,
+              shadeClose: false,
+              content: html
+            });
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+
+//切换用户
+go.search_user_change = function (dom){
+    $(dom).parents('.selectUser').find('#user_name').val($(dom).find("option:selected").attr('nickname'));
+}
+
+//搜索用户
+go.search_user = function (dom){
+    var user_name = $(dom).parents('.selectUser').find('#user_name').val();
+    if($.trim(user_name) == '')
+        return false;
+    $.ajax({
+        type : "POST",
+        url:"/index.php?m=Admin&c=User&a=search_user",//+tab,
+        data :{search_key:user_name},// 你的formid
+        dataType :'json',
+        success: function(data){
+            if(data.status == 1){
+                var html='';
+                for(var i=0 ; i<data.result.length ;i++){
+                    html +="<option value='"+data.result[i].user_id+"' nickname='"+data.result[i].nickname+"'>" + data.result[i].nickname+"</option>"
+                }
+                $(dom).parents('.selectUser').find('select.users_box').html(html);
+            }else{
+                layer.msg(data.msg, {icon: 2});
+            }
+        }
+    });
+}
+
+//添加商品会员价-页面
+go.add_user_price = function(goods_id, goods_user_id){
+    goods_user_id = goods_user_id ? goods_user_id : '';
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "/Admin/goods/add_user_price",
+        data: {goods_id:goods_id, goods_user_id:goods_user_id},
         dataType: 'html',
         success: function(html){
             layer.closeAll();
@@ -245,6 +302,38 @@ go.del = function(url, title) {
             // return window.location.href = url;
         },
         cancel: true
+    });
+}
+
+// 修改指定表的指定字段值 包括有按钮点击切换是否 或者 排序 或者输入框文字
+go.changeTableVal = function(table, id_name, id_value, field, obj,yes,no) {
+    var value = $(obj).val();
+    if(yes == '' || typeof(yes) == 'undefined') yes='是';
+    if(no == '' || typeof(no) == 'undefined') no='否';
+    if ($(obj).hasClass('no')){
+        // 图片点击是否操作
+        //src = '/public/images/yes.png';
+        $(obj).removeClass('no').addClass('yes');
+        $(obj).html("<i class='fa fa-check-circle'></i>"+yes+"");
+        value = 1;
+    } else if ($(obj).hasClass('yes')) { // 图片点击是否操作
+        $(obj).removeClass('yes').addClass('no');
+        $(obj).html("<i class='fa fa-ban'></i>"+no+"");
+        value = 0;
+    }
+
+    $.ajax({
+        url: "/index.php?m=Admin&c=Index&a=changeTableVal&table=" + table + "&id_name=" + id_name + "&id_value=" + id_value + "&field=" + field + '&value=' + value,
+        dataType:'json',
+        success: function (res) {
+            if (!$(obj).hasClass('no') && !$(obj).hasClass('yes')){
+                if (res.error==0) {
+                    layer.msg('更新成功', {icon: 1});
+                }else{
+                    layer.msg('更新失败', {icon: 1});
+                }
+            }
+        }
     });
 }
 

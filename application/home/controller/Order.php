@@ -82,9 +82,6 @@ class Order extends Base {
             $this->ajaxReturn($res);
         }
 
-        $data['url'] = trim($data['url']);
-        $data['task_num'] = trim($data['task_num']);
-
         //获取商品
         $row = $this->ToolsLogic->getGoodsRow($goods_id);
         if (empty($row)) {

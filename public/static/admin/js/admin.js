@@ -184,7 +184,7 @@ go.calcTotalAmount = function (num, price) {
         return res;
     }
 
-    num = parseInt(num);
+    num = parseFloat(num);
     if (isNaN(num)) {
         return res;
     }

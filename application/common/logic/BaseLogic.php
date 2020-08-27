@@ -66,7 +66,7 @@ class BaseLogic {
         if (empty($goods_id)) {
             return $res;
         }
-        $num = (int)$num;
+        $num = floatval($num);
 
         //查找商品销售价
         $goodsRow = db('goods')->field('goods_id, sale_price')->where('goods_id', $goods_id)->find();
@@ -101,7 +101,7 @@ class BaseLogic {
         if (empty($price)) {
             return $res;
         }
-        $num = (int)$num;
+        $num = floatval($num);
 
         $res = $num*$price;
         $res = fnum($res, 0, 4);

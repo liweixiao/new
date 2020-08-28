@@ -52,12 +52,22 @@ class Order extends Common {
 
         // $this->showNum = 2;
         $rows = db("v_order")->where($where)->order($order_by)->paginate($this->showNum);
+        // ee($rows);
+
         // ee($rows->render());
         foreach ($rows as $key => $row) {
             //获取订单产品
             $row['goods'] = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
+            $rows[$key]['task_status_name'] = '更新中';
             //通过第三方刷洗数据
-            $rows[$key] = $OrderLogic->getOutOrderData($row);//单条，不是批量
+            $goodsCfg = db('goods_config')->where(['goods_config_id'=>$row['goods_config_id']])->find();//获取商品配置
+            if (!empty($goodsCfg)) {
+                $refreshRes = $OrderLogic->getOutOrderData($row, $goodsCfg);//单条，不是批量
+                //如果刷新成功则修改
+                if (!$refreshRes['error']) {
+                    $rows[$key] = $refreshRes['data'];
+                }
+            }
         }
 
         $tags = $OrderLogic->getAllTags('run_first');

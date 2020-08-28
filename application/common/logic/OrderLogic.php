@@ -73,15 +73,16 @@ class OrderLogic extends BaseLogic{
 
 
         //可供检测重复提交数据使用
-        $data['cat_id']       = $goodsRow['cat_id'] ?? 0;
-        $data['user_id']      = $user_id;
-        $data['url']          = $params['url'] ?? '';
-        $data['out_id']       = $params['out_id'] ?? 0;//外部订单id-改为后面更新了
-        $data['first']        = $params['first'] ?? '';//优先级
-        $data['stime']        = $params['stime'] ?? 0;//开始时间
-        $data['task_num']     = $params['task_num'] ?? 0;//下单数量
-        $data['supplier_id']  = $goodsRow['supplier_id'] ?? 0;//供应商id??
-        $data['goods_id']     = $params['goods_id'] ?? 0;//商品id
+        $data['cat_id']          = $goodsRow['cat_id'] ?? 0;
+        $data['user_id']         = $user_id;
+        $data['url']             = $params['url'] ?? '';
+        $data['out_id']          = $params['out_id'] ?? 0;//外部订单id-改为后面更新了
+        $data['first']           = $params['first'] ?? '';//优先级
+        $data['stime']           = $params['stime'] ?? 0;//开始时间
+        $data['task_num']        = $params['task_num'] ?? 0;//下单数量
+        $data['supplier_id']     = $goodsRow['supplier_id'];//供应商id??
+        $data['goods_config_id'] = $goodsRow['goods_config_id'];//商品配置id
+        $data['goods_id']        = $params['goods_id'] ?? 0;//商品id
 
 
         $row = Db::name("order")->where($data)->find();
@@ -126,15 +127,17 @@ class OrderLogic extends BaseLogic{
             }
 
             //生成订单商品
-            $goods['order_id']    = $order_id;
-            $goods['goods_id']    = $goodsRow['goods_id'];
-            $goods['goods_name']  = $goodsRow['goods_name'];
-            $goods['goods_sn']    = $goodsRow['goods_sn'];
-            $goods['goods_num']   = $data['task_num'];
-            $goods['unit']        = $goodsRow['unit'];
-            $goods['final_price'] = $this->final_price;//成交价格
-            $goods['cost_price']  = $goodsRow['cost_price'];//成本价
-            $goods['ctime']       = $ctime;
+            $goods['order_id']        = $order_id;
+            $goods['goods_id']        = $goodsRow['goods_id'];
+            $goods['goods_name']      = $goodsRow['goods_name'];
+            $goods['goods_sn']        = $goodsRow['goods_sn'];
+            $goods['goods_num']       = $data['task_num'];
+            $goods['unit']            = $goodsRow['unit'];
+            $goods['final_price']     = $this->final_price;//成交价格
+            $goods['cost_price']      = $goodsRow['cost_price'];//成本价
+            $goods['goods_config_id'] = $goodsRow['goods_config_id'];//商品配置id
+            
+            $goods['ctime']           = $ctime;
             $goods_id = Db::name("order_goods")->insertGetId($goods);
 
             //用户表相关信息记录-总消费金额变动
@@ -228,10 +231,19 @@ class OrderLogic extends BaseLogic{
         if ($res) {
             foreach ($res as $key => $row) {
                 //获取订单产品
-                $row['goods'] = M('order_goods')->where(['order_id'=>$row['order_id']])->select();
+                $row['goods'] = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
+                $res[$key]['task_status_name'] = '更新中';
+
                 //通过第三方刷洗数据
-                $res[$key] = $this->getOutOrderData($row);//单条，不是批量
-                // $res[$key]['task_status_name'] = '暂停中';
+                $goodsCfg = db('goods_config')->where(['goods_config_id'=>$row['goods_config_id']])->find();//获取商品配置
+                if (!empty($goodsCfg)) {
+                    $refreshRes = $this->getOutOrderData($row, $goodsCfg);//单条，不是批量
+                    //如果刷新成功则修改
+                    if (!$refreshRes['error']) {
+                        $res[$key] = $refreshRes['data'];
+                    }
+                }
+
             }
         }
         // ee($res);
@@ -243,8 +255,8 @@ class OrderLogic extends BaseLogic{
      * 第三方刷洗数据
      * @return array $res 结果
      */
-    public function getOutOrderData($row=[]){
-        $res = ['error'=>0, 'msg'=>'操作成功'];
+    public function getOutOrderData($row=[], $goodsCfg=[]){
+        $res = ['error'=>0, 'msg'=>'操作成功', 'data'=>$row];
         if (empty($row)) {
             return $res;
         }
@@ -256,23 +268,24 @@ class OrderLogic extends BaseLogic{
         }
 
         //获取商品配置
-        $goodsCfg = M('goods_config')->where(['goods_id'=>$row['goods_id']])->find();
         if (empty($goodsCfg)) {
-            $res = ['error'=>1, 'msg'=>'抱歉，系统异常，请您联系管理员'];
+            $res = ['error'=>1, 'msg'=>'抱歉，商品未配置，请您联系管理员'];
             return $res;
         }
+
         // ee($row);
         $url = $goodsCfg['url_get_order_row'];
         $apikey = $supplier['apikey'];
         $params = ['apikey'=>$apikey, 'renwuid'=>$row['out_id'], 'type'=>'query'];
-        $res = apiget($url, $params);
-        // ee($res);
-        if (empty($res) || $res['ret'] != 1) {
-            $res = ['error'=>1, 'msg'=>'抱歉，系统出现异常，请联系管理员'];
-            return $res;
+        $res_api = apiget($url, $params);
+
+        // ee($res_api);
+        if (empty($res_api) || $res_api['ret'] != 1) {
+            $res_api = ['error'=>1, 'msg'=>'抱歉，系统出现异常，请联系管理员'];
+            return $res_api;
         }
-        $row['task_status_name'] = $res['msg'] ?? '';
-        return $row;
+        $res['data']['task_status_name'] = $res_api['msg'] ?? '';
+        return $res;
     }
 
     /**

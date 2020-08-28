@@ -434,18 +434,17 @@ em{font-style: normal;}
 
 .cat-box{
     background-color: #fff;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.7);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
     margin-bottom: 20px;
     background-color: #FFF;
     border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
     position: relative;
     transition: all 1s ease 0s;
     overflow: hidden;
     cursor: pointer;
 }
 .cat-box:hover{
-    border:1px solid #eee;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.68);
 }
 .cat-box .img-box{
     

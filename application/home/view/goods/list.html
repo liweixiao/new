@@ -35,13 +35,13 @@
             {volist name="rows" id="vo"}
                 <div class="layui-col-xs6 layui-col-md3 goods-item">
                     <div class="cat-box">
-                        <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
+                        <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}">
                         <div class="img-box">
                             <img src="__STATIC__/images{$vo.logo}">
                         </div>
                         </a>
 
-                        <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
+                        <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}">
                         <div class="item-content">
                             <h3>{$vo.goods_name}</h3>
                             <p>{$vo.desc}</p>

@@ -392,7 +392,7 @@ class OrderLogic extends BaseLogic{
         }
 
         //获取商品配置(第三方配置)
-        $goodsCfg = db('goods_config')->where(['goods_id'=>$goodsRow['goods_config_id']])->find();
+        $goodsCfg = db('goods_config')->where(['goods_config_id'=>$goodsRow['goods_config_id']])->find();
         if (empty($goodsCfg)) {
             return ['error'=>1, 'msg'=>'抱歉，商品配置有误，请您联系管理员!'];
         }

@@ -223,6 +223,8 @@ em{font-style: normal;}
     margin-left: 180px;
 }
 
+.mobile-tips{display: none;}
+.pc-tips{display: inline;}
 
 .myform-card .layui-card-body {
     /*padding: 10px 15px 10px 0;*/

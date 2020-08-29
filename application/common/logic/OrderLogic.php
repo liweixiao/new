@@ -80,12 +80,14 @@ class OrderLogic extends BaseLogic{
         $data['out_id']          = $params['out_id'] ?? 0;//外部订单id-改为后面更新了
         $data['first']           = $params['first'] ?? '';//优先级
         $data['user_note']       = $params['user_note'] ?? '';//备注
-        $data['stime']           = $params['stime'] ?? 0;//开始时间
         $data['task_num']        = $params['task_num'] ?? 0;//下单数量
         $data['supplier_id']     = $goodsRow['supplier_id'];//供应商id??
         $data['goods_config_id'] = $goodsRow['goods_config_id'];//商品配置id
         $data['goods_id']        = $params['goods_id'] ?? 0;//商品id
 
+        if (!empty($params['stime'])) {
+            $data['stime']  = $params['stime'];//开始时间
+        }
 
         $row = Db::name("order")->where($data)->find();
         if ($row) {

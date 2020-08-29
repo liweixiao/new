@@ -43,12 +43,18 @@ class Goods extends Base {
         return $this->fetch('list');
     }
 
-    //平台ip121.199.15.68
+    //商品详情
     public function detail(){
         $goods_id = I('id', 0);//商品id
         $row = $this->ToolsLogic->getGoodsRow($goods_id, $this->user_id);
         if (empty($row)) {
             $this->error('非法请求');
+        }
+
+        //获取商品模板
+        $goodsTemplate = $row['tpl'];
+        if (empty($goodsTemplate)) {
+            $this->error('抱歉，商品模板配置有误，请联系管理员！');
         }
 
         $cat_id = $row['cat_id'];
@@ -57,12 +63,15 @@ class Goods extends Base {
             $this->error('抱歉，请联系管理员！');
         }
 
-        $tags = $this->ToolsLogic->getAllTags('run_first', $cat_id);
+        $tags = $this->ToolsLogic->getAllTags('', 0, false);//第三个参数为false则获取所有字段，这在模板里面要注意
         // ee($tags);
+
+        $shop_info = tpCache('shop_info');
+        $this->assign('shop_info',$shop_info);
         $this->assign('row', $row);
         $this->assign('cat', $cat);
         $this->assign('tags', $tags);
-        return $this->fetch('weibo1');
+        return $this->fetch($goodsTemplate);
     }
 
 

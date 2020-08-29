@@ -19,7 +19,7 @@
                 <!-- 内容区域 -->
                 <form class="layui-form myform" method="post" action="" id="myform">
                   <input type="hidden" name="goods_id" value="{$row.goods_id}">
-                  <input type="hidden" name="price" id="sale_price" value="{$row.sale_price}">
+                  <input type="hidden" name="first" value="10">
                   <div class="layui-form-item">
                     <label class="layui-form-label">{$row.desc_url}</label>
                     <div class="layui-input-block">
@@ -28,31 +28,29 @@
                     </div>
                   </div>
 
-                  <div class="layui-inline mb15">
-                        <label class="layui-form-label">{$row.desc_first}</label>
-                        <div class="layui-input-inline">
-                          <select name="first" lay-verify="required" lay-search="">
-                            {volist name="$tags.run_first" id="vo"}
-                            <option value="{$vo.label_id}">{$vo.label_name}</option>
-                            {/volist}
-                          </select>
-                        </div>
-                      </div>
+                   <div class="layui-form-item">
+                     <label class="layui-form-label">{$row.desc_first}</label>
+                     <div class="layui-input-block">
+                        <div id="set-first-tool" class="demo-slider w100b"></div>
+                     </div>
+                   </div>
+
 
                   <div class="layui-form-item">
                     <label class="layui-form-label">任务量</label>
                     <div class="layui-input-block">
-                      <input type="text" name="task_num" id="task_num" value="{$row.min_num}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
-                      <span class="note">{$row.desc_task}</span>
+                      <input type="text" name="task_num" id="task_num" value="{$row.min_num*$row.unit}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)" sale_price="{$row.sale_price}" min_num="{$row.min_num}">
+                      <span class="note">{$row.desc_task}，最低下单量为{$row.min_num|fnum=false,0}个</span>
                     </div>
                   </div>
 
+                  {//注意这里传递的是标签表的id}
                   <div class="layui-form-item">
-                    <label class="layui-form-label">开始时间</label>
+                    <label class="layui-form-label">补分选项</label>
                     <div class="layui-input-block">
-                      <input type="text" value="{:date('Y-m-d H:i')}" name="stime" id="stime" placeholder="{:date('Y-m-d H:i')}" autocomplete="off" class="layui-input w180" lay-key="6">
-                      <span class="note">{$row.desc_stime}</span>
-
+                      {volist name="tags.bf_type" id="vo"}
+                      <input type="radio" name="bf_type_id" class="bf_type_id" {if condition="$i eq 1"}checked{/if} value="{$vo.id}" title="{$vo.label_name}" tag="{$vo.tag}" lay-filter="bf_type_id">
+                      {/volist}
                     </div>
                   </div>
 
@@ -73,12 +71,9 @@
 
                     <div class="layui-form-item mt20">
                         <div class="layui-input-block desc_info">
-                            <pre>{$row.desc_info}</pre>
+                            <pre>{$row.desc_info}<br>客服QQ：{$shop_info.qq}</pre>
                         </div>
                     </div>
-
-
-
 
                 </form>
                 <!-- 内容区域 -->
@@ -93,13 +88,16 @@
 <script>
 $(function(){
 
+
+
 });
 
 
-layui.use(['form', 'layedit', 'laydate'], function(){
+layui.use(['form', 'layedit', 'laydate', 'slider'], function(){
   var form = layui.form
   ,layer = layui.layer
   ,layedit = layui.layedit
+  ,slider = layui.slider
   ,laydate = layui.laydate;
   
    //日期时间选择器
@@ -109,23 +107,71 @@ layui.use(['form', 'layedit', 'laydate'], function(){
      ,format: 'yyyy-MM-dd HH:mm'
    });
 
-   //预估总价
+   //设置最大最小值
+   slider.render({
+     elem: '#set-first-tool'
+     ,value: 10 //初始值
+     ,min: 1 //最小值
+     ,max: 20 //最大值
+     ,step: 1 //步长
+     ,input: true //输入框
+     ,theme: '#47b3e3' //主题色
+     ,change: function(value){
+       // console.log(value) //动态获取滑块数值
+       $('.myform input[name=first]').val(parseInt(value));
+     }
+     ,setTips: function(value){ //自定义提示文本
+      return value + '个/分钟';
+     }
+   });
+
+   //输入框值改变-预估总价
    $("#task_num").bind("input propertychange",function(){
-        var totalAmount = '';
-        var price = $.trim($('#sale_price').val());
-        var task_num = $.trim($(this).val());
-        task_num = parseFloat(task_num);
-        totalAmount = go.calcTotalAmount(task_num, price);
-        $('.gs-price').text(totalAmount);
+        go.calcPrice();
    })
 
+   //选中补粉选项-预估总价
+   form.on('radio(bf_type_id)', function(data){
+        // console.log(data.elem); //得到radio原始DOM对象
+        // console.log(data.value); //被点击的radio的value值
+        go.calcPrice();
+   });  
+
 });
+
+
+//预估总价
+go.calcPrice = function(){
+     var totalAmount = '';
+     var price = $.trim($("#task_num").attr('sale_price'));
+     var min_num = $.trim($("#task_num").attr('min_num'));
+     var task_num = $.trim($("#task_num").val());
+     //这里多引入一个补粉价格参数,补粉的话价格会高点
+     var price_param = $('.bf_type_id:checked').attr('tag');//价格参数,基础售价倍率
+     if (price_param) {
+         price_param = parseFloat($.trim(price_param));
+         price = price*price_param;
+     }
+
+     task_num = parseFloat(task_num);
+
+     
+     //如果小于最低值
+     min_num = parseFloat(min_num);
+     if (task_num < min_num) {
+        task_num = min_num;
+     }
+
+     totalAmount = go.calcTotalAmount(task_num, price);
+     $('.gs-price').text(totalAmount);
+}
+
 
 function verifyForm(){
     var layerindex = layer.load(1);//加载层
     $.ajax({
         type: 'POST',
-        url: "{:U('home/order/create', ['s'=>$Request.get.s])}",
+        url: "{:U('home/order/create')}",
         data: $('#myform').serialize(),
         dataType: 'json',
         success: function(result){

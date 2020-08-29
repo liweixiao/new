@@ -14,18 +14,55 @@ use think\Db;
 use app\common\logic\OrderLogic;
 
 class Order extends Common {
+    public function _initialize() {
+        parent::_initialize();
+        $this->OrderLogic = new OrderLogic;
+    }
 
     public function index() {
         return $this->fetch();
     }
 
     public function list() {
+        $data = [];
         $params = I('get.');//请求参数
+        $cat_id = $data['cat_id'] = I('cid', 1);//商品一级分类id
+        $goods_id = $data['goods_id'] = I('gid', 1);//商品id
         $OrderLogic = new OrderLogic();
+
+        $params['cat_id'] = $cat_id;
+        $params['goods_id'] = $goods_id;
+
+        //获取当前分类下面所有子分类
+        $data['catList'] = $this->OrderLogic->getCatList(0);
+
+        //获取当前分类下面所有子分类ids
+        $subCatIds = $this->OrderLogic->getSubCatIds($cat_id);
+
+        $data['goodsRows'] = $this->OrderLogic->getCatGoodsList($subCatIds);
 
         $order_by = 'order_id desc';
         $where = [];
 
+        //这里由于多供应商原因,所以查单子必须要提交商品id
+        if (empty($goods_id)) {
+            $this->error('抱歉，商品id参数缺失，请联系管理员');
+        }
+
+        //获取商品信息
+        $goodsRow = $this->OrderLogic->getGoodsRow($goods_id);
+        if (empty($goodsRow)) {
+            return ['error'=>1, 'msg'=>'抱歉，产品不存在，请联系管理员'];
+        }
+        $where['goods_id'] = $goods_id;
+
+        //获取供应商
+        $supplier = $this->OrderLogic->getSupplier($goodsRow['supplier_id']);
+        if (empty($supplier)) {
+            $res = ['error'=>1, 'msg'=>'抱歉，系统供应配置异常，请联系管理员！!'];
+            return $res;
+        }
+        $data['supplier'] = $supplier;
         //排序
         if (!empty($params['order_by'])) {
             $order_by = $params['order_by'];
@@ -52,28 +89,34 @@ class Order extends Common {
 
         // $this->showNum = 2;
         $rows = db("v_order")->where($where)->order($order_by)->paginate($this->showNum);
+        // sql();
+        // ee($rows);
+        $page = $rows->render();
+        // ee($rows->render());
+
+        $rows = $rows->toArray();//转换为数组
+        $rows = $rows['data'];//取数据
+
+        foreach ($rows as $key => $row) {
+            $rows[$key]['task_status_name'] = '更新中';
+            //获取订单产品
+            $goods = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
+            $rows[$key]['goods'] = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
+
+        }
         // ee($rows);
 
-        // ee($rows->render());
-        foreach ($rows as $key => $row) {
-            //获取订单产品
-            $row['goods'] = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
-            $rows[$key]['task_status_name'] = '更新中';
-            //通过第三方刷洗数据
-            $goodsCfg = db('goods_config')->where(['goods_config_id'=>$row['goods_config_id']])->find();//获取商品配置
-            if (!empty($goodsCfg)) {
-                $refreshRes = $OrderLogic->getOutOrderData($row, $goodsCfg);//单条，不是批量
-                //如果刷新成功则修改
-                if (!$refreshRes['error']) {
-                    $rows[$key] = $refreshRes['data'];
-                }
-            }
-        }
+        $res_refresh = $OrderLogic->refreshDatasByOutOrder($rows, $goodsRow);//单条，不是批量
 
         $tags = $OrderLogic->getAllTags('run_first');
 
+        //获取商品订单统计(统计每个商品下单数量)
+        $data['orderGoodsStat'] = $this->OrderLogic->getOrderGoodsStat($params);
+
         // ee($tags);
         $this->assign('tags', $tags);
+        $this->assign('page', $page);
+        $this->assign('data', $data);
         $this->assign('rows', $rows);
         return $this->fetch();
     }

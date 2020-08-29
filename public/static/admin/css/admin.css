@@ -125,6 +125,7 @@ a:hover {
 .m10{margin:10px}
 .m15{margin:15px !important}
 .m30{margin:30px}
+.mt0{margin-top:0px!important;}
 .mt5{margin-top:5px}
 .mt10{margin-top:10px !important}
 .mt15{margin-top:15px}
@@ -613,4 +614,34 @@ em{font-style: normal;}
 .layui-btn-normal {
     background-color: #47b3e3;
 }
+/*sub-tab*/
+.goods-sub-tab.sub-tab{
+    overflow: hidden;
+}
 
+.goods-sub-tab.sub-tab ul{
+
+}
+
+.goods-sub-tab.sub-tab li.on, .goods-sub-tab.sub-tab li:hover{
+    background: #777;
+    color: #fff;
+    border: 1px solid #777;
+}
+
+.goods-sub-tab.sub-tab li {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+    color: #333;
+    background: #fff;
+    border: 1px solid #ddd;
+    height: 28px;
+    line-height: 27px;
+    padding: 0 10px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
+}

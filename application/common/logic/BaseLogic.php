@@ -66,14 +66,20 @@ class BaseLogic {
         if (empty($goods_id)) {
             return $res;
         }
-        $num = floatval($num);
 
         //查找商品销售价
-        $goodsRow = db('goods')->field('goods_id, sale_price')->where('goods_id', $goods_id)->find();
+        $goodsRow = db('goods')->field('goods_id, sale_price, min_num')->where('goods_id', $goods_id)->find();
         if (empty($goodsRow)) {
             return $res;
         }
         $price = $goodsRow['sale_price'];
+
+        //任务数量
+        $num = floatval($num);
+        //如果设置了最低量
+        if (!empty($goodsRow['min_num']) && $goodsRow['min_num'] > 0) {
+            $num = floatval($goodsRow['min_num']);
+        }
 
         //如果设置了会员价
         if ($user_id) {
@@ -83,54 +89,81 @@ class BaseLogic {
             }
         }
 
-        $res = fnum($num*$price, 0, 2);
+        $resPrice = $num*$price;
+
+        //如果设置了价格参数(比如在原来价格基础上进行倍率操作)
+        if (!empty($this->price_param)) {
+            $resPrice = $resPrice*$this->price_param;
+        }
+        // ee($this->price_param);
+
+        $res = fnum($resPrice, 0, 2);
         return $res;
     }
 
     /**
      * 计算订单总成本价
      * @param int $num 购买数量
-     * @param number $price 商品成本价格
+     * @param int $goods_id 商品id
      * @return number
      */
-    public function getTotalCost($num=0, $price=0){
+    public function getTotalCost($num=0, $goods_id=0){
         $res = 0;
         if (empty($num)) {
             return $res;
         }
-        if (empty($price)) {
+        if (empty($goods_id)) {
             return $res;
         }
+
+        //查找商品销售价
+        $goodsRow = db('goods')->field('goods_id, cost_price, min_num')->where('goods_id', $goods_id)->find();
+        if (empty($goodsRow)) {
+            return $res;
+        }
+        $price = $goodsRow['cost_price'];
+
+        //任务数量
         $num = floatval($num);
+        //如果设置了最低量
+        if (!empty($goodsRow['min_num']) && $goodsRow['min_num'] > 0) {
+            $num = floatval($goodsRow['min_num']);
+        }
 
         $res = $num*$price;
         $res = fnum($res, 0, 4);
         return $res;
     }
 
+    //获取标签行
+    public function getLabelRow($label_id=0){
+        $where = ['id'=>$label_id];
+        $res = db('goods_label')->where($where)->find();
+        return $res;
+    }
 
     //获取供应商
     public function getSupplier($supplier_id=0){
         $where = ['is_show'=>1, 'supplier_id'=>$supplier_id];
-        $res = M('suppliers')->where($where)->find();
+        $res = db('suppliers')->where($where)->find();
         return $res;
     }
 
     //获取分类
     public function getCatRow($cat_id=0){
         $where = ['is_show'=>1, 'cat_id'=>$cat_id];
-        $res = M('goods_cat')->where($where)->find();
+        $res = db('goods_cat')->where($where)->find();
         return $res;
     }
 
     //获取分类列表
-    public function getCatList($parent_id=0){
+    public function getCatList($parent_id= -1){
         $where = ['is_show'=>1];
-        if (!empty($parent_id)) {
+        if ($parent_id != -1) {
             $where['parent_id'] = $parent_id;
         }
         $field = 'cat_id, cat_name, parent_id, level, icon';
-        $res = M('goods_cat')->field($field)->where($where)->order('sort')->select();
+        $res = db('goods_cat')->field($field)->where($where)->order('sort')->select();
         return $res;
     }
 
@@ -171,7 +204,7 @@ class BaseLogic {
     //获取商品
     public function getGoodsRow($goods_id=0, $user_id=0){
         $where = ['is_show'=>1, 'goods_id'=>$goods_id];
-        $res = M('goods')->where($where)->find();
+        $res = db('goods')->where($where)->find();
 
         //是否有会员价?
         $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id);
@@ -192,8 +225,8 @@ class BaseLogic {
         return $res;
     }
 
-    //获取所有楼盘标签
-    public function getAllTags($type = '', $cat_id=2){
+    //获取所有标签
+    public function getAllTags($type = '', $cat_id=2, $only_name=true){
         $res = [];
         $where = [];
 
@@ -207,10 +240,20 @@ class BaseLogic {
             $$where['cat_id'] = $cat_id;
         }
 
-        $datas = Db::name('goods_label')->where($where)->order('type asc, sort asc')->field('type, label_id, label_name')->select();
+        $datas = Db::name('goods_label')->where($where)->order('type asc, sort asc')->field('id, type, label_id, label_name,tag')->select();
         foreach ($datas as $data) {
-            $res[$data['type']][$data['label_id']] = $data['label_name'];
+            if ($only_name) {
+                $res[$data['type']][$data['label_id']] = $data['label_name'];
+            }else{
+                $res[$data['type']][$data['label_id']] = $data;
+            }
         }
+        return $res;
+    }
+
+    //获取所有标签-id为key，label_id为value对应关系
+    public function getIdValueTags(){
+        $res = db('goods_label')->column('label_id', 'id');
         return $res;
     }
 
@@ -225,4 +268,37 @@ class BaseLogic {
         $row = M('users')->find($user_id);//dump($user);
         return $row;
      }
+
+     /*
+     * 添加api日志
+     */
+     public function add_out_api_log($data=[]){
+        $ctime = date('Y-m-d H:i:s');
+        $log_data = [
+            'order_id'=> $data['order_id'] ?? 0,
+            'desc'=> $data['desc'] ?? '',
+            'type'=> $data['type'] ?? 1,//默认是返回数据
+            'ctime'=> $ctime
+        ];
+
+        db('api_out_log')->insert($log_data);
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

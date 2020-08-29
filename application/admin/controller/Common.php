@@ -23,7 +23,7 @@ class Common extends Controller {
 
         parent::__construct($request);
         if (!session('user_id')) {
-            $this->redirect('login/index');
+            $this->redirect('/admin/login/index');
         }
 
         $this->user_id = session('user_id');

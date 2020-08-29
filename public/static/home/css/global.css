@@ -85,6 +85,7 @@ a:hover {
 .m10{margin:10px}
 .m15{margin:15px !important}
 .m30{margin:30px}
+.mt0{margin-top:0px!important;}
 .mt5{margin-top:5px}
 .mt10{margin-top:10px !important}
 .mt15{margin-top:15px}
@@ -210,6 +211,29 @@ em{font-style: normal;}
     color:#999;
     margin-left: 5px;
 }
+
+.myform.layui-form {
+    min-width: 300px;
+    max-width: 900px;
+}
+.myform .layui-form-label {
+    width: 150px;
+}
+.myform .layui-input-block {
+    margin-left: 180px;
+}
+
+
+.myform-card .layui-card-body {
+    /*padding: 10px 15px 10px 0;*/
+}
+.myform-card .layui-form-label {
+    /*width: 90px;*/
+}
+.myform-card .layui-input-block {
+    /*margin-left: 120px;*/
+}
+
 /*分页*/
 .page .fr {
     margin-top:20px
@@ -417,7 +441,13 @@ em{font-style: normal;}
 .order_sn.layui-input-block {
     margin-left: 0;
 }
+.bg-gray{
+    background: #f7f7fa;
+}
 
+.bg-white{
+    background: #FFF;
+}
 .order_sn.layui-input-block input[type=text] {
     border:1px solid #009688;
 }
@@ -496,6 +526,50 @@ em{font-style: normal;}
     padding: 15px;
     border-radius: 5px;
     color: #4F4F4F;
+}
+#set-first-tool{
+    position: relative;
+    top: 19px;
+    width: 60%;
+}
+#set-first-tool .layui-slider-input {
+    border: none;
+    border-bottom: 1px solid #e6e6e6;
+    width: 60px;
+    height: 33px;
+}
+
+
+/*sub-tab*/
+.goods-sub-tab.sub-tab{
+    overflow: hidden;
+}
+
+.goods-sub-tab.sub-tab ul{
+
+}
+
+.goods-sub-tab.sub-tab li.on, .goods-sub-tab.sub-tab li:hover{
+    background: #777;
+    color: #fff;
+    border: 1px solid #777;
+}
+
+.goods-sub-tab.sub-tab li {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+    color: #333;
+    background: #fff;
+    border: 1px solid #ddd;
+    height: 28px;
+    line-height: 27px;
+    padding: 0 10px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
 }
 
 

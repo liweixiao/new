@@ -1215,3 +1215,10 @@ function pickupNum($str=''){
     }
     return $result;
 }
+
+/*
+ * 数据返回
+ */
+function ecodejson($data){
+    return json_encode($data, JSON_UNESCAPED_UNICODE);
+}

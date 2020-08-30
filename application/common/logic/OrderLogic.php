@@ -654,6 +654,13 @@ class OrderLogic extends BaseLogic{
     public function getOrderGoodsStat($params=[]){
         $res = [];
         $where = ['is_deleted'=>'0'];
+        
+        //根据用户查找
+        if (!empty($params['user_id'])) {
+            $user_id = $params['user_id'];
+            $where['user_id'] = $user_id;
+        }
+
         $res = db('order')->where($where)->group('goods_id')->column('goods_id,count(order_id) as num');
         return $res;
     }

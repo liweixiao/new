@@ -441,8 +441,58 @@ class OrderLogic extends BaseLogic{
                     $rows[$key]['task_status_name'] = $res_api['msg'] ?? '';
                 }
                 break;
-            //精品网络-因为批量接口有问题这里改为单条查询
+
+            //精品网络-已起用
             case '20000':
+                //先更新任务速度模式-防止前面无数据任务模式未更新
+                foreach ($rows as $k => $value) {
+                    $rows[$k]['run_first_name'] = "{$value['first']}个/分钟";
+
+                    //更新开始时间
+                    $rows[$k]['stime'] = $value['ctime'];
+                }
+
+                //获取订单任务ids
+                $out_ids = array_unique(array_column($rows, 'out_id'));
+                $url_api = $goodsCfg['url_get_order_rows'];
+                $postdatas = json_encode(['order_id'=>$out_ids]);
+                $res_api = apiget($url_api, $postdatas);
+                // ee($res_api);
+
+                //异常情况
+                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
+                    $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
+                    return ['error'=>1, 'msg'=>$msg];
+                }
+
+                if (empty($res_api['data'])) {
+                    return ['error'=>1, 'msg'=>'暂无订单数据'];
+                }
+
+                //将第三方数据以任务id作为key
+                $outOrderList = array_column($res_api['data'], null, 'id');//这里用的是三方数据的weibo_id字段等TODO
+                // ee($outOrderList);
+
+                //开始遍历刷洗
+                foreach ($rows as $key => $row) {
+                    //更新任务状态
+                    $done_num = $outOrderList[$row['out_id']]['done_num'] ?? null;//执行量
+                    $task_num = $outOrderList[$row['out_id']]['task_num'] ?? null;//任务量
+
+                    if (is_null($done_num) || is_null($task_num)) {
+                        continue;
+                    }
+
+                    $task_status_name = "{$done_num}/{$task_num}";
+                    if ($done_num >0 && $done_num == $task_num) {
+                        $task_status_name = "ok";//处理完了,默认显示ok
+                    }
+                    $rows[$key]['task_status_name'] = $task_status_name;
+                }
+                // ee($rows);
+                break;
+            //精品网络-因为批量接口有问题这里改为单条查询-已废弃
+            case '20000000':
                 $url_api = $goodsCfg['url_get_order_rows'];
 
                 //先更新任务速度模式-防止前面无数据任务模式未更新
@@ -484,53 +534,6 @@ class OrderLogic extends BaseLogic{
 
                 }
 
-                // ee($rows);
-                break;
-            //精品网络-暂停使用，接口缺少返回任务id
-            case '20000000':
-
-                //先更新任务速度模式-防止前面无数据任务模式未更新
-                foreach ($rows as $k => $value) {
-                    $rows[$k]['run_first_name'] = "{$value['first']}个/分钟";
-
-                    //更新开始时间
-                    $rows[$k]['stime'] = $value['ctime'];
-                }
-
-                //获取订单任务ids
-                $out_ids = array_unique(array_column($rows, 'out_id'));
-                $url_api = $goodsCfg['url_get_order_rows'];
-                $postdatas = json_encode(['order_id'=>$out_ids]);
-                $res_api = apiget($url_api, $postdatas);
-                // ee($res_api);
-
-                //异常情况
-                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
-                    $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
-                    return ['error'=>1, 'msg'=>$msg];
-                }
-
-                if (empty($res_api['data'])) {
-                    return ['error'=>1, 'msg'=>'暂无订单数据'];
-                }
-
-                //将第三方数据以任务id作为key
-                $outOrderList = array_column($res_api['data'], null, 'id');//这里用的是三方数据的weibo_id字段等TODO
-                // ee($outOrderList);
-
-                //开始遍历刷洗
-                foreach ($rows as $key => $row) {
-                    //更新任务状态
-                    $done_num = $outOrderList[$row['out_id']]['done_num'];//执行量
-                    $task_num = $outOrderList[$row['out_id']]['task_num'];//任务量
-                    if (isset($done_num) && isset($task_num)) {
-                        $task_status_name = "{$done_num}/{$task_num}";
-                        if ($done_num >0 && $done_num == $task_num) {
-                            $task_status_name = "ok";//处理完了,默认显示ok
-                        }
-                        $rows[$key]['task_status_name'] = $task_status_name;
-                    }
-                }
                 // ee($rows);
                 break;
             default:

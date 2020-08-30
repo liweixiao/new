@@ -87,8 +87,9 @@
 
                             <div class="layui-form-item layui-form-text">
                                 <label class="layui-form-label">输入内容</label>
-                                <div class="layui-input-block">
-                                    <textarea placeholder="请输入内容,回车换行,一行为一条内容" name="appoint_content" class="layui-textarea"></textarea>
+                                <div class="layui-input-block textarea-box">
+                                    <textarea placeholder="请输入内容,回车换行,一行为一条内容" name="appoint_content" class="layui-textarea appoint_content"></textarea>
+                                    <span class="note">当前统计输入<b>0</b>行，内容中不能带链接；@符号会替换成空格。</span>
                                 </div>
                             </div>
 
@@ -194,6 +195,12 @@ layui.use(['form', 'layedit', 'laydate', 'slider'], function(){
    //输入框值改变-预估总价
    $("#task_num").bind("input propertychange",function(){
         go.calcPrice();
+   })
+
+   //textarea值改变-提示输入条数
+   $(".appoint_content").bind("input propertychange",function(){
+        var rowNum = $(this).val().split("\n").length;
+        $(this).closest('.textarea-box').find('.note b').text(rowNum);
    })
 
    //选中补粉选项-预估总价

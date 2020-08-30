@@ -60,7 +60,7 @@
                                 <label class="layui-form-label">转发评论选项</label>
                                 <div class="layui-input-block">
                                   {volist name="tags.relay_type" id="vo"}
-                                  <input type="radio" name="relay_type_id" class="relay_type_id" {if condition="$i eq 1"}checked{/if} value="{$vo.id}" title="{$vo.label_name}" tag="{$vo.tag}" lay-filter="relay_type_id">
+                                  <input type="radio" name="relay_type_id" class="relay_type_id" {if condition="$vo.label_id eq 3"}checked{/if} value="{$vo.id}" title="{$vo.label_name}" tag="{$vo.tag}" lay-filter="relay_type_id">
                                   {/volist}
                                 </div>
                               </div>
@@ -79,15 +79,15 @@
                               <label class="layui-form-label">使用内容类型</label>
                               <div class="layui-input-block">
                                 {volist name="tags.content_type" id="vo"}
-                                <input type="radio" name="content_type_id" class="content_type_id" {if condition="$i eq 1"}checked{/if} value="{$vo.id}" title="{$vo.label_name}" tag="{$vo.tag}" lay-filter="content_type_id">
+                                <input type="radio" name="content_type_id" class="content_type_id" {if condition="$vo.label_id eq 2"}checked{/if} value="{$vo.id}" title="{$vo.label_name}" tag="{$vo.tag}" lay-filter="content_type_id" data-id="{$vo.label_id}">
                                 {/volist}
                               </div>
                             </div>
 
 
-                            <div class="layui-form-item layui-form-text">
+                            <div class="layui-form-item layui-form-text textarea-box">
                                 <label class="layui-form-label">输入内容</label>
-                                <div class="layui-input-block textarea-box">
+                                <div class="layui-input-block">
                                     <textarea placeholder="请输入内容,回车换行,一行为一条内容" name="appoint_content" class="layui-textarea appoint_content"></textarea>
                                     <span class="note">当前统计输入<b>0</b>行，内容中不能带链接；@符号会替换成空格。</span>
                                 </div>
@@ -208,7 +208,19 @@ layui.use(['form', 'layedit', 'laydate', 'slider'], function(){
         // console.log(data.elem); //得到radio原始DOM对象
         // console.log(data.value); //被点击的radio的value值
         go.calcPrice();
-   });  
+   });
+
+   //点击使用内容类型-切换输入框显示
+   form.on('radio(content_type_id)', function(data){
+        // console.log(data.elem); //得到radio原始DOM对象
+        // console.log(data.value); //被点击的radio的value值
+        var label_value = $(data.elem).attr('data-id');
+        if (label_value == 2) {
+            $('.textarea-box').removeClass('hide');
+        }else{
+            $('.textarea-box').addClass('hide');
+        }
+   }); 
 
 });
 
@@ -250,11 +262,15 @@ function verifyForm(){
         success: function(result){
             // console.log(result.status);
             layer.closeAll();
-
             if (result.error == 1) {
                 go.errorTips(result.msg);
             } else {
+                //重置内容
+                $('.myform').find('button[type=reset]').click();
+                // setTimeout(function(){location.reload();},1000);
+
                 go.successTips(result.msg);
+
             }
         },
         error: function(){

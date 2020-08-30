@@ -65,7 +65,7 @@ class Goods extends Base {
 
         $tags = $this->ToolsLogic->getAllTags('', 0, false);//第三个参数为false则获取所有字段，这在模板里面要注意
         // ee($tags);
-
+        // ee($row);
         $shop_info = tpCache('shop_info');
         $this->assign('shop_info',$shop_info);
         $this->assign('row', $row);

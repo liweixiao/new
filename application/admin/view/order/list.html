@@ -27,7 +27,7 @@
                         </ul>
                     </div>
 
-                    <form class="form-inline mb10"  method="get" action="{:U('Admin/Order/list')}">
+                    <form class="form-inline mb10"  method="get" action="{:U('Admin/Order/list', ['cid'=>$Think.get.cid,'gid'=>$Think.get.gid])}">
                         <div class="sdiv">
                             {//注意只有供应商是10000才有任我模式}
                             {if condition="$data.supplier.code eq '10000'"}

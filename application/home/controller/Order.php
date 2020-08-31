@@ -150,6 +150,7 @@ class Order extends Base {
         //余额是否充足检测(加粉选择补粉|掉粉不补选项)
         $total_amount = $this->OrderLogic->getTotalAmount($taskNum, $row['goods_id'], $this->user_id);//计算订单总价
         // ee($this->OrderLogic->price_param);
+        // ee($total_amount);
 
         //检查用户余额是否充足
         if ($total_amount > $userInfo['user_money']) {

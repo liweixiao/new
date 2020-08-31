@@ -128,9 +128,13 @@ class BaseLogic {
 
         //任务数量
         $num = floatval($num);
+        $min_num = $goodsRow['min_num'];
         //如果设置了最低量
-        if (!empty($goodsRow['min_num']) && $goodsRow['min_num'] > 0) {
-            $num = floatval($goodsRow['min_num']);
+        if (!empty($min_num) && $min_num > 0) {
+            $min_num = floatval($min_num);
+            if ($num < $min_num) {
+                $num = $min_num;
+            }
         }
 
         $res = $num*$price;

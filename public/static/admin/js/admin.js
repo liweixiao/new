@@ -48,13 +48,15 @@ go.filterNum = function (dom, only_keep_int){
 }
 
 
-go.successTips = function(msg){
+go.successTips = function(msg, area){
 	msg = msg ? msg : '操作成功';
+    area = area ? area : 'auto';
 	layer.alert(msg, {
 		title:'提示'
 		,icon: 1
 		,shade:0.5
-		,shadeClose:true
+		,area:area
+        ,shadeClose:true
 		,skin: 'layui-layer-lan'
 		,closeBtn: 1
 		,anim: 0 //动画类型
@@ -219,6 +221,36 @@ go.addmoney = function(user_id){
             layer.alert("服务器繁忙, 请联系管理员!");
         }
     });
+}
+
+//重置会员密码
+go.resetPassword = function(user_id){
+    layer.confirm('确认重置此会员密码吗？', {
+        btn: ['确定', '取消'] //按钮
+    }, function () {
+        var layerindex = layer.load(1);//加载层
+        $.ajax({
+            type: 'POST',
+            url: "/Admin/user/resetPassword",
+            data: {user_id:user_id},
+            dataType: 'json',
+            success: function(result){
+                layer.closeAll();
+                if (result.error == 1) {
+                    go.errorTips(result.msg);
+                } else {
+                    go.successTips(result.msg);
+                }
+            },
+            error: function(){
+                layer.closeAll();
+                layer.alert("服务器繁忙, 请联系管理员!");
+            }
+        });
+    }, function () {
+        layer.closeAll();
+    });
+
 }
 
 //切换用户

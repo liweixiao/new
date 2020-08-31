@@ -11,6 +11,7 @@
 namespace app\admin\controller;
 use think\Page;
 use think\Db;
+use app\common\logic\UsersLogic;
 
 class User extends Common {
 
@@ -55,6 +56,36 @@ class User extends Common {
         }
         return $this->fetch();
     }
+
+    /*
+     * 重置会员密码(规则为:会员手机号后面加0000)
+     */
+    public function resetPassword(){
+        //检查是否第三方登录用户
+        $user_id = input('user_id');
+        $reset_password_rule = config('reset_password_rule');
+
+        $res = ['error'=>0, 'msg'=>"OK，新密码为【会员手机号+{$reset_password_rule}】"];
+        $ctime = date('Y-m-d H:i:s');
+        $user = db('users')->where(['user_id'=>$user_id])->find();
+        if (!$user) {
+            $this->ajaxReturn(['error'=>1, 'msg'=>'用户不存在']);
+        }
+        if (empty($user['mobile'])) {
+            $this->ajaxReturn(['error'=>1, 'msg'=>'用户暂未设置手机号,无法操作']);
+        }
+        $newPassword = encrypt($user['mobile'] . $reset_password_rule);
+        // ee($newPassword);
+        $updateDatas = ['password'=>$newPassword, 'mtime'=>$ctime];
+        $result = db('users')->where(['user_id'=>$user_id])->update($updateDatas);
+        if (!$result) {
+            $this->ajaxReturn(['error'=>1, 'msg'=>'抱歉，操作失败，请联系管理员']);
+        }
+        $this->ajaxReturn($res);
+
+    }
+
+
 
     /**
      * 搜索用户名

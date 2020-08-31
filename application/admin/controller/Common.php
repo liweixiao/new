@@ -80,7 +80,7 @@ class Common extends Controller {
         $data['userid'] = $this->user_id;
         $data['username'] = $this->user_name;
         $data['ip'] = request()->ip();
-	$data['time'] = time();
+	    $data['time'] = time();
         $arr = array('Index/index','Log/index','Menu/index');
         if (!in_array($data['c'].'/'.$data['a'], $arr)) {
             db('admin_log')->insert($data);

@@ -62,6 +62,12 @@
                                             </span>
                                         </a>
 
+                                        <a href='javascript:;' title="重置密码" onclick="go.resetPassword({$vo.user_id})">
+                                           <span class="btn btn-xs btn-danger">
+                                                <i class="ace-icon iconfont icon-xiugaimima bigger-120"></i>
+                                            </span>
+                                        </a>
+
                                         <a href='{:url("info","id=$vo[id]")}' title="编辑查看"> 
                                            <span class="btn btn-xs btn-info">
                                                 <i class="ace-icon fa fa-pencil bigger-120"></i>
@@ -69,7 +75,7 @@
                                         </a>
 
                                         <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[id]\")}', '确认要删除『 id={$vo.id} 』这条记录吗？');"  title="删除">
-                                           <span class="btn btn-xs btn-danger" >
+                                           <span class="btn btn-xs btn-default" >
                                                 <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                             </span>
                                         </a>

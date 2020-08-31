@@ -353,8 +353,13 @@ class User extends Base{
      */
     public function password(){
         //检查是否第三方登录用户
+        $res = ['error'=>0, 'msg'=>'操作成功'];
         $logic = new UsersLogic();
         $data = $logic->get_info($this->user_id);
+        if (!$data) {
+            $this->error('登录失败，请联系管理员');
+        }
+
         $user = $data['result'];
         if($user['mobile'] == ''&& $user['email'] == ''){
             $this->error('请先绑定手机或邮箱',U('Home/User/info'));
@@ -363,10 +368,10 @@ class User extends Base{
         if(IS_POST){
             $userLogic = new UsersLogic();
             $data = $userLogic->password($this->user_id,I('post.old_password'),I('post.new_password'),I('post.confirm_password')); // 获取用户信息
-            if($data['status'] == -1)
-                $this->error($data['msg']);
-            $this->success($data['msg']);
-            exit;
+            if($data['status'] == -1){
+                $this->ajaxReturn(['error'=>1, 'msg'=>$data['msg']]);
+            }
+            $this->ajaxReturn($res);
         }
         return $this->fetch();
     }

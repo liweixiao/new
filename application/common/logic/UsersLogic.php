@@ -242,7 +242,7 @@ class UsersLogic extends BaseLogic
     public function password($user_id,$old_password,$new_password,$confirm_password,$is_update=true){
         $user = M('users')->where('user_id', $user_id)->find();
         if ($new_password != $confirm_password)
-            return ['status'=>-1,'msg'=>'请输入相同的新密码'];
+            return ['status'=>-1,'msg'=>'两次新密码输入不一致'];
         if ($old_password == $new_password)
             return ['status'=>-1,'msg'=>'新密码不能和旧密码相同'];
         if (strlen($new_password) < 6 || strlen($new_password) >18 )

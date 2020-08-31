@@ -26,5 +26,6 @@ return [
     'dispatch_success_tmpl'  => APP_PATH . 'admin/view' . DS . 'dispatch_jump.html',
     'dispatch_error_tmpl'    => APP_PATH . 'admin/view' . DS . 'dispatch_jump.html',
 
-
+    //重置密码规则，为会员手机号加000
+    'reset_password_rule' =>'0000',
 ];

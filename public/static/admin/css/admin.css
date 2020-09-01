@@ -21,7 +21,9 @@ a:hover {
 	visibility: hidden;
 	content: ".";
 }
-
+.w100b{
+    width: 100%;
+}
 /*后端*/
 .pagebox{
     text-align: right;

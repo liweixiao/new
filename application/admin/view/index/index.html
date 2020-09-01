@@ -180,7 +180,25 @@
 
                 <div class="clear"></div>
                 <!-- 本月统计END -->
-                <div><h2>本月统计：</h2></div>    
+                <div>
+                    <h2>本月统计：</h2>
+
+                    <form class="form-inline mb10"  method="post" action="{:U('Admin/Index/index')}">
+                        <div class="sdiv">
+                            <div class="row">
+                                <div class="col-xs-8 col-sm-2">
+                                    <div class="input-group w100b">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar bigger-110"></i>
+                                        </span>
+                                        <input type="text" class="form-control" value="{$Think.post.stime}" name="stime" id="date-range-picker" placeholder=" - ">
+                                    </div>
+                                </div>
+                                <input type="submit" class="btn btn-primary btn-sm" value="搜索">
+                            </div>
+                        </div>
+                    </form>
+                </div>    
                 <div class="col-sm-19 infobox-container">
 
                     <div class="infobox infobox-pink">
@@ -265,3 +283,14 @@
         <!-- PAGE CONTENT ENDS -->
     </div><!-- /.row -->
 </div><!-- /.page-content -->
+<script type="text/javascript">
+$(function(){
+    //日期范围
+    layui.laydate.render({
+        elem: '#date-range-picker'
+        ,format:'yyyy/MM/dd'
+        ,range: true
+    });
+});
+
+</script>

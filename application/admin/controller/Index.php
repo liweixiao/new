@@ -16,10 +16,10 @@ class Index extends Common {
      * 后台首页
      */
     public function index(){
+        $stime = I('stime');
         $ctime = time();
         vendor('my.Datept');
         $datept = new \Datept();
-
 
         /*-----------今日统计---------*/
         $today_start_time = $datept->beginToday();//当天开始-时间
@@ -57,6 +57,14 @@ class Index extends Common {
         $month_start_time = $datept->beginMonth();//当天开始-时间
         $month_end_time = $datept->endMonth();//当天开结束-时间
 
+
+        //如果是手动选择日期范围
+        if (!empty($stime)) {
+            $timeRangeArr = explode('-', $stime);
+            $month_start_time = date('Y-m-d H:i:s', strtotime(trim($timeRangeArr[0])));//开始时间
+            $month_end_time = date('Y-m-d 59:59:59', strtotime(trim($timeRangeArr[1])));//结束时间
+        }
+
         $where = [];
         $where['ctime'] = ['between', [$month_start_time, $month_end_time]];
 
@@ -66,7 +74,7 @@ class Index extends Common {
 
         //销售额
         $data['cmonth_total_amount'] = db('order')->where($where)->sum('total_amount');
-
+        // sql();
         //成本
         $data['cmonth_total_cost'] = db('order')->where($where)->sum('total_cost');
 

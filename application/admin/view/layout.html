@@ -34,7 +34,10 @@
 
         <!-- ace settings handler -->
         <script src="{:config('public.static')}/ace1.4/assets/js/ace-extra.min.js"></script>
+        <script src="{:config('public.static')}/ace1.4/assets/js/jquery-2.1.4.min.js"></script>
 
+        <script src="__STATIC__/js/admin.js?v={$Think.config.app_version}"></script>
+        <script src="__HOMESTATIC__/layui/layui.all.js" charset="utf-8"></script>
         <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
 
         <!--[if lte IE 8]>
@@ -174,7 +177,6 @@
         <!-- basic scripts -->
 
         <!--[if !IE]> -->
-        <script src="{:config('public.static')}/ace1.4/assets/js/jquery-2.1.4.min.js"></script>
 
         <!-- <![endif]-->
 
@@ -203,8 +205,6 @@
         <script src="{:config('public.static')}/artDialog/dialog.js"></script>
         <!--artDialog end-->
         
-        <script src="__STATIC__/js/admin.js?v={$Think.config.app_version}"></script>
-        <script src="__HOMESTATIC__/layui/layui.all.js" charset="utf-8"></script>
         <script>
                     var u = $(".sidebar ul.submenu li.active").parent('ul');
                     

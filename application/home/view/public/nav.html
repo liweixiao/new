@@ -23,6 +23,9 @@
     {else/}
     <li class="layui-nav-item">
       <a href="javascript:;">
+        {if condition="$user.level gt 1"}
+        <span class="vip_user iconfont icon-zuanshi" title="高级会员"></span>
+        {/if}
         <img src="__STATIC__/images/avatar.jpg" class="layui-nav-img">
         {$user.mobile|default=''}
       </a>

@@ -42,7 +42,7 @@ class Base extends Controller {
         $actionName = $request->action();
         $controllerName = $request->controller();
         if(!$this->user_id && !in_array($actionName, $nologin)){
-            $this->redirect('Home/user/login');
+            $this->redirect('Home/user/login',['u'=>input('u')]);
             exit;
         }
         
@@ -53,7 +53,7 @@ class Base extends Controller {
         //分类树
         $BaseLogic = new \app\common\logic\BaseLogic();
         $this->catTree = $BaseLogic->getCatTree();
-        // ee($this->catTree);
+        // ee($user);
 
         $this->assign('catTree', $this->catTree);
         $this->assign('mo',$mo);

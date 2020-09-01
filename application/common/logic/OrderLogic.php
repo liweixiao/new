@@ -99,6 +99,7 @@ class OrderLogic extends BaseLogic{
         //计算订单总价
         // ee($this->price_param);
         $total_amount = $this->getTotalAmount($data['task_num'], $goodsRow['goods_id'], $user_id);//注意，这里有会员价修改final_price
+        // ee($total_amount);
         //销售额为0,默认不允许下单,防止商品销售价没有填写问题
         if ($total_amount <= 0) {
             return ['error'=>1, 'msg'=>'抱歉，暂未定商品销售价，请联系管理员'];
@@ -126,6 +127,7 @@ class OrderLogic extends BaseLogic{
             $data['total_cost'] = $total_cost;
 
             //生成订单基本信息
+            // ee($data);
             $order_id = Db::name("order")->insertGetId($data);
             $this->orderId = $order_id;
 
@@ -146,6 +148,7 @@ class OrderLogic extends BaseLogic{
             $goods['goods_config_id'] = $goodsRow['goods_config_id'];//商品配置id
             
             $goods['ctime']           = $ctime;
+            // ee($goods);
             $goods_id = Db::name("order_goods")->insertGetId($goods);
 
             //用户表相关信息记录-总消费金额变动

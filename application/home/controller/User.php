@@ -139,6 +139,30 @@ class User extends Base{
         }
         $this->ajaxReturn($res);
     }
+
+
+    //获取会员级别,根据注册token确认,也就是注册参数u
+    public function getUserLevelByRegToken(){
+        $res = 0;//默认不设置会员级别
+        $u = I('u');//获取注册token
+        $reg_token = tpCache('reg_token');
+        if (empty($reg_token)) {
+            return $res;
+        }
+
+        if (!in_array($u, $reg_token)) {
+            return $res;
+        }
+
+        //到这里会员注册token已经找到了
+        $reg_token_arr = array_flip($reg_token);
+        //获取用户token对应的会员级别
+        $user_level_id = $reg_token_arr[$u];
+        $res = $user_level_id;
+        return $res;
+    }
+
+
     /**
      *  注册
      */
@@ -146,9 +170,15 @@ class User extends Base{
         if($this->user_id > 0){
             $this->redirect('Home/User/index');
         }
+
         $reg_sms_enable = tpCache('sms.regis_sms_enable');
         $reg_smtp_enable = tpCache('smtp.regis_smtp_enable');
+
+
         if(IS_POST){
+            //根据用户token获取用户级别
+            $userLevelId = $this->getUserLevelByRegToken();
+
             $logic = new UsersLogic();
             //验证码检验
 //            $this->verifyHandle('user_reg');
@@ -188,7 +218,7 @@ class User extends Base{
             if(!empty($invite)){
                 $invite = get_user_info($invite,2);//根据手机号查找邀请人
             }
-            $data = $logic->reg($username,$password,$password2,0,$invite);
+            $data = $logic->reg($username,$password,$password2,0,$invite, '', '', $userLevelId);
             if($data['status'] != 1){
                 $this->ajaxReturn($data);
             }

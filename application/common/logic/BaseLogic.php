@@ -32,9 +32,10 @@ class BaseLogic {
      * 获取商品会员价
      * @param int $goods_id 商品id
      * @param int $user_id 用户id
+     * @param array $goodsRow 商品数据行
      * @return number
      */
-    public function getGoodsUserPrice($goods_id=0, $user_id=0){
+    public function getGoodsUserPrice($goods_id=0, $user_id=0, $goodsRow=[]){
         $res = 0;
         if (empty($goods_id)) {
             return $res;
@@ -42,6 +43,19 @@ class BaseLogic {
         if (empty($user_id)) {
             return $res;
         }
+
+        //获取会员价(注意:普通的会员level=1这里就直接跳过，因为普通会员直接拿sale_price即可)-会被下面优先级覆盖
+        $where = ['user_id'=>$user_id];
+        $user = db('v_user')->where($where)->find();
+        if (!empty($user) && $user['level'] > 1 && !empty($user['sale_price_field'])) {
+            $sale_price_field = $user['sale_price_field'];
+            if (!empty($goodsRow) && !empty($goodsRow[$sale_price_field])) {
+                $res = $goodsRow[$sale_price_field];
+            }
+        }
+
+
+        //显示定制价格-优先级最高
         $where = ['goods_id'=>$goods_id, 'user_id'=>$user_id];
         $goodsUserRow = db('goods_user')->where($where)->find();
         if (!empty($goodsUserRow) && $goodsUserRow['sale_price'] > 0) {
@@ -53,6 +67,8 @@ class BaseLogic {
     
     /**
      * 计算订单总销售价
+     * 会员价逻辑:会员users表中的level对应user_level的id，而user_level有个字段sale_price_field，这个正好是goods表中设置的售价
+     * 换句话说:会员价直接与会员的level级别有关系
      * @param int $num 购买数量
      * @param int $goods_id 商品id
      * @param int $user_id 用户id
@@ -68,7 +84,7 @@ class BaseLogic {
         }
 
         //查找商品销售价
-        $goodsRow = db('goods')->field('goods_id, sale_price, min_num')->where('goods_id', $goods_id)->find();
+        $goodsRow = db('goods')->field('goods_id, sale_price, user_price, min_num')->where('goods_id', $goods_id)->find();
         if (empty($goodsRow)) {
             return $res;
         }
@@ -86,7 +102,7 @@ class BaseLogic {
         }
         //如果设置了会员价
         if ($user_id) {
-            $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id);
+            $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id, $goodsRow);
             if ($goodsUserPrice) {
                 $this->final_price = $price = $goodsUserPrice;//修改最终成交价格为会员价
             }
@@ -212,9 +228,13 @@ class BaseLogic {
     public function getGoodsRow($goods_id=0, $user_id=0){
         $where = ['is_show'=>1, 'goods_id'=>$goods_id];
         $res = db('goods')->where($where)->find();
+        if (!$res) {
+            return $res;
+        }
 
         //是否有会员价?
-        $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id);
+        $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id, $res);
+        // ee($goodsUserPrice);
         if ($goodsUserPrice) {
             $res['sale_price'] = $goodsUserPrice;
         }

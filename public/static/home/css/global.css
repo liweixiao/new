@@ -574,5 +574,9 @@ em{font-style: normal;}
     cursor: pointer;
 }
 
-
+.vip_user{
+    color: #fff;
+    font-size: 25px;
+    vertical-align: middle;
+}
 

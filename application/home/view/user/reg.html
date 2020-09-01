@@ -1,10 +1,11 @@
 <form id="reg_form2"  method="post" action="">
     <input type="hidden" name="auth_code" value="{$Think.config.AUTH_CODE}"/>
+    <input type="hidden" name="u" value="{$Think.get.u}"/>
     <input type="hidden" name="scene" value="1">    
     <div class="ui_tab_content">
         <div class="reg-tips">
             <span>已有平台账号？</span>
-            <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="go.login()">
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" onclick="go.login({u:'{$Think.get.u}'})">
             马上登录
             </button>
         </div>

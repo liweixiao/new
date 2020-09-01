@@ -100,7 +100,7 @@ class UsersLogic extends BaseLogic
      * @param string $head_pic
      * @return array
      */
-    public function reg($username,$password,$password2,$push_id = 0,$invite=array(),$nickname="",$head_pic=""){
+    public function reg($username,$password,$password2,$push_id = 0,$invite=array(),$nickname="",$head_pic="", $levelId=0){
         $is_validated = 0 ;
         if(check_email($username)){
             $is_validated = 1;
@@ -155,6 +155,12 @@ class UsersLogic extends BaseLogic
         $map['last_login'] = $ctime;
         $user_level =Db::name('user_level')->where('amount = 0')->find(); //折扣
         $map['discount'] = !empty($user_level) ? $user_level['discount']/100 : 1;  //新注册的会员都不打折
+
+        //是否设置会员级别
+        if (!empty($levelId)) {
+            $map['level'] = $levelId;
+        }
+
         $user_id = Db::name('users')->insertGetId($map);
         user_login($user_id); // 注册时也增加一次登录
         if($switch==1 && $distribut_condition == 0 && file_exists(APP_PATH.'common/logic/DistributLogic.php')){

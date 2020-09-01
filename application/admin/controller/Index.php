@@ -62,7 +62,7 @@ class Index extends Common {
         if (!empty($stime)) {
             $timeRangeArr = explode('-', $stime);
             $month_start_time = date('Y-m-d H:i:s', strtotime(trim($timeRangeArr[0])));//开始时间
-            $month_end_time = date('Y-m-d 59:59:59', strtotime(trim($timeRangeArr[1])));//结束时间
+            $month_end_time = date('Y-m-d 23:59:59', strtotime(trim($timeRangeArr[1])));//结束时间
         }
 
         $where = [];

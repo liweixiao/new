@@ -415,6 +415,10 @@ class OrderLogic extends BaseLogic{
         //这里开始区分供应商
         switch ($supplier['code']) {
             case '10000':
+
+                //定义本平台当前订单状态值
+                $orderStateArr = ['ok'=>'ok', '暂停中'=>'pause','处理中'=>'doing','refund'=>'refund'];//api状态=>本站状态
+
                 //获取标签
                 $tags = $this->getAllTags('run_first');
 
@@ -430,6 +434,9 @@ class OrderLogic extends BaseLogic{
 
                 //注意:这个平台没有批量接口，只能逐个刷洗
                 foreach ($rows as $key => $row) {
+                    //更新任务状态-值
+                    $rows[$key]['task_status_value'] = '';
+
                     //更新任务速度模式
                     $rows[$key]['run_first_name'] = $tags['run_first'][$row['first']] ?? '';
 
@@ -440,16 +447,28 @@ class OrderLogic extends BaseLogic{
                         $msg = $res_api['msg'] ?? "抱歉，创建任务出现异常，请联系管理员";
                         continue;//失败的时候这里继续下一个
                     }
-                    //更新任务状态
+                    //更新任务状态-名称
                     $rows[$key]['task_status_name'] = $res_api['msg'] ?? '';
+
+                    //更新任务状态-值
+                    $apiStatus = $res_api['msg'] ?? '';
+                    if (isset($orderStateArr[$apiStatus])) {
+                        $rows[$key]['task_status_value'] = $orderStateArr[$apiStatus];
+                    }elseif (preg_match('/\d+\/\d+/', $apiStatus)) {
+                        $rows[$key]['task_status_value'] = $orderStateArr['处理中'];
+                    }
                 }
                 break;
 
             //精品网络-已起用
             case '20000':
+                //定义本平台当前订单状态值
+                $orderStateArr = ['4'=>'ok', '3'=>'pause','2'=>'doing','5'=>'refund'];//api状态=>本站状态
                 //先更新任务速度模式-防止前面无数据任务模式未更新
                 foreach ($rows as $k => $value) {
                     $rows[$k]['run_first_name'] = "{$value['first']}个/分钟";
+                    //更新任务状态-值
+                    $rows[$key]['task_status_value'] = '';
 
                     //更新开始时间
                     $rows[$k]['stime'] = $value['ctime'];
@@ -491,6 +510,12 @@ class OrderLogic extends BaseLogic{
                         $task_status_name = "ok";//处理完了,默认显示ok
                     }
                     $rows[$key]['task_status_name'] = $task_status_name;
+
+                    //更新任务状态-值
+                    $apiStatus = $outOrderList[$row['out_id']]['stage'] ?? '';
+                    if (isset($orderStateArr[$apiStatus])) {
+                        $rows[$key]['task_status_value'] = $orderStateArr[$apiStatus];
+                    }
                 }
                 // ee($rows);
                 break;
@@ -608,14 +633,6 @@ class OrderLogic extends BaseLogic{
             $res = ['error'=>1, 'msg'=>'操作失败，操作类型参数缺失!'];
             return $res;
         }
-        $type = $params['type'];
-
-        //类型强制检测
-        if (!in_array($type, ['pause','continue','refund'])) {
-            $res = ['error'=>1, 'msg'=>'操作失败，操作类型非法!'];
-            return $res;
-        }
-
 
         $order_id = $params['order_id'];
         $order = M('order')->where(['order_id'=>$order_id])->find();
@@ -631,25 +648,111 @@ class OrderLogic extends BaseLogic{
             return $res;
         }
 
+        //获取商品信息
+        $goodsRow = $this->getGoodsRow($order['goods_id']);
+        if (empty($goodsRow)) {
+            return ['error'=>1, 'msg'=>'抱歉，产品不存在，请联系管理员'];
+        }
+
         //获取商品配置
-        $goodsCfg = M('goods_config')->where(['goods_id'=>$order['goods_id']])->find();
+        $goodsCfg = M('goods_config')->where(['goods_config_id'=>$goodsRow['goods_config_id']])->find();
         if (empty($goodsCfg)) {
             $res = ['error'=>1, 'msg'=>'抱歉，系统异常，请您联系管理员'];
             return $res;
         }
 
-        // ee($row);
-        $url = $goodsCfg['url_set_order'];
-        $apikey = $supplier['apikey'];
-        $params = ['apikey'=>$apikey, 'renwuid'=>$order['out_id'], 'type'=>$type];
-        $result = apiget($url, $params);
-        // ee($result);
-
-        if (empty($result) || $result['ret'] != 1) {
-            $res = ['error'=>1, 'msg'=>$result['msg']];
-            return $res;
+        //开始设置
+        $setRes = $this->setOrderBySupplier($supplier, $goodsCfg, $order, $params);
+        if ($setRes['error']) {
+            return ['error'=>1, 'msg'=>$setRes['msg']];
         }
+
         return $res;
+    }
+
+    /**
+     * 设置订单(暂停|继续|退款)
+     * @return array $res 结果
+     */
+    public function setOrderBySupplier($supplier, $goodsCfg=[], $order=[], $params=[]){
+        $res = ['error'=>0, 'msg'=>'获取成功！'];
+        $order_id = $order['out_id'];
+        $supplierCode = $supplier['code'];
+        if (empty($supplierCode)) {
+            return ['error'=>1, 'msg'=>'抱歉，暂未配置操作码，暂无法使用，请联系管理员'];
+        }
+
+        //检测apikey配置
+        if (empty($supplier['apikey'])) {
+            return ['error'=>1, 'msg'=>'抱歉，产品key配置有误，暂无法使用，请联系管理员'];
+        }
+
+        //检测商品配置-是否设置了设置订单配置项目
+        if (empty($goodsCfg['url_set_order'])) {
+            return ['error'=>1, 'msg'=>'抱歉，产品配置未完善，暂无法使用，请联系管理员'];
+        }
+
+        //设置类型与api对应关系
+        $setTypeRelate = [
+            '10000' => ['pause'=>'pause','continue'=>'continue','refund'=>'refund'],
+            '20000' => ['pause'=>'pauseTask','continue'=>'resumeTask','refund'=>'refundTask'],
+        ];
+
+        if (!isset($setTypeRelate[$supplierCode])) {
+            return ['error'=>1, 'msg'=>'抱歉，配置码有误，无法操作，请联系管理员'];
+        }
+
+
+        //设置类型
+        $setTypeArr = $setTypeRelate[$supplierCode];//可能返回$setTypeRelate['10000']
+
+        //设置类型强制检测
+        if (!isset($setTypeArr[$params['type']])) {
+            return ['error'=>1, 'msg'=>'操作失败，设置操作类型非法!'];
+        }
+
+        //到这里就是api合法的设置类型了,可以直接把值传递到api
+        $type = $setTypeArr[$params['type']];
+
+        switch ($supplierCode) {
+            case '10000':
+                $url = $goodsCfg['url_set_order'];
+                $apikey = $supplier['apikey'];
+                $params = ['apikey'=>$apikey, 'renwuid'=>$order_id, 'type'=>$type];
+                // ee($params);
+                $result = apiget($url, $params);
+                // ee($result);
+
+                if (empty($result) || $result['ret'] != 1) {
+                    return ['error'=>1, 'msg'=>$result['msg']];
+                }
+                break;
+            
+            case '20000':
+                $apikey = $supplier['apikey'];
+                $url_api = $goodsCfg['url_set_order'] . "/?action={$type}&token={$apikey}";
+                $params = ['order_id'=>$order_id];
+
+                $res_api = apiget($url_api, $params);
+                // ee($res_api);
+
+                //添加api日志
+                $this->add_out_api_log(['order_id'=>$order_id, 'desc'=>ecodejson($res_api)]);
+
+                //异常情况
+                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
+                    $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
+                    return ['error'=>1, 'msg'=>$msg];
+                }
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return $res;
+
     }
 
 

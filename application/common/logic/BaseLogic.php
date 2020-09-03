@@ -246,7 +246,8 @@ class BaseLogic {
         if (empty($cat_ids)) {
             $cat_ids = 1;
         }
-
+        $where=[];
+        $where['is_show'] = 1;
         $where['cat_id'] = ['IN', $cat_ids];
         $res = db('goods')->where($where)->select();
         return $res;

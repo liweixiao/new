@@ -42,7 +42,7 @@
                   <div class="layui-form-item">
                     <label class="layui-form-label">任务量</label>
                     <div class="layui-input-block">
-                      <input type="text" name="task_num" id="task_num" value="{$row.min_num}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+                      <input type="text" name="task_num" id="task_num" value="{$row.min_num|fnum=0,0}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
                       <span class="note">{$row.desc_task}</span>
                     </div>
                   </div>

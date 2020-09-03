@@ -50,7 +50,7 @@
                               <div class="layui-form-item">
                                 <label class="layui-form-label">任务量</label>
                                 <div class="layui-input-block">
-                                  <input type="text" name="task_num" id="task_num" value="{$row.min_num*$row.unit}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)" sale_price="{$row.sale_price}" min_num="{$row.min_num}">
+                                  <input type="text" name="task_num" id="task_num" value="{$row.min_num*$row.unit|fnum=0,0}" placeholder="请输入播放任务量" autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)" sale_price="{$row.sale_price}" min_num="{$row.min_num}">
                                   <span class="note">{$row.desc_task}，最低下单量为{$row.min_num|fnum=false,0}个</span>
                                 </div>
                               </div>

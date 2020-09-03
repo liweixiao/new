@@ -20,6 +20,7 @@ class Index extends Common {
         $ctime = time();
         vendor('my.Datept');
         $datept = new \Datept();
+        $OrderLogic = new OrderLogic();
 
         /*-----------今日统计---------*/
         $today_start_time = $datept->beginToday();//当天开始-时间
@@ -92,16 +93,23 @@ class Index extends Common {
         $data['cmonth_user_login'] = db('users')->where($where)->count();
         /*-----------本月统计END---------*/
 
-
-
-
         /*上架商品统计*/
         $data['total_show_goods'] = db('goods')->where(['is_show'=>1])->count();
 
 
         /*供应商统计*/
-        $data['total_suppliers'] = db('suppliers')->where(['is_show'=>1])->count();
+        $suppliersList = db('suppliers')->where(['is_show'=>1])->select();
+        $data['total_suppliers'] = count($suppliersList);
+        //API余额统计
+        foreach ($suppliersList as $key=>$supplier) {
+            $suppliersList[$key]['money'] = $OrderLogic->getApiMoneyBySupplier($supplier['supplier_id']);
+        }
+        $data['suppliersList'] = $suppliersList;
 
+        //异常订单统计-重要的订单
+        $data['importantOrdersNum'] = db('order')->whereIn('order_status', [5])->count();
+        $data['importantOrdersStatus'] = '5';
+        
         // sql();
         // ee($data);
         $this->assign('data', $data);

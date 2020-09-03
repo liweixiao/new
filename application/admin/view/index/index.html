@@ -179,7 +179,9 @@
                 <!-- 今日统计END -->
 
                 <div class="clear"></div>
-                <!-- 本月统计END -->
+
+
+                <!-- 本月统计-s -->
                 <div>
                     <h2>本月统计：</h2>
 
@@ -276,6 +278,56 @@
 
                 </div><!-- /.widget-box -->
                 <!-- 本月统计END -->
+
+
+
+                <!-- 其他统计-s -->
+                <div>
+                    <h2>其他统计：</h2>
+                </div>    
+                <div class="col-sm-19 infobox-container">
+
+                    {volist name="$data.suppliersList" id="vo"}
+                    <div class="infobox infobox-pink">
+                        <div class="infobox-icon">
+                            <span class="iconfont icon-xiaofeijilu"></span>
+                        </div>
+
+                        <div class="infobox-data">
+                            <span class="infobox-data-number">{$vo.money}</span>
+                            <div class="infobox-content">余额({$vo.supplier_name})</div>
+                        </div>
+                        <div class="stat stat-important hide">x%</div>
+                    </div>
+                    {/volist}
+
+                    <div class="infobox infobox-pink">
+                        <div class="infobox-icon">
+                            <span class="iconfont icon-cost"></span>
+                        </div>
+
+                        <div class="infobox-data">
+                            <span class="infobox-data-number">
+                                <a href="{:U('order/list', ['order_status'=>$data.importantOrdersStatus])}">
+                                {$data.importantOrdersNum}
+                                </a>
+                            </span>
+                            <div class="infobox-content">异常订单</div>
+                        </div>
+                        <div class="stat stat-important hide">x%</div>
+                    </div>
+                </div><!-- /.widget-box -->
+                <!-- 其他统计-END -->
+
+
+
+
+
+
+
+
+
+
 
 
             </div><!-- /.col -->

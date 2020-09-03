@@ -23,7 +23,8 @@ use app\common\logic\BaseLogic;
  * @package Home\Logic
  */
 class OrderLogic extends BaseLogic{
-
+    //5=api余额不足
+    public $orderStatusConfig = ['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废'];
     //创建订单(逻辑改为先在自己平台下单,成功后在第三方平台下单,若第三方失败则回滚数据)
     public function createOrder($params = []){
         $res = ['error'=>0, 'msg'=>'恭喜，提交成功！'];
@@ -108,7 +109,6 @@ class OrderLogic extends BaseLogic{
         if ($total_amount > $userInfo['user_money']) {
             return ['error'=>1, 'msg'=>'抱歉，余额不足，请充值.'];
         }
-
         
         //计算订单总成本价
         $total_cost = $this->getTotalCost($data['task_num'], $goodsRow['goods_id']);
@@ -125,6 +125,9 @@ class OrderLogic extends BaseLogic{
 
             //订单总成本价
             $data['total_cost'] = $total_cost;
+
+            //订单默认状态名
+            $data['order_status'] = 2;//默认是待处理状态
 
             //生成订单基本信息
             // ee($data);
@@ -168,8 +171,51 @@ class OrderLogic extends BaseLogic{
             //生成第三方数据
             $create_res = $this->createOrderBySupplier($supplier, $goodsCfg, $params, $cat, $goodsRow);
             if ($create_res['error']) {
-                Db::rollback();// 回滚事务
-                return ['error'=>1, 'msg'=>$create_res['msg']];
+                //注意这里分为两种情况:1.api报错,2.平台报错-非法，如果是2则直接回滚数据
+                //api返回错误情况
+                if ($create_res['error'] == 2) {
+                    ///注意这里只记录余额不足情况
+                    //检测余额是否充足
+                    $apiMoney = $this->getApiMoneyBySupplier($supplier['supplier_id']);
+                    // ee($apiMoney);
+                    if ($apiMoney < $total_amount) {
+                        //生成一条异常订单(admin_note为余额不足)
+                        $admin_note = "当前账户余额{$apiMoney}，用户下单消耗金额{$total_amount}，尽快充值";
+                        $updateOrderStatus = ['order_status'=>5, 'admin_note'=>$admin_note];
+                        $res_update = db("order")->where('order_id', $order_id)->update($updateOrderStatus);
+
+                        //在订单扩展表里面新增用户提交数据记录-post_params_api
+                        $whereExtend = ['order_id'=>$order_id];
+                        //这里有可能order_extend已经创建好了
+                        $extend_row = Db::name("order_extend")->where($whereExtend)->find();
+
+                        $extend                    = [];
+                        $extend['order_id']        = $order_id;
+                        $extend['post_params']     = $params;
+                        $extend['post_params_api'] = $create_res['post_params_api'];
+                        $extend['ctime']           = $ctime;
+                        if ($extend_row) {
+                            $res_extend = Db::name("order_extend")->where($whereExtend)->update($extend);
+                        }else{
+                            $res_extend = Db::name("order_extend")->insertGetId($extend);
+                        }
+
+                        if (!$res_extend) {
+                            Db::rollback();// 回滚事务
+                            return ['error'=>1, 'msg'=>'抱歉，更新订单状态时候出错，请联系管理员'];
+                        }
+
+                        // 提交事务
+                        Db::commit();
+                        return $res;
+                    }
+                }else{
+                    //平台异常
+                    Db::rollback();// 回滚事务
+                    return ['error'=>1, 'msg'=>$create_res['msg']];
+                }
+
+
             }
 
             //调试数据
@@ -178,7 +224,7 @@ class OrderLogic extends BaseLogic{
             // $res_api = ['error'=>0, 'msg'=>'获取成功！', 'api_res'=>$out_api_res, 'data'=>['out_id'=>3867650]];//supplier_id=2
 
             //更新out_id
-            $updateOrder = ['out_id'=>$create_res['data']['out_id']];
+            $updateOrder = ['out_id'=>$create_res['data']['out_id'], 'order_status'=>3];
             $res_update = db("order")->where('order_id', $order_id)->update($updateOrder);
             // sql();
             if (!$res_update) {
@@ -197,11 +243,66 @@ class OrderLogic extends BaseLogic{
     }
 
     /**
+     * 获取api余额
+     * @return array $res 结果
+     */
+    public function getApiMoneyBySupplier($supplier_id=0){
+        $res = 0;
+        if (empty($supplier_id)) {
+            return $res;
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($supplier_id);
+        if (empty($supplier)) {
+            return $res;
+        }
+
+        switch ($supplier['code']) {
+            case '10000':
+                $url_api = $supplier['url'] . $supplier['url_money'];
+                $apikey = $supplier['apikey'];
+                $params = ['apikey'=>$apikey, 'renwuid'=>100, 'type'=>'balance'];//提交参数
+                $res_api = apiget($url_api, $params);
+                //异常情况
+                if (empty($res_api) || empty($res_api['ret']) || $res_api['ret'] != 1) {
+                    return $res;
+                }
+                if (isset($res_api['msg'])) {
+                    $res = $res_api['msg'];
+                }
+                break;
+
+            case '20000':
+                $apikey = $supplier['apikey'];
+                $url_api = $supplier['url'] . $supplier['url_money'] . $apikey;
+                $res_api = apiget($url_api);
+                //异常情况
+                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
+                    return $res;
+                }
+
+                if (isset($res_api['balance'])) {
+                    $res = floatval($res_api['balance']);
+                    $res = $res/100;//这里他这里单位是分
+                }
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $res = floatval($res);
+        return $res;
+    }
+
+    /**
      * 创建订单(根据供应商不同而不同)
      * @return array $res 结果
      */
     public function createOrderBySupplier($supplier, $goodsCfg=[], $params=[], $cat=[], $goodsRow=[]){
-        $res = ['error'=>0, 'msg'=>'获取成功！', 'data'=>[], 'res_api'=>[]];
+        $res = ['error'=>0, 'msg'=>'获取成功！', 'data'=>[], 'res_api'=>[], 'post_params_api'=>''];
         if (empty($supplier)) {
             return ['error'=>1, 'msg'=>'抱歉，配置有误，无法获取数据，请联系管理员'];
         }
@@ -218,7 +319,7 @@ class OrderLogic extends BaseLogic{
                 //异常情况
                 if (empty($res_api) || empty($res_api['ret']) || $res_api['ret'] != 1) {
                     $msg = $res_api['msg'] ?? "抱歉，创建任务出现异常，请联系管理员";
-                    return ['error'=>1, 'msg'=>$msg];
+                    return ['error'=>2, 'msg'=>$msg, 'post_params_api'=>json_encode($postdatas)];
                 }
 
                 $res['res_api'] = $res_api;
@@ -296,7 +397,7 @@ class OrderLogic extends BaseLogic{
                 //异常情况
                 if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
                     $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
-                    return ['error'=>1, 'msg'=>$msg];
+                    return ['error'=>2, 'msg'=>$msg, 'post_params_api'=>json_encode($postdatas)];
                 }
                 $res['res_api'] = $res_api;
                 $res['data']['out_id'] = $res_api[$return_id_field];//注意这里创建订单成功后，加粉8(taskId)和转评返回的任务(id)字段名是不一样的
@@ -306,6 +407,133 @@ class OrderLogic extends BaseLogic{
                 break;
         }
 
+        return $res;
+    }
+
+
+
+    /**
+     * 创建订单(根据用户已经提交过的参数-已经生成post参数了即order_extend字段post_params_api值)
+     * @return array $res 结果
+     */
+    public function createOrderByParams($order_id=0){
+        $res = ['error'=>0, 'msg'=>'获取成功！'];
+        if (empty($order_id)) {
+            return ['error'=>1, 'msg'=>'抱歉，订单id不能为空'];
+        }
+        $ctime = date('Y-m-d H:i:s');
+
+        $where['order_id'] = $order_id;
+        $order = db('order')->where($where)->find();
+        if (empty($order)) {
+            return ['error'=>1, 'msg'=>'抱歉，订单不存在'];
+        }
+
+        //检测订单状态是否符合下单
+        $order_status_name = $this->orderStatusConfig[$order['order_status']] ?? '';
+        if ($order['order_status'] != 5) {
+            return ['error'=>1, 'msg'=>"抱歉，当前订单状态不允许操作,状态为【{$order_status_name}】"];
+        }
+
+        //订单扩展
+        $order_extend = db('order_extend')->where($where)->find();
+        if (empty($order_extend)) {
+            return ['error'=>1, 'msg'=>'抱歉，订单扩展数据不存在,无法完成操作'];
+        }
+        //用户提交api参数
+        $post_params_api = $order_extend['post_params_api'];
+        $post_params_api = json_decode($post_params_api);
+
+        //获取商品信息
+        $goodsRow = $this->getGoodsRow($order['goods_id']);
+        if (empty($goodsRow)) {
+            return ['error'=>1, 'msg'=>'抱歉，产品不存在，请联系管理员'];
+        }
+
+        //获取商品配置(第三方配置)
+        $goodsCfg = db('goods_config')->where(['goods_config_id'=>$goodsRow['goods_config_id']])->find();
+        if (empty($goodsCfg)) {
+            return ['error'=>1, 'msg'=>'抱歉，商品配置暂时有误，请您联系管理员'];
+        }
+        //检测配置-创建订单地址是否配置
+        if (empty($goodsCfg['url_create_order'])) {
+            return ['error'=>1, 'msg'=>'抱歉，商品配置异常，请您联系管理员!'];
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($goodsRow['supplier_id']);
+        if (empty($supplier)) {
+            return ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员！'];
+        }
+
+        $postdatas = [];
+        $out_id = 0;//api订单id
+        $cat_id = $goodsRow['cat_id'] ?? 0;
+        switch ($supplier['code']) {
+            case '10000':
+                $url_api = $goodsCfg['url_create_order'];
+                $apikey = $supplier['apikey'];
+                $res_api = apiget($url_api, $post_params_api);
+
+                //异常情况
+                if (empty($res_api) || empty($res_api['ret']) || $res_api['ret'] != 1) {
+                    $msg = $res_api['msg'] ?? "抱歉，创建任务出现异常，请联系管理员";
+                    return ['error'=>2, 'msg'=>$msg];
+                }
+
+                if (empty($res_api['id'])) {
+                    return ['error'=>1, 'msg'=>'抱歉，api订单id获取失败.，请联系管理员'];
+                }
+
+                $out_id = $res_api['id'];
+                break;
+            
+            case '20000':
+                $url_api = $goodsCfg['url_create_order'];
+
+                //这里提交参数根据二级分类有差异的
+                if (in_array($cat_id, [8])) {
+                    $return_id_field = 'taskId';//返回任务字段名字
+                }elseif (in_array($cat_id, [9])) {
+                    $return_id_field = 'id';//返回任务字段名字
+                }else{
+                    //不在分类直接异常
+                    return ['error'=>1, 'msg'=>'抱歉，商品分类配置有误，暂时无法创建订单，请联系管理员增加配置'];
+                }
+
+                // $postdatas = json_encode($postdatas);//注意这里不用解析成json否则报错
+                $res_api = apiget($url_api, $post_params_api);
+                // ee($res_api);
+
+                //异常情况
+                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
+                    $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
+                    return ['error'=>2, 'msg'=>$msg];
+                }
+
+                if (empty($res_api[$return_id_field])) {
+                    return ['error'=>1, 'msg'=>'抱歉，api订单id获取失败！，请联系管理员'];
+                }
+
+                $out_id = $res_api[$return_id_field];
+                break;
+            default:
+                return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单，请联系管理员'];
+                break;
+        }
+
+        if (empty($out_id)) {
+            return ['error'=>1, 'msg'=>'抱歉，api订单id未获取到，无法创建订单！，请联系管理员'];
+        }
+
+        //到这里基本上订单id已经有了
+        //更新out_id
+        $updateOrder = ['out_id'=>$out_id, 'order_status'=>3];
+        $res_update = db("order")->where('order_id', $order_id)->update($updateOrder);
+        // sql();
+        if (!$res_update) {
+            return ['error'=>1, 'msg'=>'抱歉，更新订单数据失败!，请联系管理员。'];
+        }
         return $res;
     }
 
@@ -364,8 +592,6 @@ class OrderLogic extends BaseLogic{
         $this->page = $page;
         $this->listTotal = $count;
         foreach ($res as $key => $row) {
-            $res[$key]['task_status_name'] = '更新中';//默认任务状态
-
             //获取订单产品
             $res[$key]['goods'] = M('order_goods')->where(['order_id'=>$row['order_id']])->select();
         }
@@ -417,7 +643,8 @@ class OrderLogic extends BaseLogic{
             case '10000':
 
                 //定义本平台当前订单状态值
-                $orderStateArr = ['ok'=>'ok', '暂停中'=>'pause','处理中'=>'doing','refund'=>'refund'];//api状态=>本站状态
+                //['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款'];//5=api余额不足
+                $orderStateArr = ['ok'=>'1', '暂停中'=>'4','处理中'=>'3','refund'=>'6'];//api状态=>本站状态
 
                 //获取标签
                 $tags = $this->getAllTags('run_first');
@@ -425,6 +652,7 @@ class OrderLogic extends BaseLogic{
                 //先更新任务速度模式-防止前面无数据任务模式未更新
                 foreach ($rows as $k => $value) {
                     $rows[$k]['run_first_name'] = "{$value['first']}个/分钟";
+                    $rows[$k]['order_status_name'] = $this->orderStatusConfig[$value['order_status']] ?? '';
                 }
 
 
@@ -434,6 +662,11 @@ class OrderLogic extends BaseLogic{
 
                 //注意:这个平台没有批量接口，只能逐个刷洗
                 foreach ($rows as $key => $row) {
+                    //不更新情况
+                    if ($row['out_id'] == 0) {
+                        continue;
+                    }
+
                     //更新任务状态-值
                     $rows[$key]['task_status_value'] = '';
 
@@ -448,7 +681,9 @@ class OrderLogic extends BaseLogic{
                         continue;//失败的时候这里继续下一个
                     }
                     //更新任务状态-名称
-                    $rows[$key]['task_status_name'] = $res_api['msg'] ?? '';
+                    if (isset($res_api['msg'])) {
+                        $rows[$key]['order_status_name'] = $res_api['msg'] ?? '';
+                    }
 
                     //更新任务状态-值
                     $apiStatus = $res_api['msg'] ?? '';
@@ -463,12 +698,16 @@ class OrderLogic extends BaseLogic{
             //精品网络-已起用
             case '20000':
                 //定义本平台当前订单状态值
-                $orderStateArr = ['4'=>'ok', '3'=>'pause','2'=>'doing','5'=>'refund'];//api状态=>本站状态
+                //['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款'];//5=api余额不足
+                $orderStateArr = ['4'=>'1', '3'=>'4','2'=>'3','5'=>'6'];//api状态=>本站状态
                 //先更新任务速度模式-防止前面无数据任务模式未更新
                 foreach ($rows as $k => $value) {
                     $rows[$k]['run_first_name'] = "{$value['first']}个/分钟";
                     //更新任务状态-值
                     $rows[$key]['task_status_value'] = '';
+
+                    //订单状态名称
+                    $rows[$k]['order_status_name'] = $this->orderStatusConfig[$value['order_status']] ?? '';
 
                     //更新开始时间
                     $rows[$k]['stime'] = $value['ctime'];
@@ -497,6 +736,11 @@ class OrderLogic extends BaseLogic{
 
                 //开始遍历刷洗
                 foreach ($rows as $key => $row) {
+                    //如果api订单不存在,则不更新平台订单状态
+                    if ($row['out_id'] == 0 ||empty($outOrderList[$row['out_id']])) {
+                        continue;
+                    }
+
                     //更新任务状态
                     $done_num = $outOrderList[$row['out_id']]['done_num'] ?? null;//执行量
                     $task_num = $outOrderList[$row['out_id']]['task_num'] ?? null;//任务量
@@ -505,11 +749,11 @@ class OrderLogic extends BaseLogic{
                         continue;
                     }
 
-                    $task_status_name = "{$done_num}/{$task_num}";
-                    if ($done_num >0 && $done_num == $task_num) {
-                        $task_status_name = "ok";//处理完了,默认显示ok
+                    $order_status_name = "{$done_num}/{$task_num}";
+                    if ($done_num > 0 && $done_num == $task_num) {
+                        $order_status_name = "ok";//处理完了,默认显示ok
                     }
-                    $rows[$key]['task_status_name'] = $task_status_name;
+                    $rows[$key]['order_status_name'] = $order_status_name;
 
                     //更新任务状态-值
                     $apiStatus = $outOrderList[$row['out_id']]['stage'] ?? '';
@@ -553,11 +797,11 @@ class OrderLogic extends BaseLogic{
                     $done_num = $outOrder['done_num'];//执行量
                     $task_num = $outOrder['task_num'];//任务量
                     if (isset($done_num) && isset($task_num)) {
-                        $task_status_name = "{$done_num}/{$task_num}";
+                        $order_status_name = "{$done_num}/{$task_num}";
                         if ($done_num >0 && $done_num == $task_num) {
-                            $task_status_name = "ok";//处理完了,默认显示ok
+                            $order_status_name = "ok";//处理完了,默认显示ok
                         }
-                        $rows[$key]['task_status_name'] = $task_status_name;
+                        $rows[$key]['order_status_name'] = $order_status_name;
                     }
 
                 }
@@ -571,46 +815,6 @@ class OrderLogic extends BaseLogic{
         return $res;
     }
 
-
-
-    /**
-     * 第三方刷洗数据-弃用
-     * @return array $res 结果
-     */
-    public function getOutOrderData_old($row=[], $goodsCfg=[]){
-        $res = ['error'=>0, 'msg'=>'操作成功', 'data'=>$row];
-        return $res;
-
-        if (empty($row)) {
-            return $res;
-        }
-        //获取供应商
-        $supplier = $this->getSupplier($row['supplier_id']);
-        if (empty($supplier)) {
-            $res = ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员！!'];
-            return $res;
-        }
-
-        //获取商品配置
-        if (empty($goodsCfg)) {
-            $res = ['error'=>1, 'msg'=>'抱歉，商品未配置，请您联系管理员'];
-            return $res;
-        }
-
-        // ee($row);
-        $url = $goodsCfg['url_get_order_row'];
-        $apikey = $supplier['apikey'];
-        $params = ['apikey'=>$apikey, 'renwuid'=>$row['out_id'], 'type'=>'query'];
-        $res_api = apiget($url, $params);
-
-        // ee($res_api);
-        if (empty($res_api) || $res_api['ret'] != 1) {
-            $res_api = ['error'=>1, 'msg'=>'抱歉，系统出现异常，请联系管理员'];
-            return $res_api;
-        }
-        $res['data']['task_status_name'] = $res_api['msg'] ?? '';
-        return $res;
-    }
 
     /**
      * 第三方设置订单

@@ -253,6 +253,37 @@ go.resetPassword = function(user_id){
 
 }
 
+//重新下单
+go.reCreateOrder = function(order_id){
+    layer.confirm('确认要重新下单吗？', {
+        btn: ['确定', '取消'] //按钮
+    }, function () {
+        var layerindex = layer.load(1);//加载层
+        $.ajax({
+            type: 'POST',
+            url: "/Admin/order/reCreateOrder",
+            data: {order_id:order_id},
+            dataType: 'json',
+            success: function(result){
+                layer.closeAll();
+                if (result.error == 1) {
+                    go.errorTips(result.msg);
+                } else {
+                    go.successTips(result.msg);
+                    setTimeout(function(){location.reload()}, 1000);
+                }
+            },
+            error: function(){
+                layer.closeAll();
+                layer.alert("服务器繁忙, 请联系管理员!");
+            }
+        });
+    }, function () {
+        layer.closeAll();
+    });
+
+}
+
 //切换用户
 go.search_user_change = function (dom){
     $(dom).parents('.selectUser').find('#user_name').val($(dom).find("option:selected").attr('nickname'));

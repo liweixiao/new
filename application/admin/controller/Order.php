@@ -98,7 +98,7 @@ class Order extends Common {
         $rows = $rows['data'];//取数据
 
         foreach ($rows as $key => $row) {
-            $rows[$key]['task_status_name'] = '更新中';
+            $rows[$key]['order_status_name'] = $this->OrderLogic->orderStatusConfig[$row['order_status']] ?? '';
             //获取订单产品
             $goods = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
             $rows[$key]['goods'] = db('order_goods')->where(['order_id'=>$row['order_id']])->select();
@@ -119,6 +119,23 @@ class Order extends Common {
         $this->assign('data', $data);
         $this->assign('rows', $rows);
         return $this->fetch();
+    }
+
+
+    /*
+     * 重置会员密码
+     */
+    public function reCreateOrder(){
+        //检查是否第三方登录用户
+        $order_id = input('order_id');
+        $OrderLogic = new OrderLogic();
+        $res = $OrderLogic->createOrderByParams($order_id);
+        
+        if ($res['error']) {
+            $this->ajaxReturn(['error'=>1, 'msg'=>$res['msg']]);
+        }
+        $this->ajaxReturn($res);
+
     }
 
 }

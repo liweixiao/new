@@ -647,3 +647,11 @@ em{font-style: normal;}
     text-align: center;
     cursor: pointer;
 }
+.do-opt{
+    cursor: pointer;
+    color: #47b3e3;
+}
+.c-danger {
+    color: #c9302c;
+    -color: #c9302c;
+}

@@ -60,6 +60,7 @@
                                 <th>商品名称</th>
                                 <th>任务模式</th>
                                 <th>目标</th>
+                                <th class="w100">后台备注</th>
                                 <th>实时状态</th>
                                 <th>任务数量</th>
 
@@ -86,11 +87,21 @@
                                 <td>{$vo.goods.0.goods_name|default=''}</td>
                                 <td>{$tags.run_first[$vo.first]|default=''}</td>
                                 <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
-                                <td>{$vo.task_status_name}</td>
+                                <td>{$vo.admin_note}</td>
+                                <td>
+                                    {if condition='$vo.order_status eq 5'}
+                                    <span class="c-danger">{$vo.order_status_name}</span> 
+                                    {else/}
+                                    {$vo.order_status_name}
+                                    {/if}
+                                </td>
                                 <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
                                 <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
                                 <td>
                                     <div class="btn-group">
+                                        {if condition='$vo.order_status eq 5'}
+                                            <span onclick="go.reCreateOrder('{$vo.order_id}')" class="btn btn-sm btn-info">重新下单</span> 
+                                        {/if}
 
                                         <a href='{:url("info","id=$vo[id]")}'> 
                                            <span class="btn btn-xs btn-info">

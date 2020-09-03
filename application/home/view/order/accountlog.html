@@ -37,15 +37,15 @@
               <tr>
                 <td>{$vo.order_sn}</td>
                 <td>{$vo.goods.0.goods_name|default=''}</td>
-                <td>{$vo.task_status_name}</td>
+                <td>{$vo.order_status_name}</td>
                 <td>{$vo.stime}</td>
                 <td>{$vo.task_num}</td>
                 <td>{$vo.total_amount}</td>
                 <td>
-                    {if condition="!empty($vo.task_status_name) and $vo.task_status_name neq 'ok'"}
-                        {if condition="$vo.task_status_name eq '暂停中'"}
+                    {if condition="!empty($vo.order_status_name) and $vo.order_status_name neq 'ok'"}
+                        {if condition="$vo.order_status_name eq '暂停中'"}
                         <span class="opt-set" order_id="{$vo.order_id}" type="continue" onclick="go.setOrder(this)">继续</span>
-                        {elseif condition="preg_match('/\d+\/\d+/', $vo.task_status_name) or $vo.task_status_name eq '处理中'"/}
+                        {elseif condition="preg_match('/\d+\/\d+/', $vo.order_status_name) or $vo.order_status_name eq '处理中'"/}
                         <span class="opt-set" order_id="{$vo.order_id}" type="pause" onclick="go.setOrder(this)">暂停</span>
                         {/if}
                     {/if}

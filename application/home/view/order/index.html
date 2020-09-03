@@ -61,15 +61,16 @@
                 <td>{$vo.goods.0.goods_name|default=''}</td>
                 <td>{$vo.run_first_name|default=''}</td>
                 <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
-                <td>{$vo.task_status_name}</td>
+                <td>{$vo.order_status_name}</td>
                 <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
                 <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
                 <td>{$vo.total_amount|fnum}</td>
                 <td>
-                    {if condition="!empty($vo.task_status_value) and $vo.task_status_value neq 'ok'"}
-                        {if condition="$vo.task_status_value eq 'pause'"}
+                    {//['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款']}
+                    {if condition="!empty($vo.task_status_value) and $vo.task_status_value neq '1'"}
+                        {if condition="$vo.task_status_value eq '4'"}
                         <span class="opt-set" order_id="{$vo.order_id}" type="continue" onclick="go.setOrder(this)">继续</span>
-                        {elseif condition="$vo.task_status_value eq 'doing'"/}
+                        {elseif condition="$vo.task_status_value eq '3'"/}
                         <span class="opt-set" order_id="{$vo.order_id}" type="pause" onclick="go.setOrder(this)">暂停</span>
                         {/if}
                     {/if}

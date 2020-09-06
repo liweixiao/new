@@ -4,7 +4,7 @@
     left: 5%!important;
 }
 .layui-laydate-list > li, .layui-laydate-range .layui-laydate-main {
-    display: block;
+    /*display: block;*/
 }
 
 .layui-laydate-main {

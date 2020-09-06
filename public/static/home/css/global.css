@@ -510,6 +510,12 @@ em{font-style: normal;}
     margin-top: 7px;
     margin-bottom: 11px;
 }
+.cat-box .item-content h3 .iconfont {
+    color: #009688;
+    font-size: 18px;
+    font-weight: normal;
+    margin-right: 3px;
+}
 .cat-box .item-content p{
     color: #838383;
     padding-bottom: 10px;

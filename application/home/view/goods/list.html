@@ -30,7 +30,9 @@
 
                         <a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}">
                         <div class="item-content">
-                            <h3>{$vo.goods_name}</h3>
+                            <h3>
+                                {notempty name="$vo.icon"}<span class="iconfont {$vo.icon}"></span>{/notempty}{$vo.goods_name}
+                            </h3>
                             <p>{$vo.desc}</p>
                             <span class="layui-btn layui-btn-fluid">立即购买</span>
                         </div>

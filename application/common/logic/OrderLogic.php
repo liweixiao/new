@@ -442,7 +442,7 @@ class OrderLogic extends BaseLogic{
         }
         //用户提交api参数
         $post_params_api = $order_extend['post_params_api'];
-        $post_params_api = json_decode($post_params_api);
+        $post_params_api = json_decode(htmlspecialchars_decode($post_params_api), true);
 
         //获取商品信息
         $goodsRow = $this->getGoodsRow($order['goods_id']);
@@ -502,12 +502,13 @@ class OrderLogic extends BaseLogic{
                 }
 
                 // $postdatas = json_encode($postdatas);//注意这里不用解析成json否则报错
+                // ee($post_params_api);
                 $res_api = apiget($url_api, $post_params_api);
                 // ee($res_api);
 
                 //异常情况
                 if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
-                    $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
+                    $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常(可能情况：余额不足)，请联系管理员';
                     return ['error'=>2, 'msg'=>$msg];
                 }
 

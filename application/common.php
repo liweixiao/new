@@ -2470,6 +2470,8 @@ if( ! function_exists('fnum')){
             }       
         }
 
+        //去掉小数点末尾0
+        $res = floatval($res);
         return $res;
     }
 }

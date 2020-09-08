@@ -201,6 +201,16 @@ layui.use(['form', 'layedit', 'laydate', 'slider'], function(){
    $(".appoint_content").bind("input propertychange",function(){
         var rowNum = $(this).val().split("\n").length;
         $(this).closest('.textarea-box').find('.note b').text(rowNum);
+
+        //同步修改任务量
+        var task_num = rowNum;
+        if (rowNum < 1) {
+            task_num = 1;
+        }
+        // console.log(task_num);
+        $("#task_num").val(task_num);
+        //计算价格
+        go.calcPrice();
    })
 
    //选中补粉选项-预估总价

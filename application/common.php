@@ -2460,6 +2460,9 @@ if( ! function_exists('fnum')){
             return $res;
         }
 
+        //去掉小数点末尾0
+        $res = floatval($res);
+
         //如果有小数点则处理
         if ($res != 0) {
             $res = sprintf("%.{$fixed_num}f", $res);
@@ -2470,8 +2473,6 @@ if( ! function_exists('fnum')){
             }       
         }
 
-        //去掉小数点末尾0
-        $res = floatval($res);
         return $res;
     }
 }

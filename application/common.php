@@ -2473,6 +2473,10 @@ if( ! function_exists('fnum')){
             }       
         }
 
+        //再次来一遍去除末尾小数点,这一次是针对小数
+        if (!$isSplit) {
+            $res = floatval($res);
+        }
         return $res;
     }
 }

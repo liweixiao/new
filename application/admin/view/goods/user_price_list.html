@@ -44,7 +44,7 @@
                                 <td>{$vo.goods_user_id}</td>
                                 <td>{$vo.mobile}</td>
                                 <td>
-                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods_user','goods_user_id','{$vo.goods_user_id}','sale_price',this)" size="6" value="{$vo.sale_price|fnum}" />
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods_user','goods_user_id','{$vo.goods_user_id}','sale_price',this)" size="6" value="{$vo.sale_price|fnum=0,4}" />
                                 </td>
                                 <td>
                                     <div class="btn-group">

@@ -791,10 +791,14 @@ function tpCache($config_key,$data = array()){
  * @return  bool
  */
 function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distribut_money = 0,$order_id = 0 ,$order_sn = '',$recharge = false,$withdrawn = 0){
+
+    $user = Db::name('users')->where("user_id = $user_id")->find();//消费前账户信息
+    
     /* 插入帐户变动记录 */
     $account_log = array(
         'user_id'       => $user_id,
         'user_money'    => $user_money,
+        'befor_money'    => $user['user_money'] ?? 0,
         'pay_points'    => $pay_points,
         'change_time'   => time(),
         'desc'   => $desc,
@@ -810,7 +814,7 @@ function accountLog($user_id, $user_money = 0,$pay_points = 0, $desc = '',$distr
     );
     if($recharge) $update_data['user_total_money'] = ['exp','user_total_money+'.$user_money];  //用户充值累计金额
     if($withdrawn) $update_data['withdrawal_total_money'] = ['exp','withdrawal_total_money+'.$withdrawn];  //用户提现累计金额
-    if(($user_money+$pay_points+$distribut_money) == 0)return false;
+    if(($user_money+$pay_points+$distribut_money) == 0) return false;
     $update = Db::name('users')->where("user_id = $user_id")->save($update_data);
     if($update){
         $result = M('account_log')->add($account_log);

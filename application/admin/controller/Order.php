@@ -111,7 +111,7 @@ class Order extends Common {
         foreach ($rows as $key => $row) {
             $rows[$key]['order_status_name'] = $this->OrderLogic->orderStatusConfig[$row['order_status']] ?? '';
             //状态默认显示为-不解析
-            if ($row['order_status'] == 2) {
+            if ($row['order_status'] == 3) {
                 $rows[$key]['order_status_name'] = '未解析';
             }
 

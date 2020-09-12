@@ -11,7 +11,7 @@ class HttpCurl{
      * @param bool $returnArray
      * @return mixed
      */
-    protected function request($url, $data = [], $method = 'get', $options = [], $returnArray = true){
+    protected function request($url, $data = [], $method = 'get', $options = [], $header = [], $returnArray = true){
         $curl = curl_init(); // 启动一个CURL会话
         // ee($data);
         is_array($data) && $data = http_build_query($data);
@@ -40,6 +40,11 @@ class HttpCurl{
             CURLOPT_RETURNTRANSFER => 1, //获取的信息以文件流的形式返回
         ];
 
+        ////设置header信息
+        if (!empty($header)) {
+            $_options[CURLOPT_HTTPHEADER] = $header;
+        }
+
         $options = ($_options + $options);
 
         curl_setopt_array($curl, $options);
@@ -62,8 +67,8 @@ class HttpCurl{
      * @param bool $returnArray
      * @return mixed
      */
-    public function getRequest($url, $data =[], $options = [], $returnArray = true){
-        return $this->request($url, $data, 'get', $options, $returnArray);
+    public function getRequest($url, $data =[], $options = [], $header = [], $returnArray = true){
+        return $this->request($url, $data, 'get', $options, $header, $returnArray);
     }
 
     /**
@@ -74,8 +79,8 @@ class HttpCurl{
      * @param bool $returnArray
      * @return mixed
      */
-    public function postRequest($url, $data = [], $options = [], $returnArray = true){
-        return $this->request($url, $data, 'post', $options, $returnArray);
+    public function postRequest($url, $data = [], $options = [], $header = [], $returnArray = true){
+        return $this->request($url, $data, 'post', $options, $header, $returnArray);
     }
 
 }

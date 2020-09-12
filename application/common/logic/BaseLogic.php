@@ -172,6 +172,112 @@ class BaseLogic {
         return $res;
     }
 
+    //获取供应商Header头部请求-基本头部，不包括token
+    public function getSupplierHeaderBasic($params=[]){
+        $res = [];
+        if (empty($params['code'])) {
+            return $res;
+        }
+        $supplier_code= $params['code'];
+        switch ($supplier_code) {
+            case '30000':
+                $res = [
+                    'X-Afagou-Domain:afazhu.com',
+                    'X-Afagou-User-Agent:api',
+                    'X-Afagou-Version:1.0',
+                    'Content-Type:application/json',
+                ];
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return $res;
+    }
+
+
+    //获取供应商token
+    public function getSupplierToken($supplier=[]){
+        $res = ['error'=>0, 'msg'=>'获取成功！', 'data'=>null];
+
+        if (empty($supplier)) {
+            $res = ['error'=>1, 'msg'=>'此商品暂未配置(-001)，请联系管理'];
+        }
+
+        $supplier_code = $supplier['code'];
+        if (empty($supplier_code)) {
+            $res = ['error'=>1, 'msg'=>'此商品暂未配置(000)，请联系管理'];
+        }
+        $where = ['is_show'=>1, 'code'=>$supplier_code];
+        $supplier = db('suppliers')->where($where)->find();
+
+        if (!$supplier) {
+            $res = ['error'=>1, 'msg'=>'此商品暂未配置(001)，请联系管理'];
+        }
+
+        if (empty($supplier['url'])) {
+            $res = ['error'=>1, 'msg'=>'此商品暂未配置(002)，请联系管理'];
+        }
+
+        switch ($supplier_code) {
+            case '30000':
+                $url_api = $supplier['url'];
+                $postdatas = ['mobile'=>$supplier['api_account'], 'password'=>$supplier['api_password'], 'encrypt'=>0];
+                $headers = $this->getSupplierHeaderBasic(['code'=>$supplier_code]);//设置header头
+                $res_api = apiget($url_api, $postdatas, 'post', $headers);
+
+                //异常情况
+                if (empty($res_api) || $res_api['error_code'] != 0) {
+                    return ['error'=>2, 'msg'=>'此商品暂无法获取配置(003)，请联系管理'];
+                }
+                if (empty($res_api['data']['access_token'])) {
+                    return ['error'=>2, 'msg'=>'此商品暂无法获取配置(004)，请联系管理'];
+                }
+
+                //生成此类的属性：用户余额
+                $this->apiMoney = $res_api['data']['user']['amount'] ?? -999;
+
+                $res['data'] = $res_api['data']['access_token'];
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        return $res;
+    }
+
+    //获取供应商Header头部请求-基本头部，包括token
+    public function getSupplierHeaderAll($supplier=[]){
+        $res = ['error'=>0, 'msg'=>'获取成功！', 'data'=>null];
+        if (empty($supplier['code'])) {
+            return $res;
+        }
+        $supplier_code= $supplier['code'];//supplier的code值
+        switch ($supplier_code) {
+            case '30000':
+                $headers = $this->getSupplierHeaderBasic(['code'=>$supplier_code]);//设置header头
+                $this->apiToken = $res_token = $this->getSupplierToken($supplier);//设置对象属性apiToken
+                //获取token异常情况
+                if ($res_token['error']) {
+                    return ['error'=>1, 'msg'=>$res_token['msg']];
+                }
+                $token = $res_token['data'];
+                $headers[] = "token:{$token}";
+
+                $res['data'] = $headers;
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return $res;
+    }
+
     //获取分类
     public function getCatRow($cat_id=0){
         $where = ['is_show'=>1, 'cat_id'=>$cat_id];

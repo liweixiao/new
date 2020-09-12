@@ -70,7 +70,7 @@ class OrderLogic extends BaseLogic{
         //获取供应商
         $supplier = $this->getSupplier($goodsRow['supplier_id']);
         if (empty($supplier)) {
-            return ['error'=>1, 'msg'=>'抱歉，系统异常，请联系管理员！'];
+            return ['error'=>1, 'msg'=>'抱歉，此商品相关设置暂未配置，请联系管理员！'];
         }
 
 
@@ -177,6 +177,12 @@ class OrderLogic extends BaseLogic{
                     ///注意这里只记录余额不足情况
                     //检测余额是否充足
                     $apiMoney = $this->getApiMoneyBySupplier($supplier['supplier_id']);
+                    //未获取到情况
+                    if ($apiMoney == -999) {
+                        Db::rollback();// 回滚事务
+                        return ['error'=>1, 'msg'=>'抱歉，更新订单状态时候出错(错误码009)，请联系管理员'];
+                    }
+
                     // ee($apiMoney);
                     if ($apiMoney < $total_amount) {
                         //生成一条异常订单(admin_note为余额不足)
@@ -209,6 +215,10 @@ class OrderLogic extends BaseLogic{
                         Db::commit();
                         return $res;
                     }
+
+                    //到这里是未知错误
+                    Db::rollback();// 回滚事务
+                    return ['error'=>1, 'msg'=>'抱歉，更新订单状态时候出错(错误码008)，请联系管理员'];
                 }else{
                     //平台异常
                     Db::rollback();// 回滚事务
@@ -247,7 +257,7 @@ class OrderLogic extends BaseLogic{
      * @return array $res 结果
      */
     public function getApiMoneyBySupplier($supplier_id=0){
-        $res = 0;
+        $res = -999;//这里应该是默认未获取到余额
         if (empty($supplier_id)) {
             return $res;
         }
@@ -285,6 +295,16 @@ class OrderLogic extends BaseLogic{
                 if (isset($res_api['balance'])) {
                     $res = floatval($res_api['balance']);
                     $res = $res/100;//这里他这里单位是分
+                }
+                break;
+
+            case '30000':
+                //这种情况是下单的时候已经登录了，查询过余额了
+                if (!empty($this->apiMoney)) {
+                    $res = $this->apiMoney;//注意，这里是在类调用getSupplierToken()方法的时候，此类属性(apiMoney)已经生成
+                }else{
+                    $res_token = $this->getSupplierToken($supplier);//这里通过获取token即可知道余额
+                    $res = $this->apiMoney;
                 }
                 break;
             
@@ -402,6 +422,42 @@ class OrderLogic extends BaseLogic{
                 $res['res_api'] = $res_api;
                 $res['data']['out_id'] = $res_api[$return_id_field];//注意这里创建订单成功后，加粉8(taskId)和转评返回的任务(id)字段名是不一样的
                 break;
+            case '30000':
+                $url_api = $goodsCfg['url_create_order'];
+                $postdatas = [
+                    'parameters'=>['url'=>$params['url']], 
+                    'number'=>$params['task_num'], 
+                    'goods_id'=>$goodsRow['goods_id_out']
+                ];
+
+                ///设置header头 start
+                $res_headers = $this->getSupplierHeaderAll($supplier);//设置header头，注意，只有这一步在先，才会有对象属性apiToken！！后续依赖性
+                //获取token异常情况
+                if ($res_headers['error']) {
+                    return ['error'=>1, 'msg'=>$res_headers['msg']];
+                }
+                $headers = $res_headers['data'];
+                // ee($postdatas);
+                //设置header end
+
+                $postdatasJson = json_encode($postdatas);
+                $res_api = apiget($url_api, $postdatasJson, 'post', [], $headers);
+                // ee($res_api);
+
+                //异常情况
+                if (empty($res_api) || !isset($res_api['error_code']) || $res_api['error_code'] != 0) {
+                    $msg = $res_api['error_msg'] ?? "抱歉，创建任务出现异常(错误码003)，请联系管理员";
+                    return ['error'=>2, 'msg'=>$msg, 'post_params_api'=>$postdatasJson];
+                }
+
+                if (empty($res_api['data']['order_ids'][0])) {
+                    $msg = $res_api['error_msg'] ?? "抱歉，创建任务出现异常(错误码005)，请联系管理员";
+                    return ['error'=>2, 'msg'=>$msg, 'post_params_api'=>$postdatasJson];
+                }
+
+                $res['res_api'] = $res_api;
+                $res['data']['out_id'] = $res_api['data']['order_ids'][0];
+                break;
             default:
                 return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单，请联系管理员'];
                 break;
@@ -498,7 +554,7 @@ class OrderLogic extends BaseLogic{
                     $return_id_field = 'id';//返回任务字段名字
                 }else{
                     //不在分类直接异常
-                    return ['error'=>1, 'msg'=>'抱歉，商品分类配置有误，暂时无法创建订单，请联系管理员增加配置'];
+                    return ['error'=>1, 'msg'=>'抱歉，商品分类配置有误！，暂时无法创建订单，请联系管理员增加配置！'];
                 }
 
                 // $postdatas = json_encode($postdatas);//注意这里不用解析成json否则报错
@@ -519,7 +575,7 @@ class OrderLogic extends BaseLogic{
                 $out_id = $res_api[$return_id_field];
                 break;
             default:
-                return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单，请联系管理员'];
+                return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单！请联系管理员'];
                 break;
         }
 
@@ -642,7 +698,6 @@ class OrderLogic extends BaseLogic{
         //这里开始区分供应商
         switch ($supplier['code']) {
             case '10000':
-
                 //定义本平台当前订单状态值
                 //['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款'];//5=api余额不足
                 $orderStateArr = ['ok'=>'1', '暂停中'=>'4','处理中'=>'3','refund'=>'6'];//api状态=>本站状态
@@ -696,7 +751,7 @@ class OrderLogic extends BaseLogic{
                 }
                 break;
 
-            //精品网络-已起用
+            //JP网络-已起用
             case '20000':
                 //定义本平台当前订单状态值
                 //['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款'];//5=api余额不足
@@ -750,6 +805,7 @@ class OrderLogic extends BaseLogic{
                         continue;
                     }
 
+                    //更新状态名称
                     $order_status_name = "{$done_num}/{$task_num}";
                     if ($done_num > 0 && $done_num == $task_num) {
                         $order_status_name = "ok";//处理完了,默认显示ok
@@ -763,6 +819,83 @@ class OrderLogic extends BaseLogic{
                     }
                 }
                 // ee($rows);
+                break;
+
+            case '30000':
+                //定义本平台当前订单状态值
+                //['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废'];//5=api余额不足
+                //订单状态 1:等待中,2:审核中,3:完成,4:退款中,5:异常,6:排队,7:进行
+                $orderStateArr = ['1'=>'2', '2'=>'2','3'=>'1','4'=>'2','5'=>'2','6'=>'2','7'=>'3'];//api状态=>本站状态
+
+                //先更新任务速度模式-防止前面无数据任务模式未更新
+                foreach ($rows as $k => $value) {
+                    $rows[$k]['order_status_name'] = $this->orderStatusConfig[$value['order_status']] ?? '';
+
+                    //更新开始时间
+                    $rows[$k]['stime'] = $value['ctime'];
+                }
+
+
+                ///设置header头 start
+                $res_headers = $this->getSupplierHeaderAll($supplier);//设置header头，注意，只有这一步在先，才会有对象属性apiToken！！后续依赖性
+                //获取token异常情况
+                if ($res_headers['error']) {
+                    return ['error'=>1, 'msg'=>$res_headers['msg']];
+                }
+                $headers = $res_headers['data'];
+                //设置header end
+
+                $res_api = apiget($url_api, '', 'get', [], $headers);
+
+                $url_api = $goodsCfg['url_get_order_row'];//基础url
+                //注意:这个平台没有批量接口，只能逐个刷洗
+                foreach ($rows as $key => $row) {
+                    //不更新情况
+                    if ($row['out_id'] == 0) {
+                        continue;
+                    }
+
+                    //更新任务状态-值
+                    $rows[$key]['task_status_value'] = '';
+
+                    $res_api = apiget($url_api . "/{$row['out_id']}", '', 'get', [], $headers);
+                    // ee($res_api);
+                    //异常情况
+                    if (empty($res_api) || !isset($res_api['error_code']) || $res_api['error_code'] != 0) {
+                        $msg = $res_api['error_msg'] ?? "抱歉，任务获取出现异常(错误码0013)，请联系管理员";
+                        continue;//失败的时候这里继续下一个
+                    }
+
+                    if (!isset($res_api['data']['status'])) {
+                        $msg = $res_api['error_msg'] ?? "抱歉，任务获取出现异常(错误码015)，请联系管理员";
+                        continue;//失败的时候这里继续下一个
+                    }
+
+
+                    //异常情况
+                    //更新任务状态
+                    // ee($row);
+                    $unit = $row['goods'][0]['unit'] ?? 100;//默认是100
+                    $done_num = $res_api['data']['finish_number'] ?? 0;//执行量-这个单位是1
+                    $task_num = $row['task_num'] * $unit;//任务量,注意他这里单位是100
+
+                    if (is_null($done_num) || is_null($task_num)) {
+                        continue;
+                    }
+
+                    //更新状态名称
+                    $order_status_name = "{$done_num}/{$task_num}";
+                    if ($done_num > 0 && $done_num == $task_num) {
+                        $order_status_name = "ok";//处理完了,默认显示ok
+                    }
+                    $rows[$key]['order_status_name'] = $order_status_name;
+
+                    //更新任务状态-值
+                    $apiStatus = $res_api['data']['status'] ?? '';
+                    if (isset($orderStateArr[$apiStatus])) {
+                        $rows[$key]['task_status_value'] = $orderStateArr[$apiStatus];
+                    }
+                }
                 break;
             //精品网络-因为批量接口有问题这里改为单条查询-已废弃
             case '20000000':
@@ -810,7 +943,7 @@ class OrderLogic extends BaseLogic{
                 // ee($rows);
                 break;
             default:
-                return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单，请联系管理员'];
+                return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单，请您联系管理员'];
                 break;
         }
         return $res;

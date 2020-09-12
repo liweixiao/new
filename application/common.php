@@ -2599,14 +2599,14 @@ if( ! function_exists('gettree')){
  * @return void
  */
 if( ! function_exists('apiget')){
-    function apiget($url='', $postData=null, $method='post', $options=[], $returnArray = true) {
+    function apiget($url='', $postData=null, $method='post', $options=[], $header = [], $returnArray = true) {
         require_once '../vendor/http/HttpCurl.php';
         $http = new HttpCurl();
 
         if (strtolower($method) == 'get') {
-            $res = $http->getRequest($url, $postData, $options);
+            $res = $http->getRequest($url, $postData, $options, $header);
         }else{
-            $res = $http->postRequest($url, $postData, $options);
+            $res = $http->postRequest($url, $postData, $options, $header);
         }
         return $res;
     }

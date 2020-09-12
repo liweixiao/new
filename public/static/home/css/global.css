@@ -479,7 +479,7 @@ em{font-style: normal;}
     box-shadow: 0 1px 5px rgba(0,0,0,0.68);
 }
 .cat-box .img-box{
-    
+    position: relative;
 }
 .cat-box .img-box:hover img {
     -webkit-filter: brightness(.8);
@@ -584,5 +584,21 @@ em{font-style: normal;}
     color: #fff;
     font-size: 25px;
     vertical-align: middle;
+}
+.icon_text {
+    position: absolute;
+    color: #ff6d6f;
+    font-weight: normal;
+    border: 1px solid #ff6d6f;
+    display: inline-block;
+    border-radius: 50%;
+    min-width: 17px;
+    text-align: center;
+    min-height: 17px;
+    font-size: 14px;
+    padding: 0.5px;
+    position: relative;
+    left: 0;
+    top: 0px;
 }
 

@@ -23,7 +23,10 @@
             <ul>
                 {volist name="data.goodsRows" id="vo"}
                 <a href="{:U('home/order/index', ['cid'=>$data.cat_id, 'gid'=>$vo.goods_id])}">
-                    <li goods_id="{$vo.goods_id}" class="{if condition='$vo.goods_id eq $data.goods_id'}on{/if}">{$vo.goods_name}({$data.orderGoodsStat[$vo.goods_id]|default=0})</li>
+                    <li goods_id="{$vo.goods_id}" class="{if condition='$vo.goods_id eq $data.goods_id'}on{/if}">
+                        {notempty name="$vo.icon"}<span class="iconfont {$vo.icon}"></span>{/notempty}
+                        {$vo.goods_name}({$data.orderGoodsStat[$vo.goods_id]|default=0})
+                    </li>
                 </a>
                 {/volist}
             </ul>

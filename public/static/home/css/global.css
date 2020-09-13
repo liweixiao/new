@@ -602,3 +602,6 @@ em{font-style: normal;}
     top: 0px;
 }
 
+.layui-nav .layui-nav-mored, .layui-nav-itemed > a .layui-nav-more {
+    border-color: transparent transparent #009688;
+}

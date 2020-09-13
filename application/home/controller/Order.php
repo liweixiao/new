@@ -20,6 +20,8 @@ class Order extends Base {
         $this->UsersLogic = new UsersLogic;
         $this->OrderLogic = new OrderLogic;
 
+        //修改前端状态显示
+        $this->OrderLogic->orderStatusConfig['5'] = $this->OrderLogic->orderStatusConfig['3'];
     }
 
     public function index(){

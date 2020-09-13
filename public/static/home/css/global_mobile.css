@@ -107,12 +107,12 @@
 
 
 .goods-sub-tab.sub-tab ul {
-    display: flex;
+/*    display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-between;*/
 }
 .goods-sub-tab.sub-tab ul li {
-    min-width: 135px;
+    min-width: 120px;
 }
 
 

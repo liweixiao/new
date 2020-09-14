@@ -658,3 +658,17 @@ em{font-style: normal;}
     color: #c9302c;
     -color: #c9302c;
 }
+form textarea{
+    padding:5px 4px 6px!important;
+}
+p.notic{
+    line-height: 12px;
+    line-height: 18px;
+    color: #AAA;
+    margin-top: 4px;
+    clear: both;
+}
+p.notic b{
+    color: #c9302c;
+    font-weight: normal;
+}

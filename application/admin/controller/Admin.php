@@ -12,7 +12,7 @@ namespace app\admin\controller;
 
 use think\Loader;
 
-class Admin extends Common {
+class Admin extends Base {
 
     public function index() {
         

@@ -1,0 +1,105 @@
+<div class="page-content">
+    <div class="col-sm-6 pull-right">
+        <button class="btn btn-sm btn-primary pull-right" onclick="javascript:window.location.href = '{:url("index")}'">
+            返回列表
+            <i class="icon-reply icon-only"></i>
+        </button>
+    </div>
+
+    <div class="page-header">
+        <h1>
+            {:model('menu')->getParentNname()}
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                {:input('order_id')?'编辑':'新增'}订单
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <form class="form-horizontal" role="form" action="{:U('order/info')}"  method="post" name="myfrom" >
+                <input type="hidden" value="{$row.order_id}" name="order_id">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">用户名称</label>
+                    <div class="col-sm-9">
+                        <input disabled type="text" class="col-xs-10 col-sm-5"  name="mobile" value="{$row.mobile|default=''}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">订单编号</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="order_sn" value="{$row.order_sn|default=''}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">网址</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="url" value="{$row.url|default=''}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">任务数量</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="task_num" value="{$row.task_num|fnum}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">完成数量</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="done_num" value="{$row.done_num|default=''}"/>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">订单状态</label>
+                    <div class="col-sm-9">
+                        <select name="order_status">
+                          <option value="">设置订单状态</option>
+                          {volist name="orderStatusConfig" id="vo"}
+                          <option value="{$key}" {if condition="$row.order_status eq $key"}selected{/if}>{$vo}</option>
+                          {/volist}
+                        </select>
+                        <p class="notic">设置订单状态</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">管理员备注</label>
+                    <div class="col-sm-9">
+                        <textarea rows="2" type="text" class="col-xs-10 col-sm-5" name="admin_note">{$row.admin_note|default=''}</textarea>
+                        <p class="notic">处理订单，可留下备注</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">下单时间</label>
+                    <div class="col-sm-9">
+                        <input disabled type="text" class="col-xs-10 col-sm-5"  name="ctime" value="{$row.ctime|default=''}"/>
+                    </div>
+                </div>
+
+
+                <div class="clearfix form-actions">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button class="btn btn-info mr30" type="button" onclick="myfrom.submit()">
+                            <i class="ace-icon fa fa-check bigger-110"></i>
+                            提交
+                        </button>
+                        <button class="btn" type="reset">
+                            <i class="ace-icon fa fa-undo bigger-110"></i>
+                            重置
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->

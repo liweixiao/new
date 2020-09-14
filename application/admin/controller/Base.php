@@ -12,7 +12,7 @@ namespace app\admin\controller;
 
 use think\Controller;
 
-class Common extends Controller {
+class Base extends Controller {
 
     protected $user_id;
     protected $user_name;
@@ -90,7 +90,11 @@ class Common extends Controller {
     /*
      * 数据返回
      */
-    public function ajaxReturn($data){
+    public function ajaxReturn($data=[]){
+        //设置默认值
+        $data['error']   = isset($data['error']) ? $data['error'] : 0;
+        $data['msg'] = $data['msg'] ? $data['msg'] : '操作成功';
+        header('Content-Type:application/json; charset=utf-8');
         exit(json_encode($data, JSON_UNESCAPED_UNICODE));
     }
 

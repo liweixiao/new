@@ -12,7 +12,7 @@ namespace app\admin\controller;
 
 use think\Loader;
 
-class Menu extends Common {
+class Menu extends Base {
 
     public function index() {
         $res = db('menu')->order('listorder asc')->select();

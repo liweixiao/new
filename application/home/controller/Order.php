@@ -22,6 +22,7 @@ class Order extends Base {
 
         //修改前端状态显示
         $this->OrderLogic->orderStatusConfig['5'] = $this->OrderLogic->orderStatusConfig['3'];
+        $this->OrderLogic->orderStatusConfig['8'] = $this->OrderLogic->orderStatusConfig['3'];
     }
 
     public function index(){

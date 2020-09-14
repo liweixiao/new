@@ -128,7 +128,7 @@ function radio($array = array(), $id = 0, $str = '', $width = 0, $field = '') {
         $checked = trim($id) == trim($key) ? 'checked' : '';
         if ($width)
             $string .= '<label class="ib" style="width:' . $width . 'px">';
-        $string .= '<input type="radio" ' . $str . ' id="' . $field . '_' . $key . '" ' . $checked . ' value="' . $key . '"> ' . $value;
+        $string .= '<input type="radio" ' . $str . ' id="' . $field . '_' . $key . '" ' . $checked . ' value="' . $key . '">' . $value . '&nbsp;&nbsp;';
         if ($width)
             $string .= '</label>';
     }

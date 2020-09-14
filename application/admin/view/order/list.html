@@ -39,6 +39,15 @@
                             </select>
                             {/if}
 
+                            <!-- 订单状态筛选 -->
+                            <select name="order_status" id="type" class="select">
+                                <option value="">选择订单状态</option>
+                                {volist name="orderStatusConfig" id="vo"}
+                                <option value="{$key}" {if condition="$Think.get.order_status eq $key"}selected{/if}>{$vo}</option>
+                                {/volist}
+                            </select>
+                            <!-- 订单状态筛选 -->
+
                             <input type="text" class="qsbox w150" id="input-order-id" placeholder="订单编号|账户|目标" value="{$Think.get.keyword}" name="keyword">
                             <input type="submit" class="btn btn-primary btn-xs" value="搜索">
                         </div>
@@ -103,7 +112,7 @@
                                             <span onclick="go.reCreateOrder('{$vo.order_id}')" class="btn btn-sm btn-info">重新下单</span> 
                                         {/if}
 
-                                        <a href='{:url("info","id=$vo[id]")}'> 
+                                        <a href='{:url("info","order_id=$vo[order_id]")}'> 
                                            <span class="btn btn-xs btn-info">
                                                 <i class="ace-icon fa fa-pencil bigger-120"></i>
                                             </span>

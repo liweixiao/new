@@ -316,6 +316,26 @@
                         </div>
                         <div class="stat stat-important hide">x%</div>
                     </div>
+
+                    <!-- 手工单 -->
+                    <div class="infobox infobox-pink">
+                        <div class="infobox-icon">
+                            <span class="iconfont icon-cost"></span>
+                        </div>
+
+                        <div class="infobox-data">
+                            <span class="infobox-data-number">
+                                <a href="{:U('order/list', ['order_status'=>$data.notAutoOrdersStatus])}">
+                                {$data.notAutoOrdersNum}
+                                </a>
+                            </span>
+                            <div class="infobox-content">手工单</div>
+                        </div>
+                        <div class="stat stat-important hide">x%</div>
+                    </div>
+                    <!-- 手工单 -->
+
+
                 </div><!-- /.widget-box -->
                 <!-- 其他统计-END -->
 

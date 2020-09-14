@@ -24,7 +24,7 @@ use app\common\logic\BaseLogic;
  */
 class OrderLogic extends BaseLogic{
     //5=api余额不足
-    public $orderStatusConfig = ['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废'];
+    public $orderStatusConfig = ['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废', '8'=>'手工单'];
     //创建订单(逻辑改为先在自己平台下单,成功后在第三方平台下单,若第三方失败则回滚数据)
     public function createOrder($params = []){
         $res = ['error'=>0, 'msg'=>'恭喜，提交成功！'];
@@ -166,6 +166,20 @@ class OrderLogic extends BaseLogic{
             if (!$result) {
                 Db::rollback();// 回滚事务
                 return ['error'=>1, 'msg'=>'抱歉，更新用户消费日志失败，请联系管理员'];
+            }
+
+            //如果是手工单-到这里更新订单状态后直接提交即可
+            if ($goodsRow['is_auto'] == 0) {
+                //更新out_id
+                $updateOrder = ['order_status'=>8];
+                $res_update = db("order")->where('order_id', $order_id)->update($updateOrder);
+                if (!$res_update) {
+                    Db::rollback();// 回滚事务
+                    return ['error'=>1, 'msg'=>'抱歉，更新订单数据失败，请联系管理员'];
+                }
+
+                Db::commit();// 提交事务
+                return $res;
             }
 
             //生成第三方数据

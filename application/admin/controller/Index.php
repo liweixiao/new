@@ -11,7 +11,7 @@
 namespace app\admin\controller;
 use app\common\logic\OrderLogic;
 
-class Index extends Common {
+class Index extends Base {
     /**
      * 后台首页
      */
@@ -109,6 +109,10 @@ class Index extends Common {
         //异常订单统计-重要的订单
         $data['importantOrdersNum'] = db('order')->whereIn('order_status', [5])->count();
         $data['importantOrdersStatus'] = '5';
+
+        //手工订单统计-需要手工做的订单
+        $data['notAutoOrdersNum'] = db('order')->whereIn('order_status', [8])->count();
+        $data['notAutoOrdersStatus'] = '8';
         
         // sql();
         // ee($data);

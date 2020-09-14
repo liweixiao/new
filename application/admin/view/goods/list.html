@@ -30,10 +30,11 @@
                                 <th>商品名称</th>
                                 <th>供应商</th>
                                 <th>销售价</th>
+                                <th>会员价</th>
                                 <th>成本价</th>
                                 <th>起购量</th>
                                 <th>计量单位</th>
-                                <th>会员价</th>
+                                <th>独享价</th>
                                 <th>展示</th>
                                 <th>管理员操作</th>
                             </tr>
@@ -53,15 +54,16 @@
                                 <td><a href="{:U('Home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">{$vo.goods_name}</a></td>
                                 <td>{$vo.supplier_name}</td>
                                 <td>{$vo.sale_price|fnum=0,4}</td>
+                                <td>{$vo.user_price|fnum=0,4}</td>
                                 <td>{$vo.cost_price|fnum=0,4}</td>
                                 <td>{$vo.min_num|fnum=1,0}</td>
                                 <td>{$vo.unit|fnum=1,0}</td>
-                                <td><a href="{:U('Admin/goods/user_price_list',['id'=>$vo.goods_id])}" class="to-see">设置会员价</a></td>
+                                <td><a href="{:U('Admin/goods/user_price_list',['id'=>$vo.goods_id])}" class="to-see">设置会员独享价</a></td>
                                 <td>{$vo.is_show_name}</td>
                                 <td>
                                     <div class="btn-group">
 
-                                        <a href='{:url("info","id=$vo[id]")}'> 
+                                        <a href='{:url("goods/info","goods_id=$vo[goods_id]")}'> 
                                            <span class="btn btn-xs btn-info">
                                                 <i class="ace-icon fa fa-pencil bigger-120"></i>
                                             </span>

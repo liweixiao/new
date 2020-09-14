@@ -11,8 +11,9 @@
 namespace app\admin\controller;
 use think\Page;
 use think\Db;
+use app\common\logic\OrderLogic;
 
-class Goods extends Common {
+class Goods extends Base {
 
     public function index() {
         $this->redirect('Goods/list');
@@ -28,16 +29,47 @@ class Goods extends Common {
     }
 
 
-    /*
-     * 查看
+    /**
+     * 添加修改商品
      */
-    public function info() {
-        $id = input('id');
-        if ($id) {
-            //当前用户信息
-            $info = db('goods')->find($id);
-            $this->assign('info', $info);
+    public function info(){
+        $id = I('goods_id');
+        $OrderLogic = new OrderLogic();
+        if (IS_POST) {
+            $data = I('post.');
+            // ee($data);
+            $ctime = date('Y-m-d H:i:s');
+
+            if (empty($data['goods_name'])) {
+                $this->error('操作失败，商品名称必须填写');
+            }
+
+            if ($id) {
+                $data['mtime'] = $ctime;
+                $res = db('goods')->where(['goods_id'=>$id])->update($data);
+            } else {
+                $data['ctime'] = $ctime;
+                $res = db('goods')->insert($data);
+            }
+
+            if (!$res) {
+                $this->error('操作失败');
+            }
+            $this->success('操作成功', url('goods/list'));
         }
+
+        //获取供应商
+        $supplierList = $OrderLogic->getSupplierList();
+
+        //获取商品配置
+        $goodsConfigList = $OrderLogic->getGoodsConfigList();
+
+        $row = db('v_goods')->where(['goods_id'=>$id])->find();
+        // sql();
+        // ee($row);
+        $this->assign('row', $row);
+        $this->assign('supplierList', $supplierList);
+        $this->assign('goodsConfigList', $goodsConfigList);
         return $this->fetch();
     }
 

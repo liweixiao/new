@@ -172,6 +172,20 @@ class BaseLogic {
         return $res;
     }
 
+    //获取供应商列表
+    public function getSupplierList(){
+        $where = ['is_show'=>1];
+        $res = db('suppliers')->where($where)->select();
+        return $res;
+    }
+
+    //获取商品配置列表
+    public function getGoodsConfigList(){
+        $where = ['is_show'=>1];
+        $res = db('goods_config')->where($where)->select();
+        return $res;
+    }
+
     //获取供应商Header头部请求-基本头部，不包括token
     public function getSupplierHeaderBasic($params=[]){
         $res = [];

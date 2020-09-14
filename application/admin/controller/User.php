@@ -13,7 +13,7 @@ use think\Page;
 use think\Db;
 use app\common\logic\UsersLogic;
 
-class User extends Common {
+class User extends Base {
 
     public function index() {
         $this->redirect('User/list');

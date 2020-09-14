@@ -10,7 +10,7 @@
 
 namespace app\admin\controller;
 
-class Group extends Common{
+class Group extends Base{
 
     public function index() {
         $res = db('admin_group')->select();

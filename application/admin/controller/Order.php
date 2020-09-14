@@ -13,13 +13,48 @@ use think\Page;
 use think\Db;
 use app\common\logic\OrderLogic;
 
-class Order extends Common {
+class Order extends Base {
     public function _initialize() {
         parent::_initialize();
         $this->OrderLogic = new OrderLogic;
     }
 
     public function index() {
+        return $this->fetch();
+    }
+
+    /**
+     * 添加修改订单
+     */
+    public function info(){
+        $id = I('order_id');
+        $OrderLogic = new OrderLogic();
+        if (IS_POST) {
+            $data = I('post.');
+            // ee($data);
+            $ctime = date('Y-m-d H:i:s');
+
+            if ($id) {
+                $data['mtime'] = $ctime;
+                $res = db('order')->where(['order_id'=>$id])->update($data);
+            } else {
+                $data['ctime'] = $ctime;
+                $res = db('order')->insert($data);
+            }
+
+            if (!$res) {
+                $this->error('操作失败');
+            }
+            $this->success('操作成功', url('order/list'));
+        }
+
+        //订单状态
+        $orderStatusConfig = $OrderLogic->orderStatusConfig;
+
+        $row = db('v_order')->where(['order_id'=>$id])->find();
+        // ee($row);
+        $this->assign('row', $row);
+        $this->assign('orderStatusConfig', $orderStatusConfig);
         return $this->fetch();
     }
 
@@ -132,6 +167,10 @@ class Order extends Common {
         //获取商品订单统计(统计每个商品下单数量)
         $data['orderGoodsStat'] = $this->OrderLogic->getOrderGoodsStat($params);
         $data['orderGoodsStat'][0] = array_sum($data['orderGoodsStat']);//增加总数-不分商品id
+
+        //订单状态
+        $orderStatusConfig = $OrderLogic->orderStatusConfig;
+        $this->assign('orderStatusConfig', $orderStatusConfig);
 
         // ee($tags);
         $this->assign('tags', $tags);

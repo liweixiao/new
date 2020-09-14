@@ -1,5 +1,4 @@
 <div class="page-content">
-
     <div class="col-sm-6 pull-right">
         <button class="btn btn-sm btn-primary pull-right" onclick="javascript:window.location.href = '{:url("index")}'">
             返回列表
@@ -12,7 +11,7 @@
             {:model('menu')->getParentNname()}
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
-                {:input('id')?'编辑':'新增'}
+                {:input('goods_id')?'编辑':'新增'}商品
             </small>
         </h1>
     </div><!-- /.page-header -->
@@ -20,72 +19,205 @@
     <div class="row">
         <div class="col-xs-12">
             <!-- PAGE CONTENT BEGINS -->
-            <form class="form-horizontal" role="form" action="{:input('id')?url('edit'):url('add')}"  method="post" name="myfrom" >
-                {:input('id')?'<input type="hidden" value="'.$info['id'].'" name="id">':''}
+            <form class="form-horizontal" role="form" action="{:U('goods/info')}"  method="post" name="myfrom" >
+                <input type="hidden" value="{$row.goods_id}" name="goods_id">
+
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 上级菜单 </label>
+                    <label class="col-sm-3 control-label no-padding-right">商品名称</label>
                     <div class="col-sm-9">
-                        {:select($selectMenu,input('parentid')?input('parentid'):$info['parentid'],'name="parentid" class="col-xs-10 col-sm-5"','--作为一级菜单--')}
+                        <input type="text" class="col-xs-10 col-sm-5"  name="goods_name" value="{$row.goods_name|default=''}"/>
                     </div>
-                </div> 
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">商品简介</label>
+                    <div class="col-sm-9">
+                        <textarea rows="3" type="text" class="col-xs-10 col-sm-5" name="desc">{$row.desc|default=''}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">最大购买量</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="max_num" value="{$row.max_num|fnum}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">最小购买量</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="min_num" value="{$row.min_num|fnum}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">销售价</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="sale_price" value="{$row.sale_price|fnum=0,4}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">会员价</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="user_price" value="{$row.user_price|fnum=0,4}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">成本价</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="cost_price" value="{$row.cost_price|fnum=0,4}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">单位</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="unit" value="{$row.unit|fnum}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">图标</label>
                     <div class="col-sm-9">
-                        <span class="input-icon input-icon-left">
-                            <input type="text" id="form-field-icon-2" name="icon" value='{$info.icon|default=''}' />
-                            <i class="ace-icon fa fa-leaf green"></i>
-                        </span>
-                        <a href="http://fontawesome.io/cheatsheet/" target="_blank">查看</a>
-
+                        <input type="text" class="col-xs-10 col-sm-5"  name="icon" value="{$row.icon}"/>
+                        <p class="notic">控制商品小图标显示</p>
                     </div>
-                </div>    
+                </div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">名称</label>
+                    <label class="col-sm-3 control-label no-padding-right">排序</label>
                     <div class="col-sm-9">
-                        <input type="text" class="col-xs-10 col-sm-5"  name="name" value="{$info.name|default=''}"/>
+                        <input type="text" class="col-xs-10 col-sm-5"  name="sort" value="{$row.sort|fnum}" onkeyup="go.filterNum(this)" onpaste="go.filterNum(this)"/>
                     </div>
-                </div>    
+                </div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">文件名</label>
+                    <label class="col-sm-3 control-label no-padding-right">供应商</label>
                     <div class="col-sm-9">
-                        <input type="text" class="col-xs-10 col-sm-5" name="c"  value='{$info.c|default=''}'/>
+                        <select name="supplier_id">
+                          <option value="">选择供应商</option>
+                          {volist name="supplierList" id="vo"}
+                          <option value="{$vo.supplier_id}" {if condition="$row.supplier_id eq $vo.supplier_id"}selected{/if}>{$vo.supplier_name}</option>
+                          {/volist}
+                        </select>
+                        <p class="notic">请注意：慎重改动，错误无法下单</p>
                     </div>
-                </div>    
-                <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">方法名</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="col-xs-10 col-sm-5" name="a"  value='{$info.a|default=''}'/>
-                    </div>
-                </div>   
+                </div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">附加参数</label>
+                    <label class="col-sm-3 control-label no-padding-right">商品ID(API)</label>
                     <div class="col-sm-9">
-                        <input type="text" class="col-xs-10 col-sm-5" name="data"  value='{$info.data|default=''}'/>
+                        <input type="text" class="col-xs-10 col-sm-5"  name="goods_id_out" value="{$row.goods_id_out}"/>
+                        <p class="notic">请注意：<b>慎重改动</b> 错误无法下单</p>
                     </div>
-                </div>    
+                </div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">状态</label>
+                    <label class="col-sm-3 control-label no-padding-right">模板</label>
                     <div class="col-sm-9">
-                        {:radio(model('Menu')->display,$info['display'],'class="" name="display"')}
-
+                        <input type="text" class="col-xs-10 col-sm-5"  name="tpl" value="{$row.tpl}"/>
+                        <p class="notic">请注意：<b>慎重改动</b> 解释：用户端商品详情页面使用的模板页面</p>
                     </div>
-                </div>    
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Label内容</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="label_url" value="{$row.label_url}"/>
+                        <p class="notic">解释：商品详情页面，表单项左边显示文字内容</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">表单描述内容</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="desc_url" value="{$row.desc_url}"/>
+                        <p class="notic">解释：商品详情页面，表单里面描述内容</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">速度描述内容</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="desc_first" value="{$row.desc_first}"/>
+                        <p class="notic">解释：商品详情页面，运行速度描述内容</p>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">任务描述内容</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="desc_task" value="{$row.desc_task}"/>
+                        <p class="notic">解释：商品详情页面，任务数量相关描述内容</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">开始时间描述内容</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="desc_stime" value="{$row.desc_stime}"/>
+                        <p class="notic">解释：商品详情页面，开始时间相关描述内容</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">商品概况</label>
+                    <div class="col-sm-9">
+                        <textarea rows="3" type="text" class="col-xs-10 col-sm-5" name="desc_info">{$row.desc_info|default=''}</textarea>
+                        <p class="notic">解释：商品详情页面，提交任务按钮下面描述内容</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">商品配置项</label>
+                    <div class="col-sm-9">
+                        <select name="goods_config_id">
+                          <option value="">选择商品配置项</option>
+                          {volist name="goodsConfigList" id="vo"}
+                          <option value="{$vo.goods_config_id}" {if condition="$row.goods_config_id eq $vo.goods_config_id"}selected{/if}>{$vo.goods_config_id}</option>
+                          {/volist}
+                        </select>
+                        <p class="notic">请注意：<b>慎重改动</b> 错误无法下单，解释：商品下单相关配置</p>
+                    </div>
+                </div>
+
+
+                <div class="form-group ">
+                    <label class="col-sm-3 control-label no-padding-right">商品详细</label>
+                    <div class="col-sm-9">
+                        <textarea rows="3" type="text" class="col-xs-10 col-sm-8 ckeditor" id="post_content" name="goods_content">{$row.goods_content|default=''}</textarea>
+                        <p class="notic">商品详情页面</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">自动化</label>
+                    <div class="col-sm-9 pt5">
+                        {:radio(['1'=>'是', '0'=>'否'], $row['is_auto'], 'class="" name="is_auto"')}
+                        <p class="notic">是否为自动化，若选否则为手工单</p>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">上架</label>
+                    <div class="col-sm-9 pt5">
+                        {:radio(['1'=>'是', '0'=>'否'], $row['is_show'], 'class="" name="is_show"')}
+                    </div>
+                </div>
 
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
-                        <button class="btn btn-info" type="button" onclick="myfrom.submit()">
+                        <button class="btn btn-info mr30" type="button" onclick="myfrom.submit()">
                             <i class="ace-icon fa fa-check bigger-110"></i>
-                            Submit
+                            提交
                         </button>
-                        &nbsp; &nbsp; &nbsp;
                         <button class="btn" type="reset">
                             <i class="ace-icon fa fa-undo bigger-110"></i>
-                            Reset
+                            重置
                         </button>
                     </div>
                 </div>
@@ -94,3 +226,22 @@
         </div><!-- /.col -->
     </div><!-- /.row -->
 </div><!-- /.page-content -->
+
+
+{load href="__ROOT__/plugins/Ueditor/ueditor.config.js"/}
+{load href="__ROOT__/plugins/Ueditor/ueditor.all.min.js"/}
+<script type="text/javascript" charset="utf-8" src="__ROOT__/plugins/Ueditor/lang/zh-cn/zh-cn.js"></script>
+<script>
+var url="{:url('Ueditor/index',array('savePath'=>'goods_img'))}";
+var ue = UE.getEditor('post_content',{
+    serverUrl :url,
+    zIndex: 12000,
+    initialFrameWidth: "100%", //初化宽度
+    initialFrameHeight: 400, //初化高度
+    focus: false, //初始化时，是否让编辑器获得焦点true或false
+    maximumWords: 99999, removeFormatAttributes: 'class,style,lang,width,height,align,hspace,valign',//允许的最大字符数 'fullscreen',
+    pasteplain:false, //是否默认为纯文本粘贴。false为不使用纯文本粘贴，true为使用纯文本粘贴
+    autoHeightEnabled: true,
+});
+
+</script>

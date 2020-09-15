@@ -294,6 +294,26 @@ go.showMenu = function (dom) {
 }
 
 
+//用户下单通知
+go.pushMessageOrder = function(param){
+    if (!param) param = {};
+    param.order_id = param.order_id ? param.order_id : '';//订单编号
+
+    $.ajax({
+        type: 'POST',
+        url: "/index.php/Home/index/pushMessageOrder",
+        data: param,
+        dataType: 'json',
+        success: function(res){
+            //TODO
+        },
+        error: function(){
+            console.log("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+
+
 
 
 

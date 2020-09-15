@@ -294,6 +294,8 @@
 
 							go.successTips(result.msg);
 
+							go.pushMessageOrder({order_id:result.data.order_id});//下单提醒
+
 						}
 					},
 					error: function() {

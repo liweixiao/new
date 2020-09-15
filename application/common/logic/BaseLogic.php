@@ -433,12 +433,100 @@ class BaseLogic {
       }
 
 
+    /**
+    * qq消息推送
+    * @param array $params
+    */
+    public function qqpusher($params = []){
+
+        $res = ['error' => 0, 'msg' => '操作成功'];
+        $url_api = 'http://api.qqpusher.yanxianjun.com/send_private_msg';
+        $headers = [
+            'token:39a6e61801518b5ad50dad1c867e7344',
+        ];
+
+        $qq = $params['qq'];
+        $msg = $params['msg'];
+        $postdatas = [
+            'user_id' => $qq,//对方QQ号
+            'message' => $msg,//要发送的内容
+            'auto_escape' => true,// 默认值：false 消息内容是否作为纯文本发送（即不解析 CQ 码），只在 message 字段是字符串时有效
+        ];
+
+        $res_api = apiget($url_api, $postdatas, 'post', [], $headers);
+        return $res;
+    }
 
 
+    /**
+    * 推送消息-下单
+    * @param array $params
+    */
+    public function pushMessageOrder($params = []){
+        $res = ['error'=>0, 'msg'=>'恭喜，下单提醒成功'];
+        $order_id = $params['order_id'];//订单编号
 
+        if (empty($order_id)) {
+            return ['error'=>1, 'msg'=>'订单编号不能为空'];
+        }
 
+        $where['order_id'] = $order_id;
+        $order = db('v_order')->where($where)->find();
+        if (empty($order)) {
+            return ['error'=>1, 'msg'=>'订单不存在'];
 
+        }
 
+        //获取商品信息
+        $goodsRow = $this->getGoodsRow($order['goods_id']);
+        if (empty($goodsRow)) {
+            return ['error'=>1, 'msg'=>'订单产品不存在'];
+        }
+
+        //订单信息
+        $order_status = $order['order_status'];
+        $username     = $order['mobile'];
+        $order_sn     = $order['order_sn'];
+        $ctime        = $order['ctime'];
+        $task_num     = fnum($order['task_num']);
+
+        //产品信息
+        $goods_name     = $goodsRow['goods_name'];
+
+        //设置哪些类型需要走提醒
+        if (!in_array($order_status, ['5', '8'])) {
+            return ['error'=>1, 'msg'=>'暂时没有可提醒的订单状态'];
+        }
+
+        switch ($order_status) {
+            case '3':
+                //普通下单-暂不提醒
+                break;
+
+            case '5':
+                $msg = "【！API余额不足！】下单时间：{$ctime}，用户名：{$username}，订单编号：{$order_sn}，商品：{$goods_name}，任务数量：{$task_num}";
+                //API余额不足-提醒
+                break;
+
+            case '8':
+                //SG单-提醒
+                $msg = "【手工单】下单时间：{$ctime}，用户名：{$username}，订单编号：{$order_sn}，商品：{$goods_name}，任务数量：{$task_num}";
+                // ee($msg);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        //开始提醒
+        $kefu_qq_arr = config('kefu_qq');
+        foreach ($kefu_qq_arr as$qq) {
+            $res_push = $this->qqpusher(['qq'=> $qq, 'msg'=>$msg]);
+        }
+
+        return $res;
+    }
 
 
 

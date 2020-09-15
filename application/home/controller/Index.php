@@ -9,16 +9,25 @@
  */ 
 namespace app\home\controller;
 use think\Controller;
+use app\common\logic\ToolsLogic;
+use app\common\logic\OrderLogic;
 
 class Index extends Base {
     public function index(){
         $this->redirect('/home/user/index');
         return $this->fetch('index');
     }
-
-
     
     public function test(){
 		return $this->fetch('index');
+    }
+
+
+    //推送消息-下单
+    public function pushMessageOrder(){
+        $OrderLogic = new OrderLogic;
+        $order_id = I('order_id', 0);//订单编号
+        $push_res = $OrderLogic->pushMessageOrder(['order_id'=>$order_id]);
+        $this->ajaxReturn($push_res);
     }
 }

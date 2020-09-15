@@ -27,7 +27,7 @@ class OrderLogic extends BaseLogic{
     public $orderStatusConfig = ['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废', '8'=>'手工单'];
     //创建订单(逻辑改为先在自己平台下单,成功后在第三方平台下单,若第三方失败则回滚数据)
     public function createOrder($params = []){
-        $res = ['error'=>0, 'msg'=>'恭喜，提交成功！'];
+        $res = ['error'=>0, 'msg'=>'恭喜，提交成功！', 'data'=>[]];
         $ctime = date('Y-m-d H:i:s');
         $data = [];
         $request = \think\Request::instance();
@@ -132,6 +132,7 @@ class OrderLogic extends BaseLogic{
             //生成订单基本信息
             // ee($data);
             $order_id = Db::name("order")->insertGetId($data);
+            $res['data']['order_id'] = $order_id;//返回订单编号
             $this->orderId = $order_id;
 
             if (!$order_id) {
@@ -263,71 +264,6 @@ class OrderLogic extends BaseLogic{
             return ['error'=>1, 'msg'=>$e->getMessage()];
         }
 
-        return $res;
-    }
-
-    /**
-     * 获取api余额
-     * @return array $res 结果
-     */
-    public function getApiMoneyBySupplier($supplier_id=0){
-        $res = -999;//这里应该是默认未获取到余额
-        if (empty($supplier_id)) {
-            return $res;
-        }
-
-        //获取供应商
-        $supplier = $this->getSupplier($supplier_id);
-        if (empty($supplier)) {
-            return $res;
-        }
-
-        switch ($supplier['code']) {
-            case '10000':
-                $url_api = $supplier['url'] . $supplier['url_money'];
-                $apikey = $supplier['apikey'];
-                $params = ['apikey'=>$apikey, 'renwuid'=>100, 'type'=>'balance'];//提交参数
-                $res_api = apiget($url_api, $params);
-                //异常情况
-                if (empty($res_api) || empty($res_api['ret']) || $res_api['ret'] != 1) {
-                    return $res;
-                }
-                if (isset($res_api['msg'])) {
-                    $res = $res_api['msg'];
-                }
-                break;
-
-            case '20000':
-                $apikey = $supplier['apikey'];
-                $url_api = $supplier['url'] . $supplier['url_money'] . $apikey;
-                $res_api = apiget($url_api);
-                //异常情况
-                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
-                    return $res;
-                }
-
-                if (isset($res_api['balance'])) {
-                    $res = floatval($res_api['balance']);
-                    $res = $res/100;//这里他这里单位是分
-                }
-                break;
-
-            case '30000':
-                //这种情况是下单的时候已经登录了，查询过余额了
-                if (!empty($this->apiMoney)) {
-                    $res = $this->apiMoney;//注意，这里是在类调用getSupplierToken()方法的时候，此类属性(apiMoney)已经生成
-                }else{
-                    $res_token = $this->getSupplierToken($supplier);//这里通过获取token即可知道余额
-                    $res = $this->apiMoney;
-                }
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-
-        $res = floatval($res);
         return $res;
     }
 
@@ -481,7 +417,6 @@ class OrderLogic extends BaseLogic{
     }
 
 
-
     /**
      * 创建订单(根据用户已经提交过的参数-已经生成post参数了即order_extend字段post_params_api值)
      * @return array $res 结果
@@ -608,6 +543,71 @@ class OrderLogic extends BaseLogic{
         return $res;
     }
 
+
+    /**
+     * 获取api余额
+     * @return array $res 结果
+     */
+    public function getApiMoneyBySupplier($supplier_id=0){
+        $res = -999;//这里应该是默认未获取到余额
+        if (empty($supplier_id)) {
+            return $res;
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($supplier_id);
+        if (empty($supplier)) {
+            return $res;
+        }
+
+        switch ($supplier['code']) {
+            case '10000':
+                $url_api = $supplier['url'] . $supplier['url_money'];
+                $apikey = $supplier['apikey'];
+                $params = ['apikey'=>$apikey, 'renwuid'=>100, 'type'=>'balance'];//提交参数
+                $res_api = apiget($url_api, $params);
+                //异常情况
+                if (empty($res_api) || empty($res_api['ret']) || $res_api['ret'] != 1) {
+                    return $res;
+                }
+                if (isset($res_api['msg'])) {
+                    $res = $res_api['msg'];
+                }
+                break;
+
+            case '20000':
+                $apikey = $supplier['apikey'];
+                $url_api = $supplier['url'] . $supplier['url_money'] . $apikey;
+                $res_api = apiget($url_api);
+                //异常情况
+                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
+                    return $res;
+                }
+
+                if (isset($res_api['balance'])) {
+                    $res = floatval($res_api['balance']);
+                    $res = $res/100;//这里他这里单位是分
+                }
+                break;
+
+            case '30000':
+                //这种情况是下单的时候已经登录了，查询过余额了
+                if (!empty($this->apiMoney)) {
+                    $res = $this->apiMoney;//注意，这里是在类调用getSupplierToken()方法的时候，此类属性(apiMoney)已经生成
+                }else{
+                    $res_token = $this->getSupplierToken($supplier);//这里通过获取token即可知道余额
+                    $res = $this->apiMoney;
+                }
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $res = floatval($res);
+        return $res;
+    }
 
 
     /**

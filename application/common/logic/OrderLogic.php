@@ -752,7 +752,9 @@ class OrderLogic extends BaseLogic{
                     }
                     //更新任务状态-名称
                     if (isset($res_api['msg'])) {
-                        $rows[$key]['order_status_name'] = $res_api['msg'] ?? '';
+                        $res_api_msg = $res_api['msg'] ?? '';
+                        $res_api_msg = $res_api_msg == 'ok' ? '已完成' : $res_api_msg;
+                        $rows[$key]['order_status_name'] = $res_api_msg;
                     }
 
                     //更新任务状态-值
@@ -822,7 +824,7 @@ class OrderLogic extends BaseLogic{
                     //更新状态名称
                     $order_status_name = "{$done_num}/{$task_num}";
                     if ($done_num > 0 && $done_num == $task_num) {
-                        $order_status_name = "ok";//处理完了,默认显示ok
+                        $order_status_name = "已完成";//处理完了,默认显示
                     }
                     $rows[$key]['order_status_name'] = $order_status_name;
 
@@ -900,7 +902,7 @@ class OrderLogic extends BaseLogic{
                     //更新状态名称
                     $order_status_name = "{$done_num}/{$task_num}";
                     if ($done_num > 0 && $done_num == $task_num) {
-                        $order_status_name = "ok";//处理完了,默认显示ok
+                        $order_status_name = "已完成";//处理完了,默认显示
                     }
                     $rows[$key]['order_status_name'] = $order_status_name;
 
@@ -947,7 +949,7 @@ class OrderLogic extends BaseLogic{
                     if (isset($done_num) && isset($task_num)) {
                         $order_status_name = "{$done_num}/{$task_num}";
                         if ($done_num >0 && $done_num == $task_num) {
-                            $order_status_name = "ok";//处理完了,默认显示ok
+                            $order_status_name = "已完成";//处理完了,默认显示
                         }
                         $rows[$key]['order_status_name'] = $order_status_name;
                     }

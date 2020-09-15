@@ -504,13 +504,15 @@ class BaseLogic {
                 break;
 
             case '5':
-                $msg = "【！API余额不足！】下单时间：{$ctime}，用户名：{$username}，订单编号：{$order_sn}，商品：{$goods_name}，任务数量：{$task_num}";
+                // $msg = "【！API余额不足！】下单时间：{$ctime}，用户名：{$username}，订单编号：{$order_sn}，商品：{$goods_name}，任务数量：{$task_num}";
+                $msg = "【！API余额不足！】下单时间：{$ctime}，订单编号：{$order_sn}，任务数量：{$task_num}";
                 //API余额不足-提醒
                 break;
 
             case '8':
                 //SG单-提醒
-                $msg = "【手工单】下单时间：{$ctime}，用户名：{$username}，订单编号：{$order_sn}，商品：{$goods_name}，任务数量：{$task_num}";
+                // $msg = "【手工单】下单时间：{$ctime}，用户名：{$username}，订单编号：{$order_sn}，商品：{$goods_name}，任务数量：{$task_num}";
+                $msg = "【手工单】下单时间：{$ctime}，订单编号：{$order_sn}，任务数量：{$task_num}";
                 // ee($msg);
                 break;
             

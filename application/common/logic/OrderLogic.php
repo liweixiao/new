@@ -302,10 +302,11 @@ class OrderLogic extends BaseLogic{
                 //这里提交参数根据二级分类有差异的
                 if (in_array($cat_id, [8])) {
                     $return_id_field = 'taskId';//返回任务字段名字
-                    $postdatas = ['uri'=>$params['url'],
-                         'count'=>$params['task_num'], 
-                         'speed'=>$params['first'], 
-                         'bfType'=>$params['bfType']
+                    $postdatas = [
+                        'uri'=>$params['url'],
+                        'count'=>$params['task_num'], 
+                        'speed'=>$params['first'], 
+                        'bfType'=>$params['bfType']
                      ];
                 }elseif (in_array($cat_id, [9])) {
                     $return_id_field = 'id';//返回任务字段名字
@@ -478,6 +479,7 @@ class OrderLogic extends BaseLogic{
             case '10000':
                 $url_api = $goodsCfg['url_create_order'];
                 $apikey = $supplier['apikey'];
+                // ee($post_params_api);
                 $res_api = apiget($url_api, $post_params_api);
 
                 //异常情况
@@ -1122,6 +1124,76 @@ class OrderLogic extends BaseLogic{
         }
 
         $res = db('order')->where($where)->group('goods_id')->column('goods_id,count(order_id) as num');
+        return $res;
+    }
+
+
+    /**
+     * 修改订单扩展表extend数据，主要修改用户postData数据-此处用于后台修改用户订单
+     * @return array $res 结果
+     */
+    public function editExtendData($order_id){
+        $res = ['error'=>0, 'msg'=>'修改成功！'];
+        if (empty($order_id)) {
+            return ['error'=>1, 'msg'=>'错误，订单id缺失！'];
+        }
+
+        $whereExtend = ['order_id'=>$order_id];
+        $extend_row = db('order_extend')->where($whereExtend)->find();
+        if (!$extend_row) {
+            return ['error'=>1, 'msg'=>'扩展数据不存在'];
+        }
+
+        //这种情况没啥要改了
+        if (empty($extend_row['post_params_api'])) {
+            return ['error'=>1, 'msg'=>'扩展数据的字段post_params_api为空'];
+        }
+
+
+        $order = db('order')->where(['order_id'=>$order_id])->find();
+        if (empty($order)) {
+            return ['error'=>1, 'msg'=>'错误，订单数据不存在！'];
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($order['supplier_id']);
+        if (empty($supplier)) {
+            return ['error'=>1, 'msg'=>'抱歉，此商品相关设置暂未配置，请联系管理员！'];
+        }
+
+
+        $post_params_api_arr = json_decode($extend_row['post_params_api'],true);
+        if (empty($post_params_api_arr)) {
+            return ['error'=>1, 'msg'=>'扩展数据的字段post_params_api解析错误'];
+        }
+        //暂时只修改地址
+        switch ($supplier['code']) {
+            case '10000':
+                $post_params_api_arr['weibouid'] = $order['url'];
+                break;
+            
+            case '20000':
+                $post_params_api_arr['uri'] = $order['url'];
+                break;
+
+            case '30000':
+                $post_params_api_arr['parameters']['url'] = $order['url'];
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        //反解析，保存
+        $post_params_api = json_encode($post_params_api_arr);
+        $data=[
+            'post_params_api' => $post_params_api
+        ];
+        $result = db('order_extend')->where(['order_extend_id'=>$extend_row['order_extend_id']])->update($data);
+        if (!$result) {
+            return ['error'=>1, 'msg'=>'更新数据失败！'];
+        }
+
         return $res;
     }
 

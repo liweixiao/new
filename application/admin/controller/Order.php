@@ -37,6 +37,10 @@ class Order extends Base {
             if ($id) {
                 $data['mtime'] = $ctime;
                 $res = db('order')->where(['order_id'=>$id])->update($data);
+
+                //修改用户提交信息，extend表的post_params_api字段信息
+                $res_edit_extend = $OrderLogic->editExtendData($id);
+
             } else {
                 $data['ctime'] = $ctime;
                 $res = db('order')->insert($data);

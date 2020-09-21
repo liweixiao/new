@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+<script src="__STATIC__/js/jquery-1.9.1-min.js" type="text/javascript" charset="utf-8"></script>
+
 <style type="text/css">
     .download{
         display: inline-block;
@@ -19,10 +21,11 @@
 </style>
 </head>
 <body>
-<span class="download" onclick="mydownload()">点击下载</span>
+<span class="download" onclick="mydownload()" style="display: none;">点击下载</span>
 
 
 <script type="text/javascript">
+    mydownload();
     function mydownload(){
         var src = '__STATIC__/upload/apk/new.apk';
         var form = document.createElement('form');

@@ -442,7 +442,7 @@ class BaseLogic {
         $res = ['error' => 0, 'msg' => '操作成功'];
         $url_api = 'http://api.qqpusher.yanxianjun.com/send_private_msg';
         $headers = [
-            'token:39a6e61801518b5ad50dad1c867e7344',
+            'token:27c631a69783252726649d1fe6cbe834',
         ];
 
         $qq = $params['qq'];
@@ -454,6 +454,7 @@ class BaseLogic {
         ];
 
         $res_api = apiget($url_api, $postdatas, 'post', [], $headers);
+        // ee($res_api);
         return $res;
     }
 

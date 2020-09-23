@@ -15,13 +15,13 @@ function p($str) {
     print_r($str);
 }
 
-function nodeTree($arr, $id = 0, $level = 0) {
+function nodeTree($arr, $id0 = 0, $level = 0, $id='id', $parent_id='parentid') {
     static $array = array();
     foreach ($arr as $v) {
-        if ($v['parentid'] == $id) {
+        if ($v[$parent_id] == $id0) {
             $v['level'] = $level;
             $array[] = $v;
-            nodeTree($arr, $v['id'], $level + 1);
+            nodeTree($arr, $v[$id], $level + 1, $id, $parent_id);
         }
     }
     return $array;

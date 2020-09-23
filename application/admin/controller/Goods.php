@@ -12,6 +12,7 @@ namespace app\admin\controller;
 use think\Page;
 use think\Db;
 use app\common\logic\OrderLogic;
+use app\common\logic\GoodscatLogic;
 
 class Goods extends Base {
 
@@ -35,6 +36,7 @@ class Goods extends Base {
     public function info(){
         $id = I('goods_id');
         $OrderLogic = new OrderLogic();
+        $GoodscatLogic = new GoodscatLogic();
         if (IS_POST) {
             $data = I('post.');
             // ee($data);
@@ -65,6 +67,11 @@ class Goods extends Base {
         $goodsConfigList = $OrderLogic->getGoodsConfigList();
 
         $row = db('v_goods')->where(['goods_id'=>$id])->find();
+
+        //获取已选择分类ID
+        $cat_id_arr = $GoodscatLogic->getSelectedCatIds($row['cat_id']);
+        $this->assign('cat_id_ids', implode('|', $cat_id_arr));
+
         // sql();
         // ee($row);
         $this->assign('row', $row);

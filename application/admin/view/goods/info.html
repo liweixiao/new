@@ -29,6 +29,18 @@
                     </div>
                 </div>
 
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">商品分类</label>
+                    <div class="col-sm-9 regionBox">
+                        <select class="J_cate_select mr10" data-pid="0" data-uri="{:U('goodscat/getSubCats')}" data-selected="{$cat_id_ids}">
+                        </select>
+                        <input type="hidden" name="cat_id" class="cat_id" id="J_cate_id" value="{$row.cat_id}" />
+                        <p class="notic">注：只有选择的商品分类，此商品才会在前端列表页面展示</p>
+
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">商品简介</label>
                     <div class="col-sm-9">
@@ -244,4 +256,9 @@ var ue = UE.getEditor('post_content',{
     autoHeightEnabled: true,
 });
 
+
+$(function(){
+    //多级菜单联动-楼盘地址用
+    $('.J_cate_select').cate_select({top_option:'请选择'}); //分类联动
+});
 </script>

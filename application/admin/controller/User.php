@@ -192,6 +192,9 @@ class User extends Base {
             ];
             $result_log = add_account_log($account_log);
 
+            //充值成功后把此会员充值提醒去掉(即account_log与此会员有关的state置为1)
+            db('account_log')->where(['user_id'=>$user_id, 'type'=>2])->update(['state'=>1]);
+
             // 提交事务
             Db::commit();
         }catch(\Exception $e) {

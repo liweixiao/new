@@ -86,7 +86,7 @@ class Index extends Base {
         $data['cmonth_invalid_amount'] = db('order')->where($where)->where('order_status', 'IN', [6,7])->sum('total_amount');
 
         //利润
-        $data['cmonth_profit'] = $data['cmonth_total_amount'] - $data['cmonth_invalid_amount'];
+        $data['cmonth_profit'] = $data['cmonth_total_amount'] - $data['cmonth_total_cost'] - $data['cmonth_invalid_amount'];
 
 
 

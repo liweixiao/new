@@ -16,6 +16,26 @@
             <!-- PAGE CONTENT BEGINS -->
             <div class="row">
                 <div class="col-xs-12 table-box">
+                    <form class="my-form form-inline mb10"  method="get" action="{:U('Admin/Goods/list', ['cid'=>$Think.get.cid,'gid'=>$Think.get.gid])}">
+                        <div class="sdiv">
+
+                            <!-- 筛选排序 -->
+                            <select name="sort" id="type" class="select" onchange="$('.my-form').submit()">
+                                <option value="">选择排序</option>
+                                <option value="1" {if condition="$Think.get.sort eq 1"}selected{/if}>销售价升序</option>
+                                <option value="2" {if condition="$Think.get.sort eq 2"}selected{/if}>销售价降序</option>
+                                <option value="3" {if condition="$Think.get.sort eq 3"}selected{/if}>会员价升序</option>
+                                <option value="4" {if condition="$Think.get.sort eq 4"}selected{/if}>会员价降序</option>
+                                <option value="5" {if condition="$Think.get.sort eq 4"}selected{/if}>成本升序</option>
+                                <option value="6" {if condition="$Think.get.sort eq 4"}selected{/if}>成本降序</option>
+                            </select>
+                            <!-- 筛选排序 -->
+
+                            <input type="text" class="qsbox w150" id="input-order-id" placeholder="商品名称|商品简介" value="{$Think.get.keyword}" name="keyword">
+                            <input type="submit" class="btn btn-primary btn-xs" value="搜索">
+                        </div>
+                    </form>
+
                     <table id="simple-table" class="table  table-bordered table-hover">
                         <thead>
                             <tr>
@@ -51,13 +71,33 @@
                                 </td>
                                 <td>{$vo.goods_id}</td>
                                 <!-- <td>{$vo.cat_name}</td> -->
-                                <td><a href="{:U('Home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">{$vo.goods_name}</a></td>
+                                <td>
+                                    <a href="{:U('Home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
+                                        {if condition="$vo.is_auto == 0"}
+                                        <span class="iconfont icon-zhipai"></span>
+                                        {/if}
+                                        {$vo.goods_name}
+                                    </a>
+                                </td>
                                 <td>{$vo.supplier_name}</td>
-                                <td>{$vo.sale_price|fnum=0,4}</td>
-                                <td>{$vo.user_price|fnum=0,4}</td>
-                                <td>{$vo.cost_price|fnum=0,4}</td>
-                                <td>{$vo.min_num|fnum=1,0}</td>
-                                <td>{$vo.unit|fnum=1,0}</td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','sale_price',this)" size="6" value="{$vo.sale_price|fnum=0,4}" />
+                                </td>
+
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','user_price',this)" size="6" value="{$vo.user_price|fnum=0,4}" />
+                                </td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','cost_price',this)" size="6" value="{$vo.cost_price|fnum=0,4}" />
+                                </td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','min_num',this)" size="6" value="{$vo.min_num|fnum=0,0}" />
+                                </td>
+
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','unit',this)" size="6" value="{$vo.unit|fnum=0,0}" />
+                                </td>
+                                
                                 <td><a href="{:U('Admin/goods/user_price_list',['id'=>$vo.goods_id])}" class="to-see">设置会员独享价</a></td>
                                 <td>{$vo.is_show_name}</td>
                                 <td>
@@ -69,7 +109,7 @@
                                             </span>
                                         </a>
 
-                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[id]\")}', '确认要删除『 id={$vo.id} 』这条记录吗？');">
+                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[goods_id]\")}', '确认要删除『 id={$vo.goods_id} 』这条记录吗？');">
                                            <span class="btn btn-xs btn-danger" >
                                                 <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                             </span>

@@ -22,12 +22,19 @@ class Index extends Base {
 		return $this->fetch('index');
     }
 
-
     //推送消息-下单
     public function pushMessageOrder(){
         $OrderLogic = new OrderLogic;
         $order_id = I('order_id', 0);//订单编号
         $push_res = $OrderLogic->pushMessageOrder(['order_id'=>$order_id]);
+        $this->ajaxReturn($push_res);
+    }
+
+    //推送消息-分类型
+    public function pushMessage(){
+        $ToolsLogic = new ToolsLogic;
+        $params = I('post.');
+        $push_res = $ToolsLogic->pushMessage($params);
         $this->ajaxReturn($push_res);
     }
 }

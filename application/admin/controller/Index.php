@@ -39,8 +39,11 @@ class Index extends Base {
         //成本
         $data['today_total_cost'] = db('order')->where($where)->sum('total_cost');
 
+        //无效订单=作废6、退款7
+        $data['today_invalid_amount'] = db('order')->where($where)->where('order_status', 'IN', [6,7])->sum('total_amount');
+
         //利润
-        $data['today_profit'] = $data['today_total_amount'] - $data['today_total_cost'];
+        $data['today_profit'] = $data['today_total_amount'] - $data['today_total_cost'] - $data['today_invalid_amount'];
 
 
 
@@ -79,8 +82,11 @@ class Index extends Base {
         //成本
         $data['cmonth_total_cost'] = db('order')->where($where)->sum('total_cost');
 
+        //无效订单=作废6、退款7
+        $data['cmonth_invalid_amount'] = db('order')->where($where)->where('order_status', 'IN', [6,7])->sum('total_amount');
+
         //利润
-        $data['cmonth_profit'] = $data['cmonth_total_amount'] - $data['cmonth_total_cost'];
+        $data['cmonth_profit'] = $data['cmonth_total_amount'] - $data['cmonth_invalid_amount'];
 
 
 
@@ -113,6 +119,9 @@ class Index extends Base {
         //手工订单统计-需要手工做的订单
         $data['notAutoOrdersNum'] = db('order')->whereIn('order_status', [8])->count();
         $data['notAutoOrdersStatus'] = '8';
+
+        //用户充值-未处理
+        $data['rechargeNotDoNum'] = db('account_log')->where(['state'=>0, 'type'=>2])->count();
         
         // sql();
         // ee($data);

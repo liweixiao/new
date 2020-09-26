@@ -212,6 +212,12 @@ em{font-style: normal;}
 .m-bottom20{margin-bottom: 20px;}
 
 .border-b-fff{border-bottom: 1px solid #fff;}
+.gray{
+    color: #999;
+}
+.level2{
+    color: #DAA520;
+}
 .gray-line{border-bottom: 1px solid #999;}
 .clear{clear: both;overflow: hidden;}
 .hide{display: none!important;}
@@ -487,6 +493,12 @@ em{font-style: normal;}
 }
 .manage-stat .infobox > .infobox-data > .infobox-data-number a {
     color: #f25658;
+}
+.manage-stat .infobox > .infobox-data > .infobox-data-number.gray a {
+    color: #ddd;
+}
+.manage-stat .infobox > .infobox-data > .infobox-data-number.gray{
+    color: #ddd;
 }
 .manage-stat h2{
     margin-bottom: 10px;

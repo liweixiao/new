@@ -313,6 +313,25 @@ go.pushMessageOrder = function(param){
     });
 }
 
+//用户行为通知[充值]
+go.pushMessage = function(param){
+    if (!param) param = {};
+    param.type = param.type ? param.type : '';//通知类型
+
+    $.ajax({
+        type: 'POST',
+        url: "/index.php/Home/index/pushMessage",
+        data: param,
+        dataType: 'json',
+        success: function(res){
+            //TODO
+        },
+        error: function(){
+            console.log("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+
 
 
 

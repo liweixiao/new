@@ -68,6 +68,8 @@ function payOrderSubmit(){
                 go.errorTips(res.msg);
             }else{
                 go.successTips(res.msg);
+
+                go.pushMessage({type:'cz', order_sn:order_sn});//充值提醒
             }
         },
         error : function(XMLHttpRequest, textStatus, errorThrown) {

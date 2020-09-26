@@ -27,9 +27,11 @@
                                 </th>
                                 <th>序号</th>
                                 <th>会员账号</th>
+                                <th>等级</th>
                                 <th>余额</th>
                                 <th>累计充值</th>
                                 <th>累计消费</th>
+                                <th>独享商品</th>
                                 <th>注册时间</th>
                                 <th>状态</th>
                                 <th>上次登录</th>
@@ -47,10 +49,21 @@
                                     </label>
                                 </td>
                                 <td>{$vo.user_id}</td>
-                                <td>{$vo.mobile}</td>
+                                <td>
+                                    {$vo.mobile}
+                                    {if condition="$vo.note"}
+                                    <span class="gray">
+                                    ({$vo.note|default=''})
+                                    </span>
+                                    {/if}
+                                </td>
+                                <td><span class="level{$vo.level}">{$user_level[$vo.level]|default=''}</span></td>
                                 <td>{$vo.user_money}</td>
                                 <td>{$vo.user_total_money}</td>
                                 <td>{$vo.total_money_use}</td>
+                                <td>
+                                    <a href="{:U('Admin/goods/user_price_list',['uid'=>$vo.user_id])}" class="to-see">查看独享商品({$vo.goods_user_num|default=0})</a>
+                                </td>
                                 <td>{$vo.ctime}</td>
                                 <td>{$vo.is_lock_name}</td>
                                 <td>{$vo.last_login}</td>
@@ -68,13 +81,13 @@
                                             </span>
                                         </a>
 
-                                        <a href='{:url("info","id=$vo[id]")}' title="编辑查看"> 
+                                        <a href='{:url("user/info","user_id=$vo[user_id]")}' title="编辑查看"> 
                                            <span class="btn btn-xs btn-info">
                                                 <i class="ace-icon fa fa-pencil bigger-120"></i>
                                             </span>
                                         </a>
 
-                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[id]\")}', '确认要删除『 id={$vo.id} 』这条记录吗？');"  title="删除">
+                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[user_id]\")}', '确认要删除『 id={$vo.user_id} 』这条记录吗？');"  title="删除">
                                            <span class="btn btn-xs btn-default" >
                                                 <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                             </span>
@@ -88,7 +101,7 @@
                             {/volist}    
                         </tbody>
                     </table>
-                    <div class="pagebox">{$rows->render()}</div>
+                    <div class="pagebox">{$page}</div>
                    
                 </div><!-- /.span -->
             </div><!-- /.row -->

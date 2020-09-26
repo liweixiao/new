@@ -23,7 +23,24 @@ class User extends Base {
     public function list() {
         $where = [];
         $rows = db("v_user")->where($where)->order('user_id desc')->paginate($this->showNum);
+        $page = $rows->render();
+
         // ee($rows->render());
+
+        $rows = $rows->toArray();//转换为数组
+        $rows = $rows['data'];//取数据
+        foreach ($rows as $key => $row) {
+            //会员独享价统计-统计该会员设置了多少独享价商品
+            $goods_user_num = db("goods_user")->where(['user_id'=>$row['user_id']])->count();
+            $rows[$key]['goods_user_num'] = $goods_user_num;
+        }
+
+        //获取会员级别
+        $user_level = db('user_level')->column('level_name', 'level_id');
+        $this->assign('user_level', $user_level);
+
+        // ee($rows);
+        $this->assign('page', $page);
         $this->assign('rows', $rows);
         return $this->fetch();
     }
@@ -33,12 +50,38 @@ class User extends Base {
      * 查看
      */
     public function info() {
+        $id = input('user_id');
+        if (IS_POST) {
+            $data = I('post.');
+            // ee($data);
+            $ctime = date('Y-m-d H:i:s');
 
-        $id = input('id');
+            if (empty($data['mobile'])) {
+                $this->error('操作失败，用户手机号必须填写');
+            }
+
+            if ($id) {
+                $data['mtime'] = $ctime;
+                $res = db('users')->where(['user_id'=>$id])->update($data);
+            } else {
+                $data['ctime'] = $ctime;
+                $res = db('users')->insert($data);
+            }
+
+            if (!$res) {
+                $this->error('操作失败');
+            }
+            $this->success('操作成功', url('user/list'));
+        }
+
+        //获取会员级别
+        $user_level = db('user_level')->column('level_name', 'level_id');
+        $this->assign('user_level', $user_level);
+
         if ($id) {
             //当前用户信息
-            $info = db('v_user')->where('user_id', $id)->find();
-            $this->assign('info', $info);
+            $row = db('v_user')->where('user_id', $id)->find();
+            $this->assign('row', $row);
         }
         return $this->fetch();
     }
@@ -191,6 +234,12 @@ class User extends Base {
             $where['type'] = $type;
         }
 
+        //处理状态
+        if (!empty($params['state'])) {
+            $state = $params['state'];
+            $where['state'] = $state;
+        }
+
         //根据会员账号查找
         if (!empty($params['keyword'])) {
             $keyword = $params['keyword'];
@@ -204,6 +253,19 @@ class User extends Base {
         $this->assign('rows', $rows);
         // ee($rows);
         return $this->fetch();
+    }
+
+    /*
+     * 删除
+     */
+    public function del() {
+        $id = input('id');
+        $res = db('users')->where(['user_id' => $id])->delete();
+        if ($res) {
+            $this->success('操作成功', url('index'));
+        } else {
+            $this->error('操作失败');
+        }
     }
 
 }

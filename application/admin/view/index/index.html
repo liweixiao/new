@@ -26,7 +26,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.today_total_amount}</span>
+                            <span class="infobox-data-number" num="{$data.today_total_amount}">{$data.today_total_amount}</span>
                             <div class="infobox-content">销售额</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.today_total_cost}</span>
+                            <span class="infobox-data-number" num="{$data.today_total_cost}">{$data.today_total_cost}</span>
                             <div class="infobox-content">成本</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.today_profit}</span>
+                            <span class="infobox-data-number" num="{$data.today_profit}">{$data.today_profit}</span>
                             <div class="infobox-content">利润</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.today_order_num}</span>
+                            <span class="infobox-data-number" num="{$data.today_order_num}">{$data.today_order_num}</span>
                             <div class="infobox-content">新增订单</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -75,7 +75,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.today_user}</span>
+                            <span class="infobox-data-number" num="{$data.today_user}">{$data.today_user}</span>
                             <div class="infobox-content">新注册会员</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.today_user_login}</span>
+                            <span class="infobox-data-number" num="{$data.today_user_login}">{$data.today_user_login}</span>
                             <div class="infobox-content">今日登录过</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -209,7 +209,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.cmonth_total_amount}</span>
+                            <span class="infobox-data-number" num="{$data.cmonth_total_amount}">{$data.cmonth_total_amount}</span>
                             <div class="infobox-content">销售额</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -221,7 +221,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.cmonth_total_cost}</span>
+                            <span class="infobox-data-number" num="{$data.cmonth_total_cost}">{$data.cmonth_total_cost}</span>
                             <div class="infobox-content">成本</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -233,7 +233,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.cmonth_profit}</span>
+                            <span class="infobox-data-number" num="{$data.cmonth_profit}">{$data.cmonth_profit}</span>
                             <div class="infobox-content">利润</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -245,7 +245,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.cmonth_order_num}</span>
+                            <span class="infobox-data-number" num="{$data.cmonth_order_num}">{$data.cmonth_order_num}</span>
                             <div class="infobox-content">新增订单</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -258,7 +258,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.cmonth_user}</span>
+                            <span class="infobox-data-number" num="{$data.cmonth_user}">{$data.cmonth_user}</span>
                             <div class="infobox-content">新注册会员</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -270,7 +270,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$data.cmonth_user_login}</span>
+                            <span class="infobox-data-number" num="{$data.cmonth_user_login}">{$data.cmonth_user_login}</span>
                             <div class="infobox-content">本月登录过</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -294,7 +294,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">{$vo.money}</span>
+                            <span class="infobox-data-number" num="{$data.money}">{$vo.money}</span>
                             <div class="infobox-content">余额({$vo.supplier_name})</div>
                         </div>
                         <div class="stat stat-important hide">x%</div>
@@ -307,7 +307,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">
+                            <span class="infobox-data-number" num="{$data.importantOrdersNum}">
                                 <a href="{:U('order/list', ['order_status'=>$data.importantOrdersStatus])}">
                                 {$data.importantOrdersNum}
                                 </a>
@@ -324,7 +324,7 @@
                         </div>
 
                         <div class="infobox-data">
-                            <span class="infobox-data-number">
+                            <span class="infobox-data-number" num="{$data.notAutoOrdersNum}">
                                 <a href="{:U('order/list', ['order_status'=>$data.notAutoOrdersStatus])}">
                                 {$data.notAutoOrdersNum}
                                 </a>
@@ -335,19 +335,26 @@
                     </div>
                     <!-- 手工单 -->
 
+                    <!-- 用户充值 -->
+                    <div class="infobox infobox-pink">
+                        <div class="infobox-icon">
+                            <span class="iconfont icon-cost"></span>
+                        </div>
+
+                        <div class="infobox-data">
+                            <span class="infobox-data-number" num="{$data.rechargeNotDoNum}">
+                                <a href="{:U('user/user_account_log', ['state'=>0, 'type'=>2])}">
+                                {$data.rechargeNotDoNum}
+                                </a>
+                            </span>
+                            <div class="infobox-content">充值提醒</div>
+                        </div>
+                    </div>
+                    <!-- 用户充值 -->
+
 
                 </div><!-- /.widget-box -->
                 <!-- 其他统计-END -->
-
-
-
-
-
-
-
-
-
-
 
 
             </div><!-- /.col -->
@@ -363,6 +370,9 @@ $(function(){
         ,format:'yyyy/MM/dd'
         ,range: true
     });
+
+    //小于零数字不高亮显示
+    $('.infobox-data-number[num=0]').addClass('gray');
 });
 
 </script>

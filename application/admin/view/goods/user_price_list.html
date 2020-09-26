@@ -7,7 +7,14 @@
     </div>
     <div class="page-header">
         <h1>
-             {:model('menu')->getName()}<span class="sub">({$row.goods_name})</span>
+             {:model('menu')->getName()}
+             <span class="sub">
+            {if condition="$Think.get.uid > 0"}
+             ({$row.mobile})
+             {else/}
+             ({$row.goods_name})
+             {/if}
+            </span>
         </h1>
     </div><!-- /.page-header -->
 
@@ -27,6 +34,7 @@
                                 </th>
                                 <th>序号</th>
                                 <th>用户</th>
+                                <th>商品名称</th>
                                 <th>商品会员价</th>
                                 <th>管理员操作</th>
                             </tr>
@@ -43,6 +51,7 @@
                                 </td>
                                 <td>{$vo.goods_user_id}</td>
                                 <td>{$vo.mobile}</td>
+                                <td>{$vo.goods_name}</td>
                                 <td>
                                     <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods_user','goods_user_id','{$vo.goods_user_id}','sale_price',this)" size="6" value="{$vo.sale_price|fnum=0,4}" />
                                 </td>

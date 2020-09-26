@@ -22,9 +22,24 @@ class Goods extends Base {
     }
 
     public function list() {
+        $sortType = I('sort/d', 0);
+        $keyword = I('keyword/s', '');
         $where = [];
-        $rows = db("v_goods")->where($where)->order('goods_id')->paginate($this->showNum);
+
+        $sort = 'goods_id';//默认排序
+        $sortRtn = ['1'=>'sale_price', '2'=>'sale_price desc', '3'=>'user_price', '4'=>'user_price desc', '5'=>'cost_price', '6'=>'cost_price desc'];
+        if (!empty($sortType)) {
+            $sort = $sortRtn[$sortType] ?? $sort;
+        }
+
+        //根据会员账号查找
+        if (!empty($keyword)) {
+            $where['goods_name|desc'] = ['like', "%{$keyword}%"];
+        }
+
+        $rows = db("v_goods")->where($where)->order($sort)->paginate($this->showNum);
         // ee($rows->render());
+        // ee($rows);
         $this->assign('rows', $rows);
         return $this->fetch();
     }
@@ -85,16 +100,25 @@ class Goods extends Base {
      * 查看商品会员价
      */
     public function user_price_list() {
-        $id = input('id');
+        $id = input('id');//goods_id
+        $user_id = input('uid');//会员id
+        $row = [];
 
-        if (empty($id)) {
-            $this->error('商品ID不能为空');
-        }
         $where  = [];
-        $where['goods_id'] = $id;
 
-        //查看商品
-        $row = db("v_goods")->where($where)->find();
+        //指定商品id
+        if (!empty($id)) {
+            $where['goods_id'] = $id;
+            //查看商品
+            $row = db("v_goods")->where($where)->find();
+        }
+
+        //指定会员id
+        if (!empty($user_id)) {
+            $where['user_id'] = $user_id;
+            $row = db("users")->where($where)->find();
+        }
+
         $rows = db('v_goods_user')->where($where)->order('goods_user_id')->paginate($this->showNum);
         // ee($rows);
         $this->assign('rows', $rows);
@@ -179,6 +203,22 @@ class Goods extends Base {
         }
 
         $this->ajaxReturn($res);
+    }
+
+    /*
+     * 删除
+     */
+
+    public function del() {
+        $id = input('id');
+        $row = db('goods')->where(['goods_id' => $id])->find();
+        $res = db('goods')->where(['goods_id' => $id])->delete();
+        if ($res) {
+            db('goods_cat')->where(['cat_id'=>$row['cat_id']])->delete();
+            $this->success('操作成功', url('index'));
+        } else {
+            $this->error('操作失败');
+        }
     }
 
 }

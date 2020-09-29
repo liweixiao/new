@@ -69,7 +69,8 @@
                                 <th>商品名称</th>
                                 <th>任务模式</th>
                                 <th>目标</th>
-                                <th class="w100">后台备注</th>
+                                <th class="w100">API备注</th>
+                                <th>订单备注</th>
                                 <th>实时状态</th>
                                 <th>任务数量</th>
 
@@ -97,6 +98,7 @@
                                 <td>{$tags.run_first[$vo.first]|default=''}</td>
                                 <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
                                 <td>{$vo.admin_note}</td>
+                                <td>{$vo.order_note}</td>
                                 <td>
                                     {if condition='$vo.order_status eq 5'}
                                     <span class="c-danger">{$vo.order_status_name}</span> 

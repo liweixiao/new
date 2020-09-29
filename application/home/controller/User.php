@@ -756,7 +756,8 @@ class User extends Base{
                 'user_id'      => $this->user_id,
                 'order_sn'     => $order_sn,
                 'is_show'      => 0,//这个默认是不显示的
-                'change_money' => $recharge,
+                'change_money' => 0,//只是作为记录使用，这里不记录金额
+                'befor_money'  => $row['user_money'],
                 'desc'         => '用户充值-用户',
                 'type'         => 2,//充值
             ];

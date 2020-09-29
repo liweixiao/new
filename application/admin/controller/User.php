@@ -186,7 +186,8 @@ class User extends Base {
             $account_log = [
                 'user_id'      => $user_id,
                 'change_money' => $recharge,
-                'desc'         => '用户充值-管理员',
+                'befor_money'  => $row['user_money'],
+                'desc'         => '用户充值-系统',
                 'operator'     => $this->user_id,
                 'type'         => 2,//充值
             ];

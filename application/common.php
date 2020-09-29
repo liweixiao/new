@@ -2628,6 +2628,7 @@ if( ! function_exists('add_account_log')){
         $account_log = [
             'user_id'     => $params['user_id'],
             'user_money'  => $params['change_money'] ?? 0,
+            'befor_money' => $params['befor_money'] ?? 0,
             'change_time' => time(),
             'order_sn'    => $params['order_sn'] ?? '',
             'desc'        => $params['desc'] ?? '',

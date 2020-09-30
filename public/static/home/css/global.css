@@ -565,7 +565,7 @@ em{font-style: normal;}
 }
 .cat-box .item-content .price-desc .my-row .txt-info{
     color: #8d9799;
-    margin-right: 6px;
+    /*margin-right: 6px;*/
 }
 .cat-box .item-content .price-desc .my-row .txt-cnt{
     

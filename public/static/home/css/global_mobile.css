@@ -5,6 +5,9 @@
 .nav-pc{
     display: none;
 }
+.layui-container {
+    padding: 0;
+}
 .mobile-menu {
     display: block;
     position: absolute;
@@ -124,7 +127,7 @@
     margin-bottom: 4px;
 }
 .container {
-    padding: 15px 15px 100px 15px;
+    padding: 15px 10px 100px 10px;
 }
 
 

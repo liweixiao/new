@@ -373,6 +373,49 @@ class BaseLogic {
         return $res;
     }
 
+    //获取当前分类ids下面所有商品-暂时用于导航-不分页-注意，这个跟上面区别是：
+    //这个显示会员价或者会员私有价
+    public function getCatGoodsListByUser($cat_ids=[], $user_id=0){
+        if (empty($cat_ids)) {
+            $cat_ids = 1;
+        }
+        $where=[];
+        $where['is_show'] = 1;
+        $where['cat_id'] = ['IN', $cat_ids];
+        $res = db('goods')->alias('g')
+                ->field('g.*, gu.goods_user_id, gu.sale_price as user_sale_price')
+                ->join('goods_user gu', "g.goods_id=gu.goods_id and gu.user_id={$user_id}", 'LEFT')
+                ->where($where)
+                ->select();
+
+        if (empty($res)) {
+            return $res;
+        }
+
+        //价格显示
+        $user = db('v_user')->where(['user_id'=>$user_id])->find();
+        if ($user) {
+            foreach ($res as $key => $row) {
+
+                //获取会员价(注意:普通的会员level=1这里就直接跳过，因为普通会员直接拿sale_price即可)-会被下面优先级覆盖
+                if (!empty($user) && $user['level'] > 1 && !empty($user['sale_price_field'])) {
+                    $sale_price_field = $user['sale_price_field'];
+                    if (!empty($row[$sale_price_field])) {
+                        $res[$key]['sale_price'] = $row[$sale_price_field];
+                    }
+                }
+                
+                //显示定制价格-优先级最高
+                if (!empty($row['user_sale_price']) && $row['user_sale_price'] > 0) {
+                    $res[$key]['sale_price'] = $row['user_sale_price'];
+                }
+            }
+        }
+
+
+        return $res;
+    }
+
     //获取所有标签
     public function getAllTags($type = '', $cat_id=2, $only_name=true){
         $res = [];

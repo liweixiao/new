@@ -206,10 +206,34 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">速度描述</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="speed" value="{$row.speed}"/>
+                        <p class="notic">解释：描述订单速度</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">自动化</label>
                     <div class="col-sm-9 pt5">
                         {:radio(['1'=>'是', '0'=>'否'], $row['is_auto'], 'class="" name="is_auto"')}
                         <p class="notic">是否为自动化，若选否则为手工单</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">可退款</label>
+                    <div class="col-sm-9 pt5">
+                        {:radio(['1'=>'是', '0'=>'否'], $row['is_refund'], 'class="" name="is_refund"')}
+                        <p class="notic">是否可以退款</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">独立计数</label>
+                    <div class="col-sm-9 pt5">
+                        {:radio(['1'=>'是', '0'=>'否'], $row['is_dl_count'], 'class="" name="is_dl_count"')}
+                        <p class="notic">是否独立计数</p>
                     </div>
                 </div>
 

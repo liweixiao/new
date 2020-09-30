@@ -33,7 +33,8 @@ class Goods extends Base {
         //获取当前分类下面所有子分类ids
         $subCatIds = $this->ToolsLogic->getSubCatIds($cat_id);
 
-        $rows = $this->ToolsLogic->getCatGoodsList($subCatIds);
+        // $rows = $this->ToolsLogic->getCatGoodsList($subCatIds);
+        $rows = $this->ToolsLogic->getCatGoodsListByUser($subCatIds, $this->user_id);
         // ee($rows);
         $tags = $this->ToolsLogic->getAllTags('run_first', $cat_id);
 

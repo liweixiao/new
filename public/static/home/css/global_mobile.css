@@ -114,9 +114,18 @@
 .goods-sub-tab.sub-tab ul li {
     min-width: 120px;
 }
+.cat-box .item-content {
+    padding: 6px 8px 15px;
+    min-height: 314px;
+    overflow: hidden;
+}
 
-
-
+.cat-box .item-content .tag {
+    margin-bottom: 4px;
+}
+.container {
+    padding: 15px 15px 100px 15px;
+}
 
 
 

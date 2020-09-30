@@ -36,9 +36,36 @@
 										<h3>
 											{notempty name="$vo.icon"}<span class="iconfont {$vo.icon}"></span>{/notempty}
 											{$vo.goods_name}
-
 										</h3>
 										<p>{$vo.desc}</p>
+										<span class="tag">{if condition="$vo.is_dl_count eq 1"}独立计数{else/}非独立计数{/if}</span>
+										<span class="tag">{if condition="$vo.is_refund eq 1"}支持退款{else/}进行中不支持退款{/if}</span>
+
+										<div class="price-desc">
+											<div class="my-row">
+												<span class="txt-info">购&nbsp;买&nbsp;单&nbsp;价：</span>
+												<span class="txt-cnt price">¥ {$vo.sale_price|fnum=0,4}/{$vo.unit}</span>
+											</div>
+
+											<div class="my-row">
+												<span class="txt-info">最低下单量：</span>
+												<span class="txt-cnt green">{if condition="$vo.min_num gt 0"}{$vo.min_num*$vo.unit|fnum=0,0}{else/}不限{/if}</span>
+											</div>
+
+											<div class="my-row">
+												<span class="txt-info">最低购买价：</span>
+												<span class="txt-cnt green">¥ {$vo.sale_price*$vo.min_num|fnum}</span>
+											</div>
+
+											<div class="my-row">
+												<span class="txt-info">最大下单量：</span>
+												<span class="txt-cnt green">{if condition="$vo.max_num gt 0"}{$vo.max_num|fnum=0,0}{else/}不限{/if}</span>
+											</div>
+
+										</div>
+
+
+
 										<span class="layui-btn layui-btn-fluid">立即购买</span>
 									</div>
 								</a>

@@ -22,7 +22,9 @@ class User extends Base {
 
     public function list() {
         $where = [];
-        $rows = db("v_user")->where($where)->order('user_id desc')->paginate($this->showNum);
+        $sort = 'sort, user_id';//默认排序
+
+        $rows = db("v_user")->where($where)->order($sort)->paginate($this->showNum);
         $page = $rows->render();
 
         // ee($rows->render());

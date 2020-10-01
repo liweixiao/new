@@ -26,6 +26,7 @@
                                     </label>
                                 </th>
                                 <th>序号</th>
+                                <th>排序</th>
                                 <th>会员账号</th>
                                 <th>等级</th>
                                 <th>余额</th>
@@ -49,6 +50,9 @@
                                     </label>
                                 </td>
                                 <td>{$vo.user_id}</td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('users','user_id','{$vo.user_id}','sort',this)" size="3" value="{$vo.sort|fnum=0}" reload="true" />
+                                </td>
                                 <td>
                                     {$vo.mobile}
                                     {if condition="$vo.note"}

@@ -26,7 +26,7 @@ class Goods extends Base {
         $keyword = I('keyword/s', '');
         $where = [];
 
-        $sort = 'goods_id';//默认排序
+        $sort = 'sort, goods_id';//默认排序
         $sortRtn = ['1'=>'sale_price', '2'=>'sale_price desc', '3'=>'user_price', '4'=>'user_price desc', '5'=>'cost_price', '6'=>'cost_price desc'];
         if (!empty($sortType)) {
             $sort = $sortRtn[$sortType] ?? $sort;

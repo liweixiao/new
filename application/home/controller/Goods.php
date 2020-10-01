@@ -35,6 +35,7 @@ class Goods extends Base {
 
         // $rows = $this->ToolsLogic->getCatGoodsList($subCatIds);
         $rows = $this->ToolsLogic->getCatGoodsListByUser($subCatIds, $this->user_id);
+        $this->ToolsLogic->delFields($rows, ['out_url']);//剔除字段
         // ee($rows);
         $tags = $this->ToolsLogic->getAllTags('run_first', $cat_id);
 
@@ -48,6 +49,8 @@ class Goods extends Base {
     public function detail(){
         $goods_id = I('id', 0);//商品id
         $row = $this->ToolsLogic->getGoodsRow($goods_id, $this->user_id);
+        $this->ToolsLogic->delFields($row, ['out_url'], 1);//剔除字段
+
         if (empty($row)) {
             $this->error('非法请求');
         }

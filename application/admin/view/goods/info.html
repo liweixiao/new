@@ -42,6 +42,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">商品图片</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="logo" value="{$row.logo|default=''}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">商品简介</label>
                     <div class="col-sm-9">
                         <textarea rows="3" type="text" class="col-xs-10 col-sm-5" name="desc">{$row.desc|default=''}</textarea>
@@ -123,6 +130,14 @@
                     <div class="col-sm-9">
                         <input type="text" class="col-xs-10 col-sm-5"  name="goods_id_out" value="{$row.goods_id_out}"/>
                         <p class="notic">请注意：<b>慎重改动</b> 错误无法下单</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">外链</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="out_url" value="{$row.out_url}"/>
+                        <p class="notic">商品外链地址，后台专用</p>
                     </div>
                 </div>
 

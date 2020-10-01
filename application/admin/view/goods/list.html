@@ -46,8 +46,10 @@
                                     </label>
                                 </th>
                                 <th>序号</th>
+                                <th>排序</th>
                                 <!-- <th>商品分类</th> -->
                                 <th>商品名称</th>
+                                <th>外链</th>
                                 <th>供应商</th>
                                 <th>销售价</th>
                                 <th>会员价</th>
@@ -70,6 +72,9 @@
                                     </label>
                                 </td>
                                 <td>{$vo.goods_id}</td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','sort',this)" size="3" value="{$vo.sort|fnum=0}" reload="true" />
+                                </td>
                                 <!-- <td>{$vo.cat_name}</td> -->
                                 <td>
                                     <a href="{:U('Home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
@@ -78,6 +83,11 @@
                                         {/if}
                                         {$vo.goods_name}
                                     </a>
+                                </td>
+                                <td>
+                                    {notempty name="vo.out_url"}
+                                    <a href="{$vo.out_url}" target="_blank" class="to-see">查看</a>
+                                    {/notempty}
                                 </td>
                                 <td>{$vo.supplier_name}</td>
                                 <td>

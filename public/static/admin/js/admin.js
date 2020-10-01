@@ -392,6 +392,11 @@ go.changeTableVal = function(table, id_name, id_value, field, obj,yes,no) {
             if (!$(obj).hasClass('no') && !$(obj).hasClass('yes')){
                 if (res.error==0) {
                     layer.msg('更新成功', {icon: 1});
+
+                    //成功之后是否刷新
+                    if ($(obj).attr('reload')) {
+                        location.reload();
+                    }
                 }else{
                     layer.msg('更新失败', {icon: 1});
                 }

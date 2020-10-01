@@ -577,7 +577,44 @@ class BaseLogic {
     }
 
 
+    /**
+    * 剔除字段
+    * @param array $rows 原始数据
+    * @param array $fields 要剔除的字段数组
+    * @param int $w $rows 数据源是一位数组还是二维数组
+    */
+    public function delFields(&$rows, $fields=[], $w=2){
+        if (empty($rows)) {
+            return;
+        }
 
+        if (empty($fields)) {
+            return;
+        }
+
+        if (!is_array($fields)) {
+            return;
+        }
+
+        //处理二维数组
+        if ($w == 2) {
+            foreach ($rows as $key => $value) {
+                foreach ($fields as $field) {
+                    if (isset($value[$field])) {
+                        unset($rows[$key][$field]);
+                    }
+                }
+            }
+        }else{
+            foreach ($fields as $field) {
+                if (isset($rows[$field])) {
+                    unset($rows[$field]);
+                }
+            }
+        }
+
+        return true;
+     }
 
 
 

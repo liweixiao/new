@@ -2646,6 +2646,20 @@ if( ! function_exists('add_account_log')){
     }
 }
 
+/**
+ * 数字超过万显示x万
+ * @param number $num
+ * @return number
+ */
+if( ! function_exists('shortNum')){
+    function shortNum($num){
+        if ($num >= 10000) {
+            return ($num/10000) . '万';
+        }
+        return $num;
+    }
+}
+
 
 
 

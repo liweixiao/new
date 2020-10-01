@@ -44,12 +44,12 @@
 										<div class="price-desc">
 											<div class="my-row">
 												<span class="txt-info s-info">购买单价：</span>
-												<span class="txt-cnt price">¥ {$vo.sale_price|fnum=0,4}/{$vo.unit}</span>
+												<span class="txt-cnt price">¥ {$vo.sale_price|fnum=0,4}/{$vo.unit|shortNum}</span>
 											</div>
 
 											<div class="my-row">
 												<span class="txt-info">最低下单量：</span>
-												<span class="txt-cnt green">{if condition="$vo.min_num gt 0"}{$vo.min_num*$vo.unit|fnum=0,0}个{else/}不限{/if}</span>
+												<span class="txt-cnt green">{if condition="$vo.min_num gt 0"}{$vo.min_num*$vo.unit|fnum=0,0|shortNum}个{else/}不限{/if}</span>
 											</div>
 
 											<div class="my-row">

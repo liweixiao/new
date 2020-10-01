@@ -567,6 +567,9 @@ em{font-style: normal;}
     color: #8d9799;
     /*margin-right: 6px;*/
 }
+.cat-box .item-content .price-desc .my-row .txt-info.s-info{
+    letter-spacing: 3px;
+}
 .cat-box .item-content .price-desc .my-row .txt-cnt{
     
 }

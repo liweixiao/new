@@ -129,6 +129,12 @@
 .container {
     padding: 15px 10px 100px 10px;
 }
+.cat-box .item-content .price-desc .my-row .txt-info.s-info{
+    letter-spacing: 0;
+}
+.cat-box .item-content .price-desc {
+    padding: 5px 0 5px 5px;
+}
 
 
 

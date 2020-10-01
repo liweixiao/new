@@ -379,6 +379,7 @@ class BaseLogic {
         if (empty($cat_ids)) {
             $cat_ids = 1;
         }
+        $sort = 'sort';
         $where=[];
         $where['is_show'] = 1;
         $where['cat_id'] = ['IN', $cat_ids];
@@ -386,6 +387,7 @@ class BaseLogic {
                 ->field('g.*, gu.goods_user_id, gu.sale_price as user_sale_price')
                 ->join('goods_user gu', "g.goods_id=gu.goods_id and gu.user_id={$user_id}", 'LEFT')
                 ->where($where)
+                ->order('sort')
                 ->select();
 
         if (empty($res)) {

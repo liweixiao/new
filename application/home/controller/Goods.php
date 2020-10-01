@@ -20,6 +20,8 @@ class Goods extends Base {
     //商品列表,思路是先拿到大分类id，然后找到大分类下面所有子分类id-sub_cat_ids,然后拿这些ids去商品表查即可
     public function list(){
         $cat_id = I('id', 0);//商品分类id
+        $tag = I('tag/d', 0);//商品tag
+        $params = I('get.');//参数
 
         if (empty($cat_id)) {
             $this->error('地址有误!请检查');
@@ -34,10 +36,10 @@ class Goods extends Base {
         $subCatIds = $this->ToolsLogic->getSubCatIds($cat_id);
 
         // $rows = $this->ToolsLogic->getCatGoodsList($subCatIds);
-        $rows = $this->ToolsLogic->getCatGoodsListByUser($subCatIds, $this->user_id);
+        $rows = $this->ToolsLogic->getCatGoodsListByUser($subCatIds, $this->user_id, $params);
         $this->ToolsLogic->delFields($rows, ['out_url']);//剔除字段
         // ee($rows);
-        $tags = $this->ToolsLogic->getAllTags('run_first', $cat_id);
+        $tags = $this->ToolsLogic->getAllTags('goods_tag');
 
         $this->assign('cat', $cat);
         $this->assign('rows', $rows);

@@ -42,6 +42,19 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">标签</label>
+                    <div class="col-sm-9 multi_select mt6">
+                        {foreach name="tags.goods_tag" item="v" key="k"}
+                            <span>
+                                <input {if condition="in_array($k, $row.tag_ids_arr)"}checked{/if} type="checkbox" name="tag_ids[]" value="{$k}" />
+                                {$v}
+                            </span>
+                        {/foreach}
+                        <p class="notic">注：商品贴上标签后，可以在客户端列表进行筛选</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">商品图片</label>
                     <div class="col-sm-9">
                         <input type="text" class="col-xs-10 col-sm-5"  name="logo" value="{$row.logo|default=''}"/>

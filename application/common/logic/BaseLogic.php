@@ -375,7 +375,7 @@ class BaseLogic {
 
     //获取当前分类ids下面所有商品-暂时用于导航-不分页-注意，这个跟上面区别是：
     //这个显示会员价或者会员私有价
-    public function getCatGoodsListByUser($cat_ids=[], $user_id=0){
+    public function getCatGoodsListByUser($cat_ids=[], $user_id=0, $params=[]){
         if (empty($cat_ids)) {
             $cat_ids = 1;
         }
@@ -383,13 +383,24 @@ class BaseLogic {
         $where=[];
         $where['is_show'] = 1;
         $where['cat_id'] = ['IN', $cat_ids];
+
+
+        //筛选-标签
+        if (!empty($params['tag'])) {
+            $tag = $params['tag'];
+            if ($tag_ids_filter_str = $this->makeIdsInFieldCond($tag, 'tag_ids')) {
+                $where[] = ['EXP', $tag_ids_filter_str];
+            }
+        }
+
+
         $res = db('goods')->alias('g')
                 ->field('g.*, gu.goods_user_id, gu.sale_price as user_sale_price')
                 ->join('goods_user gu', "g.goods_id=gu.goods_id and gu.user_id={$user_id}", 'LEFT')
                 ->where($where)
                 ->order('sort')
                 ->select();
-
+        // sql();
         if (empty($res)) {
             return $res;
         }
@@ -419,18 +430,18 @@ class BaseLogic {
     }
 
     //获取所有标签
-    public function getAllTags($type = '', $cat_id=2, $only_name=true){
+    public function getAllTags($type = '', $cat_id=0, $only_name=true){
         $res = [];
         $where = [];
 
         //仅查询某个类型情况
         if (!empty($type)) {
-            $$where['type'] = $type;
+            $where['type'] = $type;
         }
 
         //仅查询某个供应商情况
         if (!empty($cat_id)) {
-            $$where['cat_id'] = $cat_id;
+            $where['cat_id'] = $cat_id;
         }
 
         $datas = Db::name('goods_label')->where($where)->order('type asc, sort asc')->field('id, type, label_id, label_name,tag')->select();
@@ -616,10 +627,59 @@ class BaseLogic {
         return true;
      }
 
+     //转换前端提交的数组为逗号分隔字符串
+     public function arr2string(&$row, $convertList=[]){
+         if (empty($row)) {
+             return;
+         }
+
+         if (empty($convertList)) {
+             return;
+         }
+
+         if (is_string($convertList) && $convertList) {
+             if (isset($row[$convertList]) && is_array($row[$convertList])) {
+                 $row[$convertList] = implode(',', $row[$convertList]);
+             }
+         }elseif(is_array($convertList)){
+             foreach ($convertList as $rowKey) {
+                 if (in_array($rowKey, array_keys($row))) {
+                     if (is_array($row[$rowKey])) {
+                         $row[$rowKey] = implode(',', $row[$rowKey]);
+                     }
+                 }
+             }
+         }
+     }
 
 
+     /**
+      * 生成find_in_set查询条件,传入是ids字符串或者数组
+      * @param mixed $ids 查询条件,可以是逗号分隔的字符串
+      * @param string $fieldName 数据库字段，一般以逗号分隔的值,例如：1,2,3
+      * @return str 数据库查询语句 or连接的
+      */
+     public function makeIdsInFieldCond($ids, $fieldName){
+         $exp_str = '';
+         if (empty($ids)) {
+             return $exp_str;
+         }
 
+         $ids_arr = $ids;
+         //若传入的是字符串,例如：1,2,3
+         if (is_string($ids)) {
+             $ids_arr = css2array($ids);
+         }
 
+         $exp = [];
+         foreach ($ids_arr as $id) {
+             if (!empty($id)) {
+                 $exp[] = "FIND_IN_SET({$id}, $fieldName)";
+             }
+         }
+         $exp_str = implode(' OR ', $exp);
+         return $exp_str;
+     }
 
 
 }

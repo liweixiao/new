@@ -10,11 +10,40 @@
 		<!-- 主体-->
 		<div class="layui-body">
 			<div class="container">
-				<div class="layui-tab layui-tab-brief mb15">
-					<ul class="layui-tab-title">
-						<li class="layui-this">{$cat.cat_name}</li>
+				<div class="my-tab mb15">
+					<ul>
+						<li class="on">{$cat.cat_name}</li>
+						<li class="tag-box">
+							<a href="{:U('home/goods/list',['id'=>$Think.get.id])}">
+								<span class="item-tag mr10 {if condition='empty($Think.get.tag)'}on{/if}">全部</span>
+							</a>
+							{volist name="tags.goods_tag" id="vo"}
+							<a href="{:U('home/goods/list',['id'=>$Think.get.id, 'tag'=>$key])}">
+								<span class="item-tag mr10 {if condition='$Think.get.tag eq $key'}on{/if}">{$vo}</span>
+							</a>
+							{/volist}
+						</li>
 					</ul>
 				</div>
+
+
+				<!-- <div class="layui-tab myCatBox layui-tab-brief mb15">
+					<ul class="layui-tab-title">
+						<li class="layui-this">{$cat.cat_name}</li>
+
+						<li class="tag-box">
+							<a href="{:U('home/goods/list',['id'=>$Think.get.id])}">
+								<span class="item-tag mr10 {if condition='empty($Think.get.tag)'}on{/if}">全部</span>
+							</a>
+							{volist name="tags.goods_tag" id="vo"}
+							<a href="{:U('home/goods/list',['id'=>$Think.get.id, 'tag'=>$key])}">
+								<span class="item-tag mr10 {if condition='$Think.get.tag eq $key'}on{/if}">{$vo}</span>
+							</a>
+							{/volist}
+
+						</li>
+					</ul>
+				</div> -->
 
 				<div class="layui-container  goods-list">
 					<!-- 内容区域 -->

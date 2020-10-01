@@ -61,6 +61,9 @@ class Goods extends Base {
                 $this->error('操作失败，商品名称必须填写');
             }
 
+            //相关标签数组转为逗号分隔
+            $OrderLogic->arr2string($data,['tag_ids']);
+            
             if ($id) {
                 $data['mtime'] = $ctime;
                 $res = db('goods')->where(['goods_id'=>$id])->update($data);
@@ -78,10 +81,17 @@ class Goods extends Base {
         //获取供应商
         $supplierList = $OrderLogic->getSupplierList();
 
+        //获取标签
+        $tags = $OrderLogic->getAllTags('goods_tag');
+
+
         //获取商品配置
         $goodsConfigList = $OrderLogic->getGoodsConfigList();
 
         $row = db('v_goods')->where(['goods_id'=>$id])->find();
+        if ($row) {
+            $row['tag_ids_arr'] = css2array($row['tag_ids']);
+        }
 
         //获取已选择分类ID
         $cat_id_arr = $GoodscatLogic->getSelectedCatIds($row['cat_id']);
@@ -90,6 +100,7 @@ class Goods extends Base {
         // sql();
         // ee($row);
         $this->assign('row', $row);
+        $this->assign('tags', $tags);
         $this->assign('supplierList', $supplierList);
         $this->assign('goodsConfigList', $goodsConfigList);
         return $this->fetch();

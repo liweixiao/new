@@ -19,7 +19,7 @@
             <!-- PAGE CONTENT BEGINS -->
             <div class="row">
                 <div class="col-xs-12 table-box">
-                    <form class="my-form form-inline mb10"  method="get" action="{:U('Admin/Goods/list', ['cid'=>$Think.get.cid,'gid'=>$Think.get.gid])}">
+                    <form class="my-form form-inline mb10"  method="get" action="{:U('Admin/Goods/set_user_goods', ['uid'=>$user.user_id])}">
                         <div class="sdiv">
 
                             <!-- 筛选排序 -->

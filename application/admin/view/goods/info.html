@@ -46,7 +46,7 @@
                     <div class="col-sm-9 multi_select mt6">
                         {foreach name="tags.goods_tag" item="v" key="k"}
                             <span>
-                                <input {if condition="in_array($k, $row.tag_ids_arr)"}checked{/if} type="checkbox" name="tag_ids[]" value="{$k}" />
+                                <input {if condition="!empty($row.tag_ids_arr) and in_array($k, $row.tag_ids_arr)"}checked{/if} type="checkbox" name="tag_ids[]" value="{$k}" />
                                 {$v}
                             </span>
                         {/foreach}

@@ -33,6 +33,7 @@
                                 <th>累计充值</th>
                                 <th>累计消费</th>
                                 <th>独享商品</th>
+                                <th>设置商品</th>
                                 <th>注册时间</th>
                                 <th>状态</th>
                                 <th>上次登录</th>
@@ -67,6 +68,9 @@
                                 <td>{$vo.total_money_use}</td>
                                 <td>
                                     <a href="{:U('Admin/goods/user_price_list',['uid'=>$vo.user_id])}" class="to-see">查看独享商品({$vo.goods_user_num|default=0})</a>
+                                </td>
+                                <td>
+                                    <a href="{:U('Admin/goods/set_user_goods',['uid'=>$vo.user_id])}" class="to-see">设置商品</a>
                                 </td>
                                 <td>{$vo.ctime}</td>
                                 <td>{$vo.is_lock_name}</td>

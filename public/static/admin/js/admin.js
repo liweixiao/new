@@ -405,6 +405,37 @@ go.changeTableVal = function(table, id_name, id_value, field, obj,yes,no) {
     });
 }
 
+//设置会员商品私有价
+go.setUserPrice = function(obj){
+    var sale_price    = $(obj).val();
+    var goods_user_id = $(obj).attr('goods_user_id');
+    var user_id       = $(obj).attr('user_id');
+    var goods_id      = $(obj).attr('goods_id');
+    $.ajax({
+        type: 'POST',
+        url: "/Admin/goods/doSetUserPrice",
+        data: {goods_user_id:goods_user_id, user_id:user_id, goods_id:goods_id, sale_price:sale_price},
+        dataType: 'json',
+        success: function(res){
+            if (res.error==0) {
+                layer.msg('更新成功', {icon: 1});
+
+                //成功之后是否刷新
+                if ($(obj).attr('reload')) {
+                    location.reload();
+                }
+            }else{
+                layer.msg('更新失败', {icon: 1});
+            }
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
+
+}
+
 
 
 

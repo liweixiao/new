@@ -1,0 +1,152 @@
+<div class="page-content">
+    <div class="col-sm-6 pull-right">
+        <span class="btn btn-sm btn-primary pull-right" onclick="javascript:window.location.href='info'">
+            添加
+            <i class="icon-reply icon-only"></i>
+        </span>
+    </div>
+    <div class="page-header">
+        <h1>
+            会员商品设置
+            <span class="sub">
+            ({$user.mobile}{notempty name="user.note"} - {$user.note}{/notempty})
+            </span>
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <div class="row">
+                <div class="col-xs-12 table-box">
+                    <form class="my-form form-inline mb10"  method="get" action="{:U('Admin/Goods/list', ['cid'=>$Think.get.cid,'gid'=>$Think.get.gid])}">
+                        <div class="sdiv">
+
+                            <!-- 筛选排序 -->
+                            <select name="sort" id="type" class="select" onchange="$('.my-form').submit()">
+                                <option value="">选择排序</option>
+                                <option value="1" {if condition="$Think.get.sort eq 1"}selected{/if}>销售价升序</option>
+                                <option value="2" {if condition="$Think.get.sort eq 2"}selected{/if}>销售价降序</option>
+                                <option value="3" {if condition="$Think.get.sort eq 3"}selected{/if}>会员价升序</option>
+                                <option value="4" {if condition="$Think.get.sort eq 4"}selected{/if}>会员价降序</option>
+                                <option value="5" {if condition="$Think.get.sort eq 4"}selected{/if}>成本升序</option>
+                                <option value="6" {if condition="$Think.get.sort eq 4"}selected{/if}>成本降序</option>
+                            </select>
+                            <!-- 筛选排序 -->
+
+                            <input type="text" class="qsbox w150" id="input-order-id" placeholder="商品名称|商品简介" value="{$Think.get.keyword}" name="keyword">
+                            <input type="submit" class="btn btn-primary btn-xs" value="搜索">
+                        </div>
+                    </form>
+
+                    <table id="simple-table" class="table  table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="center">
+                                    <label class="pos-rel">
+                                        <input type="checkbox" class="ace" />
+                                        <span class="lbl"></span>
+                                    </label>
+                                </th>
+                                <th>序号</th>
+                                <th>排序</th>
+                                <!-- <th>商品分类</th> -->
+                                <th>商品名称</th>
+                                <th>外链</th>
+                                <th>供应商</th>
+                                <th>销售价</th>
+                                <th>会员价</th>
+                                <th>成本价</th>
+                                <th>起购量</th>
+                                <th>计量单位</th>
+                                <th>独享价</th>
+                                <th>展示</th>
+                                <th>管理员操作</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {volist name="rows" id="vo"}
+                            <tr>
+                                <td class="center">
+                                    <label class="pos-rel">
+                                        <input type="checkbox" class="ace" />
+                                        <span class="lbl"></span>
+                                    </label>
+                                </td>
+                                <td>{$vo.goods_id}</td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','sort',this)" size="3" value="{$vo.sort|fnum=0}" reload="true" />
+                                </td>
+                                <!-- <td>{$vo.cat_name}</td> -->
+                                <td>
+                                    <a href="{:U('Home/goods/detail',['id'=>$vo.goods_id])}" target="_blank">
+                                        {if condition="$vo.is_auto == 0"}
+                                        <span class="iconfont icon-zhipai"></span>
+                                        {/if}
+                                        {$vo.goods_name}
+                                    </a>
+                                </td>
+                                <td>
+                                    {notempty name="vo.out_url"}
+                                    <a href="{$vo.out_url}" target="_blank" class="to-see">查看</a>
+                                    {/notempty}
+                                </td>
+                                <td>{$vo.supplier_name}</td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','sale_price',this)" size="6" value="{$vo.sale_price|fnum=0,4}" />
+                                </td>
+
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','user_price',this)" size="6" value="{$vo.user_price|fnum=0,4}" />
+                                </td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','cost_price',this)" size="6" value="{$vo.cost_price|fnum=0,4}" />
+                                </td>
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','min_num',this)" size="6" value="{$vo.min_num|fnum=0,0}" />
+                                </td>
+
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods','goods_id','{$vo.goods_id}','unit',this)" size="6" value="{$vo.unit|fnum=0,0}" />
+                                </td>
+                                
+                                <td>
+                                    <input type="text" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.setUserPrice(this)" size="4" value="{$vo.user_sale_price|fnum=0,4}" user_id="{$user.user_id}" goods_id="{$vo.goods_id}" goods_user_id="{$vo.goods_user_id}" />
+                                </td>
+                                <td>{$vo.is_show_name}</td>
+                                <td>
+                                    <div class="btn-group">
+
+                                        <a href='{:url("goods/info","goods_id=$vo[goods_id]")}'> 
+                                           <span class="btn btn-xs btn-info">
+                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                            </span>
+                                        </a>
+
+                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[goods_id]\")}', '确认要删除『 id={$vo.goods_id} 』这条记录吗？');">
+                                           <span class="btn btn-xs btn-danger" >
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </span>
+                                        </a>
+
+                                    </div>
+
+                                </td>
+                                
+                            </tr>
+                            {/volist}    
+                        </tbody>
+                    </table>
+                    <div class="pagebox">{$rows->render()}</div>
+                   
+                </div><!-- /.span -->
+            </div><!-- /.row -->
+             
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->
+
+
+

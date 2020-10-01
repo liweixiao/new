@@ -205,6 +205,97 @@ class Goods extends Base {
         $this->ajaxReturn($res);
     }
 
+    //设置用户私有商品
+    public function set_user_goods() {
+        $sortType = I('sort/d', 0);
+        $keyword = I('keyword/s', '');
+        $user_id = I('uid/d', 0);
+        $where = [];
+
+        $user = db("users")->where(['user_id'=>$user_id])->find();
+        if (empty($user)) {
+            $this->error('用户不存在');
+        }
+
+        $sort = 'sort, goods_id';//默认排序
+        $sortRtn = ['1'=>'sale_price', '2'=>'sale_price desc', '3'=>'user_price', '4'=>'user_price desc', '5'=>'cost_price', '6'=>'cost_price desc'];
+        if (!empty($sortType)) {
+            $sort = $sortRtn[$sortType] ?? $sort;
+        }
+
+        //根据会员账号查找
+        if (!empty($keyword)) {
+            $where['goods_name|desc'] = ['like', "%{$keyword}%"];
+        }
+
+        $rows = db("v_goods")->alias('g')
+                ->field('g.*, gu.goods_user_id, gu.sale_price as user_sale_price')
+                ->join('goods_user gu', "g.goods_id=gu.goods_id and gu.user_id={$user_id}", 'LEFT')
+                ->where($where)
+                ->order($sort)
+                ->paginate($this->showNum);
+        // ee($rows->render());
+        // ee($rows);
+        $this->assign('rows', $rows);
+        $this->assign('user', $user);
+        return $this->fetch();
+    }
+
+
+    /*
+     * 设置商品会员价-动作
+     */
+    public function doSetUserPrice() {
+        $res = ['error'=>0, 'msg'=>'操作成功！'];
+        $goods_user_id = input('goods_user_id');
+        $user_id       = input('user_id');
+        $goods_id      = input('goods_id');
+        $sale_price    = input('sale_price');
+
+        if (empty($user_id)) {
+            $res = ['error'=>1, 'msg'=>'错误，用户id参数不能为空！'];
+            $this->ajaxReturn($res);
+        }
+        if ($sale_price < 0) {
+            $res = ['error'=>1, 'msg'=>'错误，会员价不能为空'];
+            $this->ajaxReturn($res);
+        }
+
+        $row = db('users')->find($user_id);
+        if (empty($row)) {
+            $res = ['error'=>1, 'msg'=>'错误，用户不存在！'];
+            $this->ajaxReturn($res);
+        }
+
+        $ctime = date('Y-m-d H:i:s');
+        $data               = [];
+        $data['user_id']    = $user_id;
+        $data['goods_id']   = $goods_id;
+
+        //检测是否设置过了
+        $goods_user = db('goods_user')->where($data)->find();
+        if ($goods_user) {
+            $goods_user_id = $goods_user['goods_user_id'];
+        }
+        
+
+        $data['sale_price'] = $sale_price;
+        if (!empty($goods_user_id)) {
+            $data['ctime'] = $ctime;
+            $result = db('goods_user')->where('goods_user_id', $goods_user_id)->update($data);
+        }else{
+            $data['mtime'] = $ctime;
+            $result = db('goods_user')->insert($data);
+        }
+
+        if (!$result) {
+            $res = ['error'=>1, 'msg'=>'操作失败'];
+            $this->ajaxReturn($res);
+        }
+
+        $this->ajaxReturn($res);
+    }
+
     /*
      * 删除
      */

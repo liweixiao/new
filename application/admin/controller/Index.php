@@ -104,7 +104,7 @@ class Index extends Base {
 
 
         /*供应商统计*/
-        $suppliersList = db('suppliers')->where(['is_show'=>1])->select();
+        $suppliersList = db('suppliers')->where(['is_show'=>1])->where('code', 'NEQ', '88888')->select();
         $data['total_suppliers'] = count($suppliersList);
         //API余额统计
         foreach ($suppliersList as $key=>$supplier) {

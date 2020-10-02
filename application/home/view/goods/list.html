@@ -49,12 +49,12 @@
 										</h3>
 										<p>{$vo.desc}</p>
 										<span class="tag">{if condition="$vo.is_dl_count eq 1"}独立计数{else/}非独立计数{/if}</span>
-										<span class="tag">{if condition="$vo.is_refund eq 1"}支持退款{else/}进行中不支持退款{/if}</span>
+										<span class="tag">{if condition="$vo.is_refund eq 1"}支持退款{else/}进行中不可退{/if}</span>
 
 										<div class="price-desc">
 											<div class="my-row">
 												<span class="txt-info s-info">购买单价：</span>
-												<span class="txt-cnt price">¥ {$vo.sale_price|fnum=0,4}/{$vo.unit|shortNum}</span>
+												<span class="txt-cnt price">¥ {$vo.sale_price|fnum=0,4}/{$vo.unit|shortNum}个</span>
 											</div>
 
 											<div class="my-row">

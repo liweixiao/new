@@ -22,6 +22,9 @@
     cursor: pointer;
 }
 
+.cat-box .img-box {
+    width: 70%;
+}
 .mobile-menu .iconfont{
     font-size: 37px;
 }
@@ -149,7 +152,9 @@
     font-size: 15px;
 }
 
-
+.cat-box .item-content h3 {
+    margin-top: 4px;
+}
 
 
 

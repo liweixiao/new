@@ -222,3 +222,20 @@
 
 
 }
+
+/*992-1200区间屏幕*/
+@media only screen and (min-width: 992px) and (max-width: 1200px){
+.cat-box .item-content .tag {
+    font-size: 12px;
+    margin-right: 1px;
+    padding: 0 3px;
+    letter-spacing: -1px;
+}
+.cat-box .item-content {
+    min-height: 290px;
+}
+
+
+
+
+}

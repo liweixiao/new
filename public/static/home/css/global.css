@@ -503,10 +503,10 @@ em{font-style: normal;}
 }
 .cat-box .item-content h3 {
     font-size: 16px;
-    overflow: hidden;
+    /*overflow: hidden;
     text-overflow: ellipsis;
     word-break: keep-all;
-    white-space: nowrap;
+    white-space: nowrap;*/
     display: block;
     font-weight: bold;
     line-height: 18px;

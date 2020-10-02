@@ -119,8 +119,11 @@
 }
 .cat-box .item-content {
     padding: 6px 8px 15px;
-    min-height: 314px;
+    min-height: 290px;
     overflow: hidden;
+}
+.cat-box .item-content h3 .iconfont {
+    margin-right: 0px;
 }
 
 .cat-box .item-content .tag {
@@ -136,6 +139,15 @@
     padding: 5px 0 5px 5px;
 }
 
+.cat-box .item-content .tag {
+    font-size: 12px;
+    margin-right: 1px;
+    padding: 0 3px;
+    letter-spacing: -1px;
+}
+.cat-box .item-content h3 {
+    font-size: 15px;
+}
 
 
 
@@ -163,6 +175,43 @@
 
 
 
+
+
+
+
+}
+
+/*最大屏宽400*/
+@media screen and (max-width: 400px) {
+.cat-box .item-content {
+    min-height: 312px;
+}
+
+.cat-box .item-content {
+    padding: 6px 8px 6px;
+}
+
+.cat-box .item-content {
+    min-height: 330px;
+}
+
+
+
+
+
+
+}
+
+/*最大屏宽320*/
+@media screen and (max-width: 350px) {
+.cat-box .item-content h3 {
+    font-size: 14px;
+}
+
+.cat-box .item-content .price-desc .my-row {
+    letter-spacing: -1px;
+    font-size: 12px;
+}
 
 
 

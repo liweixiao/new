@@ -517,7 +517,7 @@ em{font-style: normal;}
     color: #009688;
     font-size: 18px;
     font-weight: normal;
-    margin-right: 3px;
+    margin-right: 0;
 }
 .cat-box .item-content p{
     color: #838383;

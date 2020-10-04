@@ -72,6 +72,7 @@
                                 <th class="w100">API备注</th>
                                 <th>订单备注</th>
                                 <th>实时状态</th>
+                                <th width="50">设备</th>
                                 <th>任务数量</th>
 
                                 <th><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>开始时间</th>
@@ -106,6 +107,18 @@
                                     {$vo.order_status_name}
                                     {/if}
                                 </td>
+                                <td>
+                                    <span class="tips{$vo.order_id}" onmouseover="go.iconTips(this, 'tips{$vo.order_id}')" onclick="go.iconTips(this, 'tips{$vo.order_id}')">
+                                    查看
+                                    <div class="tips-content hide">
+                                        <span>系统：{$vo.user_system}</span>
+                                        <br>
+                                        <span>浏览器：{$vo.user_browser}</span>
+                                    </div>
+                                    </span>
+                                    
+                                </td>
+
                                 <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
                                 <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
                                 <td>

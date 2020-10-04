@@ -28,6 +28,8 @@ class OrderLogic extends BaseLogic{
     //创建订单(逻辑改为先在自己平台下单,成功后在第三方平台下单,若第三方失败则回滚数据)
     public function createOrder($params = []){
         $res = ['error'=>0, 'msg'=>'恭喜，提交成功！', 'data'=>[]];
+        vendor('my.Guestinfo');
+        $Guestinfo = new \Guestinfo();
         $ctime = date('Y-m-d H:i:s');
         $data = [];
         $request = \think\Request::instance();
@@ -120,6 +122,10 @@ class OrderLogic extends BaseLogic{
             $data['ctime'] = $ctime;
             $data['ip'] = $request->ip();
 
+            //设备信息
+            $data['user_system'] = $Guestinfo->equipmentSystem();//设备
+            $data['user_browser'] = $Guestinfo->getUserBrowser();//浏览器
+
             //订单总销售价
             $data['total_amount'] = $total_amount;
 
@@ -201,7 +207,7 @@ class OrderLogic extends BaseLogic{
                     // ee($apiMoney);
                     if ($apiMoney < $total_amount) {
                         //生成一条异常订单(admin_note为余额不足)
-                        $admin_note = "当前账户余额{$apiMoney}，用户下单消耗金额{$total_amount}，尽快充值";
+                        $admin_note = "余额{$apiMoney}，订单额{$total_amount}";
                         $updateOrderStatus = ['order_status'=>5, 'admin_note'=>$admin_note];
                         $res_update = db("order")->where('order_id', $order_id)->update($updateOrderStatus);
 

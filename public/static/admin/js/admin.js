@@ -160,7 +160,7 @@ go.slideToArea = function (dom) {
  * @return int|float
  */
 go.iconTips = function (dom, stickDom){
-    var content = $(dom).find('.tips-content').text();
+    var content = $(dom).find('.tips-content').html();
     if (content != '') {
         //弹出提示
         var tipsLayer = layer.tips(content, '.' + stickDom, {

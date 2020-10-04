@@ -692,3 +692,13 @@ p.notic b{
 .multi_select span {
     margin-right: 8px;
 }
+.iconfont.icon-tips {
+    cursor: pointer;
+}
+
+.ginfo{
+
+}
+.ginfo span{
+    display: block;
+}

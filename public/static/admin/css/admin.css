@@ -12,6 +12,10 @@ a {
 a:hover {
     color: #333;
 }
+.tit em {
+    color: #F60;
+    font-size: 14px;
+}
 
 .clearfix::after {
 	display: block;

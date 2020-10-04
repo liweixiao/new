@@ -19,9 +19,8 @@
                     <table id="simple-table" class="table  table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th class="detail-col" width="20">排序</th>
                                 <th class="detail-col">序号</th>
-
+                                <th class="detail-col" width="20">排序</th>
                                 <th>名称</th>
                                 <!-- <th>url</th> -->
                                 <!-- <th class="hidden-480">data</th> -->
@@ -36,9 +35,8 @@
 
                             {volist name="lists" id="vo"}
                             <tr>
-                                <td><input type="text" name="sort[{$vo.cat_id}]" value="{$vo.sort}" width="10"></td>
                                 <td>{$vo.cat_id}</td>
-
+                                <td><input type="text" name="sort[{$vo.cat_id}]" value="{$vo.sort}" size="3"></td>
                                 <td>{:str_repeat("│        ",$vo['level'])} {eq name="$vo['level']" value="0"}<span class="iconfont {$vo.icon}"></span> <b>{$vo.cat_name}</b>{else/}├─{$vo.cat_name}{/eq}</td>
                                 <!-- <td>{$vo['c']}/{$vo['a']}</td> -->
                                 <!-- <td class="hidden-480">

@@ -734,6 +734,9 @@ em{font-style: normal;}
     border-radius: 0;
     border-bottom: 2px solid #5FB878;
 }
+.my-tag-box .item-tag{
+    margin-bottom: 8px;
+}
 
 
 

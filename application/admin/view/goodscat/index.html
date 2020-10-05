@@ -36,7 +36,7 @@
                             {volist name="lists" id="vo"}
                             <tr>
                                 <td>{$vo.cat_id}</td>
-                                <td><input type="text" name="sort[{$vo.cat_id}]" value="{$vo.sort}" size="3"></td>
+                                <td><input type="text" name="sort[{$vo.cat_id}]" value="{$vo.sort|fnum=0}" onKeyUp="go.filterNum(this)" onpaste="go.filterNum(this)" onchange="go.changeTableVal('goods_cat','cat_id','{$vo.cat_id}','sort',this)"  size="3" reload="true" /></td>
                                 <td>{:str_repeat("│        ",$vo['level'])} {eq name="$vo['level']" value="0"}<span class="iconfont {$vo.icon}"></span> <b>{$vo.cat_name}</b>{else/}├─{$vo.cat_name}{/eq}</td>
                                 <!-- <td>{$vo['c']}/{$vo['a']}</td> -->
                                 <!-- <td class="hidden-480">

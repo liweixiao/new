@@ -72,7 +72,7 @@
 
 											<div class="my-row">
 												<span class="txt-info">最大下单量：</span>
-												<span class="txt-cnt green">{if condition="$vo.max_num gt 0"}{$vo.max_num|fnum=0,0}{else/}不限{/if}</span>
+												<span class="txt-cnt green">{if condition="$vo.max_num gt 0"}{$vo.max_num|fnum=0,0|shortNum}个{else/}不限{/if}</span>
 											</div>
 
 										</div>

@@ -22,6 +22,10 @@ a:hover {
 	content: ".";
 }
 
+.layui-btn.btn-gray {
+    background-color: #ddd;
+    color: #666;
+}
 /*layui 改造*/
 .layui-btn-primary:hover {
     border-color: #47b3e3;

@@ -29,11 +29,11 @@
 				</div>
 				<!-- sub标签 -->
 
-				<div class="layui-container  goods-list">
+				<div class="layui-container goods-list">
 					<!-- 内容区域 -->
 					<div class="layui-row layui-col-space15">
 						{volist name="rows" id="vo"}
-						<div class="layui-col-xs6 layui-col-md3 goods-item">
+						<div class="layui-col-xs6 layui-col-md3 goods-item is_wh{$vo.is_wh}">
 							<div class="cat-box">
 								<!-- 角标 -->
 								{notempty name="$vo.icon_text"}<!-- <span class="icon_text">{$vo.icon_text}</span> -->{/notempty}
@@ -78,8 +78,11 @@
 										</div>
 
 
-
+										{if condition="$vo.is_wh eq 0"}
 										<span class="layui-btn layui-btn-fluid">立即购买</span>
+										{else/}
+										<span class="layui-btn btn-gray layui-btn-fluid">维护中</span>
+										{/if}
 									</div>
 								</a>
 							</div>
@@ -97,7 +100,8 @@
 		<!-- 主体END-->
 		<script>
 			$(function() {
-
+				//维护状态的商品去掉链接
+				$('.goods-list .goods-item.is_wh1 a').attr('href', '#');
 			});
 
 

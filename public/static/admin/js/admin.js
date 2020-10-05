@@ -395,7 +395,9 @@ go.changeTableVal = function(table, id_name, id_value, field, obj,yes,no) {
 
                     //成功之后是否刷新
                     if ($(obj).attr('reload')) {
-                        location.reload();
+                        setTimeout(function(){
+                            location.reload();
+                        }, 800);
                     }
                 }else{
                     layer.msg('更新失败', {icon: 1});

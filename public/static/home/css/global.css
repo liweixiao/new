@@ -687,7 +687,9 @@ em{font-style: normal;}
     color: #777;
     background: #eff4f6;
 }
-
+.table-box {
+    overflow-x: scroll;
+}
 .item-tag.on {
     background: #47B3E3;
     color: #fff;
@@ -696,8 +698,12 @@ em{font-style: normal;}
     display: inline;
 }
 
-.my-tab{
-    margin: 10px 0;
+.my-tab {
+    margin: 0 0 10px 0;
+    text-align: left !important;
+}
+.layui-tab {
+    margin: 0 0 10px 0;
     text-align: left !important;
 }
 .my-tab ul{

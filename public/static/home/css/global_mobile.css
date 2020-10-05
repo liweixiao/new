@@ -1,4 +1,8 @@
 ﻿@media screen and (max-width: 800px) {
+.layui-header {
+    position: fixed;
+    width: 100%;
+}
 .layui-layout-admin .layui-header .layui-nav {
     display: none;
 }
@@ -58,7 +62,7 @@
 .layui-layout-admin .layui-body {
     bottom: auto;
     position: relative;
-    top: auto;
+    top: 60px;
 }
 .userinfo.platinfo dl dt span.cz-box {
     width: auto;
@@ -68,10 +72,10 @@
     margin-right: 0; 
 }
 .table-box-order {
-    min-width: 800px;
+    /*min-width: 800px;*/
 }
 .table-box-log {
-    min-width: 600px;
+    /*min-width: 600px;*/
 }
 
 .goods-box .layui-input-block {

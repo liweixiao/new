@@ -9,6 +9,7 @@
  */ 
 namespace app\home\controller; 
 use app\common\logic\UsersLogic;
+use app\common\logic\FeedBackLogic;
 use think\Loader;
 use think\Page;
 use think\Session;
@@ -20,6 +21,7 @@ class User extends Base{
     public function _initialize() {
         parent::_initialize();
         $this->UsersLogic = new UsersLogic;
+        $this->FeedBackLogic = new FeedBackLogic;
     }
 
     /*
@@ -64,6 +66,34 @@ class User extends Base{
         // $this->UsersLogic->showNum = 2;
         $rows = $this->UsersLogic->getAccountlog($params);
         $page = $this->UsersLogic->page;
+
+
+        $this->assign('page', $page);
+        $this->assign('rows', $rows);
+        // ee($rows);
+        $this->assign('userinfo',$userinfo);
+        return $this->fetch();
+    }
+
+    /*
+     * 会员反馈
+     */
+    public function feedback(){
+        $params = I('get.');//请求参数
+        if (empty($this->user_id)) {
+            $this->error('请先登录');
+        }
+
+        $userinfo = $this->UsersLogic->get_user_info($this->user_id);
+        if (empty($userinfo)) {
+            $this->error('非法请求');
+        }
+
+        //获取用户订单列表
+        $params['user_id'] = $this->user_id;
+        // $this->FeedBackLogic->showNum = 2;
+        $rows = $this->FeedBackLogic->getUserFeedbackList($params);
+        $page = $this->FeedBackLogic->page;
 
 
         $this->assign('page', $page);

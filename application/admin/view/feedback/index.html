@@ -1,0 +1,111 @@
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            {:model('menu')->getName()} 
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <div class="row">
+                <div class="col-xs-12 row-list table-box">
+                    <form class="form-inline mb10"  method="get" action="{:U('Admin/feedback/index')}">
+                        <div class="sdiv">
+                            <!-- 反馈状态筛选 -->
+                            <select name="state" id="type" class="select">
+                                <option value="">选择处理状态</option>
+                                {volist name="feedbackState" id="vo"}
+                                <option value="{$key}" {if condition="$Think.get.state eq $key"}selected{/if}>{$vo}</option>
+                                {/volist}
+                            </select>
+                            <!-- 反馈状态筛选 -->
+
+                            <input type="text" class="qsbox w150" id="input-order-id" placeholder="订单编号|反馈内容|用户" value="{$Think.get.keyword}" name="keyword">
+                            <input type="submit" class="btn btn-primary btn-xs" value="搜索">
+                        </div>
+                    </form>
+                    <table id="simple-table" class="table  table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="center">
+                                    <label class="pos-rel">
+                                        <input type="checkbox" class="ace" />
+                                        <span class="lbl"></span>
+                                    </label>
+                                </th>
+                                <th>序号</th>
+                                <th>类型</th>
+                                <th>订单编号</th>
+                                <th>客户名称</th>
+                                <th>内容</th>
+                                <th>备注</th>
+                                <th>实时状态</th>
+                                <th><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>创建时间</th>
+                                <th>操作</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {volist name="rows" id="vo"}
+                            <tr>
+                                <td class="center">
+                                    <label class="pos-rel">
+                                        <input type="checkbox" class="ace" />
+                                        <span class="lbl"></span>
+                                    </label>
+                                </td>
+                                <td>{$vo.feedback_id}</td>
+                                <td>{$tags.user_feedback[$vo.type]|default=''}</td>
+                                <td><a href="{:U('order/info', ['order_id'=>$vo.order_id])}" class="task_url" title="{$vo.url}" target="_blank">{$vo.order_sn}</a></td>
+                                <td>{$vo.mobile}</td>
+                                <td>
+                                    <div class="tip-box omit max-w400 tips{$vo.feedback_id}" onmouseover="go.iconTips(this, 'tips{$vo.feedback_id}')" onclick="go.iconTips(this, 'tips{$vo.feedback_id}')">
+                                        {$vo.desc|default=''}
+                                        <div class="tips-content hide">
+                                            <span>{$vo.desc}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{$vo.admin_note}</td>
+                                <td>
+                                    {if condition='$vo.state eq 2'}
+                                    <span class="c-danger">{$vo.state_name}</span> 
+                                    {else/}
+                                    {$vo.state_name}
+                                    {/if}
+                                </td>
+                                <td>{$vo.ctime|date='Y-m-d H:i:s',###}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href='{:url("info","feedback_id=$vo[feedback_id]")}'> 
+                                           <span class="btn btn-xs btn-info">
+                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                            </span>
+                                        </a>
+
+                                        <a href='javascript:void(0)' onclick="return alert_del('{:url(\"del\",\"id=$vo[feedback_id]\")}', '确认要删除『 id={$vo.feedback_id} 』这条记录吗？');">
+                                           <span class="btn btn-xs btn-danger" >
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            {/volist}    
+                        </tbody>
+                    </table>
+                    <div class="pagebox">{$page}</div>
+                   
+                </div><!-- /.span -->
+            </div><!-- /.row -->
+             
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->
+
+
+

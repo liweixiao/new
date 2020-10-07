@@ -160,7 +160,25 @@
     margin-top: 4px;
 }
 
+.xf-box{
+    right: 8px;
+    bottom: 50px;
+}
 
+/*弹框*/
+.popbox {
+    min-width: 320px;
+    padding: 15px 0 40px;
+}
+
+.myform.layui-form {
+    padding: 0 15px;
+    width: auto;
+    min-width: auto;
+    max-width: auto;
+}
+
+/*弹框*/
 
 
 
@@ -222,7 +240,9 @@
     font-size: 12px;
 }
 
-
+.popbox {
+    min-width: 290px;
+}
 
 
 }

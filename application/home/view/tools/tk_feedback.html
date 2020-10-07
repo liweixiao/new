@@ -1,0 +1,79 @@
+<div class="popbox">
+    <form class="layui-form myform feedform" id="feedform" method="post">
+        <input type="hidden" name="order_id" value="{$params.order_id}">
+        <i class="imgico i-close"></i>
+        <p class="nh-title mb15">{$params.tips|default='提示'}</p>
+        <p class="nh-explain hide">请填写您的问题</p>
+
+        <div class="layui-inline mb15">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-inline">
+                <select name="type" lay-verify="required" lay-search="">
+                    {volist name="$tags.user_feedback" id="vo"}
+                    <option {if condition="$params.type eq $key"}selected{/if} value="{$key}">{$vo}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+
+        <div class="mt10">
+            <textarea name="desc" placeholder="在这里输入您的问题" class="layui-textarea"></textarea>
+        </div>
+        <span class="okBtn" onClick="checkSubmit();">确定</span>
+        <div class="error-box">
+            <p class="error-tips" style="display: none;"></p>
+            <p class="success-tips" style="display: none;"><span class="iconfont icon-chenggong mr3"></span>操作成功！</p>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+var order_sn = "{$params.order_sn|default=''}";
+$(function(){
+    //焦点
+    $('input').focus(function(){
+        $('.popbox .error-tips').hide();
+    })
+
+})
+
+layui.use(['form'], function() {
+    var form = layui.form;
+    form.render("select");
+});
+
+function checkSubmit(){
+    var layerindex = layer.load(1);
+    $.ajax({
+        type : 'POST',
+        url : "{:U('home/tools/dofeed')}",
+        data : $('#feedform').serialize(),
+        dataType : 'json',
+        success : function(res){
+            layer.close(layerindex);
+            if(res.error == 1){
+                $('.error-box p').hide().filter('.error-tips').show().text(res.msg);
+            }else{
+                $('.error-box p').hide().filter('.success-tips').show().text(res.msg);
+                go.pushMessage({type:'fk', order_sn:order_sn, feedback_id:res.data});//反馈提醒
+
+                setTimeout("layer.closeAll();",1500);
+            }
+        },
+        error : function(XMLHttpRequest, textStatus, errorThrown) {
+            layer.close(layerindex);
+            go.errorTips('网络失败，请刷新页面后重试');
+        }
+    })
+}
+
+//回车提交
+$(document).keyup(function(event){
+    if(event.keyCode ==13){
+        var isFocus=$(".feedform #mobile").is(":focus");
+        if(true==isFocus){
+            checkSubmit();
+        }
+    }
+});
+</script>

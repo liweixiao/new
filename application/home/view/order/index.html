@@ -70,7 +70,7 @@
                 <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
                 <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
                 <td>{$vo.total_amount|fnum}</td>
-                <td>
+                <td class="my-opt">
                     {//['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废']}
                     {if condition="!empty($vo.task_status_value) and $vo.task_status_value neq '1'"}
                         {if condition="$vo.task_status_value eq '4'"}
@@ -79,6 +79,9 @@
                         <span class="opt-set" order_id="{$vo.order_id}" type="pause" onclick="go.setOrder(this)">暂停</span>
                         {/if}
                     {/if}
+                    <span class="opt-set" order_id="{$vo.order_id}" type="pause" onclick="go.setOrder(this)">暂停</span>
+
+                    <span class="opt-set" order_id="{$vo.order_id}" onclick="go.getfeed(this)" type="1" tips="申请工单">申请工单</span>
                 </td>
               </tr>
             {/volist}

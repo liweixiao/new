@@ -221,10 +221,15 @@ em{font-style: normal;}
     max-width: 900px;
 }
 .myform .layui-form-label {
-    width: 150px;
+    width: auto;
+    padding: 9px 15px 9px 0;
 }
+
 .myform .layui-input-block {
     margin-left: 180px;
+}
+.myform .error-box{
+    padding-left: 0;
 }
 
 .mobile-tips{display: none;}
@@ -748,9 +753,181 @@ em{font-style: normal;}
     margin-bottom: 8px;
 }
 
+/*悬浮块*/
+.xf-box{
+    position: fixed;
+    right: 38px;
+    bottom: 60px;
+    height: 44px;
+    width: 44px;
+    line-height: 44px;
+    text-align: center;
+    background-color: #009688;
+    color: #fff;
+    border-radius: 100%;
+    cursor: pointer;
+}
 
+.xf-box .xf-inner{
+    z-index: 100;
+}
+.xf-box .xf-inner:hover {
+    opacity: .85;
+}
+.xf-box .xf-inner .iconfont{
+    font-size: 22px;
+}
 
+.xf-box .xf-cnt{
+    z-index: 9;
+    background-color: #009688;
+    position: fixed;
+    bottom: 110px;
+    width: 44px;
+    line-height: 20px;
+    padding: 0;
+    border-radius: 3px 3px 0 0;
+    display: none;
+}
 
+.xf-box .xf-cnt .row{
+    padding: 8px 0; 
+}
+.xf-box .xf-cnt .row:hover {
+    background-color: #008678;
+}
+.xf-box .xf-cnt .row.border-btm{
+    border-bottom: 1px solid #7ac3bc;
+}
+.xf-box .xf-cnt .row span{
+    display: block;
+}
+.xf-box .xf-cnt .row .iconfont{
+    
+}
+.xf-box .xf-cnt .row .text-info{
+    
+}
+/*悬浮块*/
+
+/*反馈模板*/
+.layui-layer {
+    border-radius: 5px;
+}
+.popbox {
+    position: relative;
+    background: #fff;
+    min-width: 320px;
+    margin: 0 auto;
+    padding: 15px 36px 40px;
+    color: #444;
+    border-radius: 5px;
+}
+
+.popbox .i-close {
+    right: 10px;
+    top: 10px;
+    position: absolute;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    background-position: -52px -64px;
+    display: inline-block;
+    vertical-align: top;
+}
+.popbox .nh-title {
+    font-size: 18px;
+    color: #009688;
+    line-height: 30px;
+    font-weight: 700;
+    text-align: center;
+}
+.popbox .userinfo dl dt {
+    width: auto;
+}
+.popbox .nh-explain {
+    line-height: 22px;
+    padding-bottom: 10px;
+    font-size: 12px;
+    color: #aaa;
+    line-height: 25px;
+}
+.popbox .inputbox {
+    background: #f9f9f9;
+    border: 1px solid #e7e7e7;
+    position: relative;
+    padding: 10px 10px 10px 32px;
+    height: 20px;
+    margin-top: 32px;
+}
+.imgico {
+    display: inline-block;
+    vertical-align: top;
+}
+.popbox .i-phone {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+}
+.popbox .i-phone .iconfont {
+    color: #ff6d6f;
+    font-size: 20px;
+}
+.popbox .telinput {
+    display: block;
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    border: 0;
+    font-size: 14px;
+    outline: 0;
+    background: 0;
+}
+
+.popbox .okBtn {
+    display: block;
+    height: 42px;
+    line-height: 42px;
+    background: #009688;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.popbox .error-box{
+    height: 20px;
+}
+.popbox .error-tips {
+    color: #ff4d45;
+    padding-top: 10px;
+}
+
+.popbox .success-tips {
+    color: green;
+    padding-top: 10px;
+}
+.popbox .success-tips .iconfont{
+    
+}
+/*弹框end*/
+.my-opt .opt-set{
+    display: block;
+    color: #47b3e3;
+    cursor: pointer;
+    margin-bottom: 3px;
+}
+.my-opt .opt-set:hover{
+    opacity: 0.9;
+}
+.c-green{
+    color: green;
+}
+.list-fk{
+    
+}
 
 
 

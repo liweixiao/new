@@ -332,7 +332,92 @@ go.pushMessage = function(param){
     });
 }
 
+//打开悬浮
+go.showXf = function(dom){
+    //本身图标切换效果
+    $(dom).find('.switch-icon').toggleClass('hide');
 
+    //展示隐藏工单内容
+    $(dom).closest('.xf-box').find('.xf-cnt').slideToggle(200);
+}
+
+//获取用户反馈信息
+go.getfeed = function(dom){
+    var param = {};
+    param.type = 1;//默认类型
+
+    if ($(dom).attr('type') != '') {
+        param.type = $(dom).attr('type');
+    }
+
+    //弹框模板
+    if ($(dom).attr('tpl')) {
+        param.tpl = $(dom).attr('tpl');
+    }
+
+    param.order_id = $(dom).attr('order_id');//订单id
+    param.tips = $(dom).attr('tips');//弹框标题显示
+
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "/index.php/Home/Tools/getFeedPage",
+        data: param,
+        dataType: 'html',
+        success: function(html){
+            layer.closeAll();
+            if (html == 'error') return;
+            layer.open({
+              type: 1,
+              title: false,
+              area: ['auto', 'auto'],
+              closeBtn: 1,
+              shadeClose: false,
+              content: html
+            });
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+
+//提交用户反馈信息(注意这个跟上面的getfeed不同，上面是先获取弹框页面，而这个是直接提交信息，少了弹框页面了)
+go.dofeed = function(param){
+    if (!param) param = {};
+    if (!param.type) param.type = 1;//反馈类型
+
+    if (param.mobile == '') {
+        go.errorTips('请输入手机号');
+        return;
+    }
+
+    if (!go.checkMobile(param.mobile)){
+        go.errorTips('手机号格式不正确');
+        return;
+    }
+
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "/index.php/Home/Tools/dofeed",
+        data: param,
+        dataType: 'json',
+        success: function(res){
+            layer.closeAll();
+            if (res.error == 0){
+                go.successTips(res.msg);
+            }else{
+                go.errorTips(res.msg);
+            }
+        },
+        error: function(){
+            layer.closeAll();
+            layer.alert("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
 
 
 

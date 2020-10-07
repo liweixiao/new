@@ -1,0 +1,66 @@
+{include file="public/header"/}
+<style type="text/css">
+</style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+{include file="public/nav"/}
+{include file="public/left"/}
+
+
+<!-- 主体-->
+<div class="layui-body">
+    <div class="container">
+
+        <div class="layui-form table-box table-box-log">
+            <div class="layui-input-block order_sn list-fk">
+                  <span  onclick="go.getfeed(this)" type="3" tips="提交工单" class="layui-btn ">提交工单</span>
+            </div>
+          <table class="layui-table">
+            <colgroup>
+              <col width="150">
+              <col>
+              <col width="200">
+              <col width="200">
+              <col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>订单编号</th>
+                <th>描述</th>
+                <th>状态</th>
+                <th>备注</th>
+                <th>创建时间</th>
+              </tr> 
+            </thead>
+            <tbody>
+            {volist name="rows" id="vo"}
+              <tr>
+                <td>{$vo.order_sn}</td>
+                <td>{$vo.desc}</td>
+                <td><span class="{if condition='$vo.state eq 1'}c-green{/if}">{$vo.state_name}</span></td>
+                <td>{$vo.admin_note}</td>
+                <td>{$vo.ctime|date='Y-m-d H:i:s',###}</td>
+              </tr>
+            {/volist}
+            </tbody>
+          </table>
+          {$page->show()}
+        </div>
+
+    </div>
+</div>
+<!-- 主体END-->
+<script>
+$(function(){
+
+});
+</script>
+
+
+{include file="public/footer"/}
+</div>
+<!--layui-layout END-->
+</body>
+</html>

@@ -122,6 +122,9 @@ class Index extends Base {
 
         //用户充值-未处理
         $data['rechargeNotDoNum'] = db('account_log')->where(['state'=>0, 'type'=>2])->count();
+
+        //用户反馈-未处理
+        $data['feedbackNotDoNum'] = db('feedback')->where(['state'=>2])->count();
         
         // sql();
         // ee($data);

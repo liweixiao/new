@@ -1,4 +1,27 @@
 <div class="layui-footer">
+
+<!-- 悬浮块 -->
+<div class="xf-box">
+    <div class="xf-inner" onclick="go.showXf(this)">
+        <span class="iconfont switch-icon icon-dakaiwenjianjia hide"></span>
+        <span class="iconfont switch-icon icon-wenti1"></span>
+    </div>
+    <div class="xf-cnt">
+        <div class="row border-btm" onclick="go.getfeed(this)" type="3" tips="提交工单">
+            <span class="iconfont icon-pinglun"></span>
+            <span class="text-info">工单</span>
+        </div>
+
+        <div class="row" onclick="go.getfeed(this)" type="1" tips="客服信息" tpl="tk_kf">
+            <span class="iconfont icon-kefu"></span>
+            <span class="text-info">客服</span>
+        </div>
+    </div>
+
+</div>
+<!-- 悬浮块 -->
+
+
 <!-- 底部固定区域 -->
 © new.hehuaban.com - 会员中心
 </div>
@@ -7,4 +30,5 @@ layui.use('element', function(){
   var element = layui.element;
   
 });
+
 </script>

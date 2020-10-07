@@ -196,6 +196,8 @@ a:hover {
 .pr50{padding-right:50px}
 .pr100{padding-right:100px}
 
+.tip-box{position: relative;}
+.max-w400{max-width:400px!important}
 .border-all{border:1px solid #eaeaea;}
 .block{display: block;}
 .items-list-box{margin-bottom: 50px;}

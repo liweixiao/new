@@ -1,0 +1,28 @@
+<div class="popbox">
+    <form class="layui-form myform feedform" id="feedform" method="post">
+        <i class="imgico i-close"></i>
+        <p class="nh-title mb15">{$params.tips|default='提示'}</p>
+        <div class="mt10 userinfo">
+            <dl>
+                <dd>客服QQ：</dd>
+                <dt><span>{$shop_info.qq}</span></dt>
+            </dl>
+
+            <dl>
+                <dd>微信：</dd>
+                <dt><span>mishu2011</span></dt>
+            </dl>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    //焦点
+    $('input').focus(function(){
+        $('.popbox .error-tips').hide();
+    })
+
+})
+
+</script>

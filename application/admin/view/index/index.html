@@ -352,6 +352,23 @@
                     </div>
                     <!-- 用户充值 -->
 
+                    <!-- 用户反馈-未处理 -->
+                    <div class="infobox infobox-pink">
+                        <div class="infobox-icon">
+                            <span class="iconfont icon-pinglun"></span>
+                        </div>
+
+                        <div class="infobox-data">
+                            <span class="infobox-data-number" num="{$data.rechargeNotDoNum}">
+                                <a href="{:U('Feedback/index', ['state'=>2])}">
+                                {$data.feedbackNotDoNum}
+                                </a>
+                            </span>
+                            <div class="infobox-content">待处理反馈</div>
+                        </div>
+                    </div>
+                    <!-- 用户反馈-未处理 -->
+
 
                 </div><!-- /.widget-box -->
                 <!-- 其他统计-END -->

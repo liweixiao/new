@@ -1,0 +1,183 @@
+{include file="public/header"/}
+</head>
+
+<body class="layui-layout-body">
+	<div class="layui-layout layui-layout-admin">
+		{include file="public/nav"/}
+		{include file="public/left"/}
+
+
+		<!-- 主体-->
+		<div class="layui-body">
+			<div class="container">
+				<div class="layui-tab layui-tab-brief goods-box" lay-filter="docDemoTabBrief">
+					<ul class="layui-tab-title">
+						<li class="layui-this">{$cat.cat_name}</li>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							<!-- 内容区域 -->
+							<form class="layui-form myform tools-form" method="post" action="" id="myform">
+								<input type="hidden" name="goods_id" value="{$row.goods_id}">
+								<input type="hidden" name="price" id="sale_price" value="{$row.sale_price}">
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">任务标题</label>
+									<div class="layui-input-block">
+										<input type="text" name="cm_title" value="" lay-verify="title" autocomplete="off" placeholder="请填写任务标题"
+										 class="layui-input">
+									</div>
+								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">任务地址</label>
+									<div class="layui-input-block">
+										<input type="text" name="url" value="" lay-verify="title" autocomplete="off" placeholder="{$row.desc_url}"
+										 class="layui-input">
+									</div>
+								</div>
+
+								<div class="layui-form-item layui-form-text textarea-box">
+									<label class="layui-form-label">任务要求</label>
+									<div class="layui-input-block">
+										<textarea placeholder="例如：好好写，否则罚款" name="user_note" class="layui-textarea h50"></textarea>
+									</div>
+								</div>
+
+								<div class="layui-form-item layui-form-text textarea-box">
+									<label class="layui-form-label">敏感词</label>
+									<div class="layui-input-block">
+										<textarea placeholder="例如：呵呵;嘿嘿;" name="cm_sens" class="layui-textarea"></textarea>
+										<span class="note">敏感词，多个词中间分号隔开,最多100字</span>
+									</div>
+								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">评论方向</label>
+									<div class="layui-input-block">
+										<input type="checkbox" name="cm_face[]" lay-skin="primary" title="赞美" checked>
+										<input type="checkbox" name="cm_face[]" lay-skin="primary" title="中性" checked>
+										<input type="checkbox" name="cm_face[]" lay-skin="primary" title="询问" checked>
+										<input type="checkbox" name="cm_face[]" lay-skin="primary" title="调侃" checked>
+										<input type="checkbox" name="cm_face[]" lay-skin="primary" title="吐槽">
+									</div>
+								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">最大评论量</label>
+									<div class="layui-input-block">
+										<input type="text" name="cm_max" id="cm_max" value="{$row.max_num|fnum=0,0}"
+										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+										 <span class="note">设置最大评论数量</span>
+									</div>
+								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">最少字数</label>
+									<div class="layui-input-block">
+										<input type="text" name="cm_minchar" id="cm_minchar" value="{$row.min_num|fnum=0,0}"
+										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+										<span class="note">设置每条评论最小字数</span>
+									</div>
+								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">设置单价</label>
+									<div class="layui-input-block">
+										<input type="text" name="cm_price" id="cm_price" value="0.1"
+										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+										<span class="note">每条评论的单价(元)</span>
+									</div>
+								</div>
+
+								<div class="layui-inline gs-price-box">
+									<label class="layui-form-label">价格预计</label>
+									<div class="layui-input-inline">
+										<span class="gs-price">{$row.sale_price*$row.min_num|fnum}</span>
+									</div>
+								</div>
+
+
+								<div class="layui-form-item mt20">
+									<div class="layui-input-block">
+										<a href="JavaScript:void(0);" onClick="verifyForm();" class="layui-btn">提交任务</a>
+										<button class="hide" type="reset" class="layui-btn layui-btn-primary">重置</button>
+									</div>
+								</div>
+
+								<div class="layui-form-item mt20">
+									<div class="layui-input-block desc_info">
+										<pre>{$row.desc_info}</pre>
+									</div>
+								</div>
+
+
+
+
+							</form>
+							<!-- 内容区域 -->
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+		<!-- 主体END-->
+		<script>
+			$(function() {
+
+			});
+
+
+			layui.use(['form', 'layedit', 'laydate'], function() {
+				var form = layui.form,
+					layer = layui.layer,
+					layedit = layui.layedit,
+					laydate = layui.laydate;
+
+				//预估总价
+				$("#task_num").bind("input propertychange", function() {
+					var totalAmount = '';
+					var price = $.trim($('#sale_price').val());
+					var task_num = $.trim($(this).val());
+					task_num = parseFloat(task_num);
+					totalAmount = go.calcTotalAmount(task_num, price);
+					$('.gs-price').text(totalAmount);
+				})
+
+			});
+
+			function verifyForm() {
+				var layerindex = layer.load(1); //加载层
+				$.ajax({
+					type: 'POST',
+					url: "{:U('home/order/create', ['s'=>$Request.get.s])}",
+					data: $('#myform').serialize(),
+					dataType: 'json',
+					success: function(result) {
+						// console.log(result.status);
+						layer.closeAll();
+
+						if (result.error == 1) {
+							go.errorTips(result.msg);
+						} else {
+							go.successTips(result.msg);
+							
+							go.pushMessageOrder({order_id:result.data.order_id});//下单提醒
+						}
+					},
+					error: function() {
+						layer.closeAll();
+						layer.alert("服务器繁忙, 请联系管理员!");
+					}
+				});
+			}
+		</script>
+
+
+		{include file="public/footer"/}
+	</div>
+	<!--layui-layout END-->
+</body>
+</html>

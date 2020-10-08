@@ -658,6 +658,12 @@ class OrderLogic extends BaseLogic{
             $where['url'] = ['LIKE', "%$keyword%"];
         }
 
+        //筛选-根据分类
+        if (!empty($params['cat_ids'])) {
+            $cat_ids = $params['cat_ids'];
+            $where['cat_id'] = ['IN', $cat_ids];
+        }
+
         // ee($where);
         $count = db('v_order')->where($where)->count();
         // sql();

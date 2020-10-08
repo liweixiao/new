@@ -51,6 +51,10 @@ class Order extends Base {
         //获取当前分类下面所有子分类ids
         $subCatIds = $this->OrderLogic->getSubCatIds($cat_id);
 
+        if (!empty($cat_id)) {
+            $params['cat_ids'] = $subCatIds;
+        }
+
         $data['goodsRows'] = $this->OrderLogic->getCatGoodsList($subCatIds);
 
         //获取用户订单列表

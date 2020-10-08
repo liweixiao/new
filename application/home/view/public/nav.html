@@ -3,7 +3,7 @@
   <ul class="layui-nav nav-pc layui-layout-left">
     <!-- <li class="layui-nav-item"><a href="">控制台</a></li> -->
     <li data-param="goods" class="layui-nav-item"><a href="{:U('Home/goods/list',['id'=>1])}">商品列表</a></li>
-    <li data-param="order" class="layui-nav-item"><a href="{:U('Home/order/index')}">订单管理</a></li>
+    <li data-param="order" class="layui-nav-item"><a href="{:U('Home/order/index',['cid'=>1])}">订单管理</a></li>
     <li data-param="user" class="layui-nav-item">
       <a href="javascript:;" class=""><a href="{:U('Home/user/index')}">会员中心</a>
       <!-- <dl class="layui-nav-child hide">
@@ -77,7 +77,13 @@
         $('.left-box ul.layui-nav li[data-param='+controller+']').addClass('layui-nav-itemed');
 
         //左侧二级加选中状态
-        $('.left-box ul.layui-nav li dd[data-param="'+conAct+'"]').addClass('layui-this');
+        //是否商品列表选择
+        if (conAct == 'goods|list') {
+            var catId = "{$Think.get.id}";
+            $('.left-box ul.layui-nav li dd[data-param="'+conAct+'"]').filter('.cat_id' + catId).addClass('layui-this');
+        }else{
+            $('.left-box ul.layui-nav li dd[data-param="'+conAct+'"]').addClass('layui-this');
+        }
 
     }
 </script>

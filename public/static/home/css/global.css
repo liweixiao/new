@@ -351,15 +351,15 @@ em{font-style: normal;}
     cursor:pointer
 }
 .dataTables_paginate .pagination .paginate_button:hover {
-    background:#47b3e3;
-    border-color:#47b3e3
+    background:#009688;
+    border-color:#009688
 }
 .dataTables_paginate .pagination .paginate_button:hover a {
     color:white
 }
 .dataTables_paginate .pagination .active {
-    background-color:#47b3e3;
-    border-color:#47b3e3
+    background-color:#009688;
+    border-color:#009688
 }
 .dataTables_paginate .pagination .active a {
     color:white
@@ -931,6 +931,10 @@ em{font-style: normal;}
 }
 .list-fk{
     
+}
+
+.tools-form .layui-textarea {
+    min-height: 50px;
 }
 
 

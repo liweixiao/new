@@ -39,7 +39,7 @@ class Goods extends Base {
         $rows = $this->ToolsLogic->getCatGoodsListByUser($subCatIds, $this->user_id, $params);
         $this->ToolsLogic->delFields($rows, ['out_url']);//剔除字段
         // ee($rows);
-        $tags = $this->ToolsLogic->getAllTags('goods_tag');
+        $tags = $this->ToolsLogic->getAllTags('goods_tag', $cat_id);
 
         $this->assign('cat', $cat);
         $this->assign('rows', $rows);

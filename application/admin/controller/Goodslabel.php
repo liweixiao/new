@@ -61,7 +61,7 @@ class Goodslabel extends Base {
      */
     public function info()
     {
-
+        $OrderLogic = new OrderLogic();
         $data = input('post.');
         $id = input('id');
         if($data){
@@ -99,10 +99,14 @@ class Goodslabel extends Base {
             $this->assign('row', $row);
         }
 
+        //获取所有一级分类
+        $catList = $OrderLogic->getCatList(0);
+
         //获取配置
         $tags_type = config('items.tags_type');
         $this->assign('tags_type', $tags_type);
 
+        $this->assign('catList', $catList);
         return $this->fetch();
     }
 

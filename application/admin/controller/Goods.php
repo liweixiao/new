@@ -81,10 +81,6 @@ class Goods extends Base {
         //获取供应商
         $supplierList = $OrderLogic->getSupplierList();
 
-        //获取标签
-        $tags = $OrderLogic->getAllTags('goods_tag');
-
-
         //获取商品配置
         $goodsConfigList = $OrderLogic->getGoodsConfigList();
 
@@ -97,8 +93,11 @@ class Goods extends Base {
         $cat_id_arr = $GoodscatLogic->getSelectedCatIds($row['cat_id']);
         $this->assign('cat_id_ids', implode('|', $cat_id_arr));
 
+        //获取标签
+        $tags = $OrderLogic->getAllTags('goods_tag', $cat_id_arr[0]);
+
         // sql();
-        // ee($row);
+        // ee($cat_id_arr);
         $this->assign('row', $row);
         $this->assign('tags', $tags);
         $this->assign('supplierList', $supplierList);

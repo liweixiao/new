@@ -300,7 +300,7 @@ class BaseLogic {
     }
 
     //获取分类列表
-    public function getCatList($parent_id= -1){
+    public function getCatList($parent_id = -1){
         $where = ['is_show'=>1];
         if ($parent_id != -1) {
             $where['parent_id'] = $parent_id;

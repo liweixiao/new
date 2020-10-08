@@ -23,12 +23,25 @@
                 <input type="hidden" value="{$row.id}" name="id">
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right tit"><em>*</em>分类</label>
+                    <div class="col-sm-9">
+                        <select name="type">
+                          <option value="">选择标签分类</option>
+                          {volist name="catList" id="vo"}
+                          <option value="{$vo.cat_id}" {if condition="$row.cat_id eq $vo.cat_id"}selected{/if}>{$vo.cat_name}</option>
+                          {/volist}
+                        </select>
+                        <p class="notic">指定标签所属分类</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right tit"><em>*</em>标签类型</label>
                     <div class="col-sm-9">
                         <select name="type">
                           <option value="">选择标签类型</option>
                           {volist name="tags_type" id="vo"}
-                          <option value="{$key}" {if condition="$row.label_id eq $key"}selected{/if}>{$vo}</option>
+                          <option value="{$key}" {if condition="$row.type eq $key"}selected{/if}>{$vo}</option>
                           {/volist}
                         </select>
                         <p class="notic">指定标签类型</p>

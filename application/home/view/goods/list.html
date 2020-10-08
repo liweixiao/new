@@ -17,6 +17,7 @@
 				</div>
 
 				<!-- sub标签 -->
+				{if condition="!empty($tags.goods_tag)"}
 				<div class="my-tag-box mb10 ml15">
 					<a href="{:U('home/goods/list',['id'=>$Think.get.id])}">
 						<span class="item-tag mr10 {if condition='empty($Think.get.tag)'}on{/if}">全部</span>
@@ -27,6 +28,7 @@
 					</a>
 					{/volist}
 				</div>
+				{/if}
 				<!-- sub标签 -->
 
 				<div class="layui-container goods-list">

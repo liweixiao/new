@@ -221,15 +221,19 @@ em{font-style: normal;}
     max-width: 900px;
 }
 .myform .layui-form-label {
-    width: auto;
-    padding: 9px 15px 9px 0;
+    width: 150px;
 }
 
 .myform .layui-input-block {
     margin-left: 180px;
 }
-.myform .error-box{
+.feedform .error-box{
     padding-left: 0;
+}
+
+.feedform .layui-form-label {
+    width: auto;
+    padding: 9px 15px 9px 0;
 }
 
 .mobile-tips{display: none;}

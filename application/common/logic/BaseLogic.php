@@ -255,6 +255,34 @@ class BaseLogic {
 
                 $res['data'] = $res_api['data']['access_token'];
                 break;
+            case '40000':
+                $headers = [
+                    'Content-Type:application/json; charset=UTF-8',
+                ];
+                $url_api = $supplier['url'];
+                $postdatas = ['acco'=>$supplier['api_account'], 'pswd'=>base64_encode($supplier['api_password'])];
+                $postdatasJson = json_encode($postdatas);
+                $res_api = apiget($url_api, $postdatasJson, 'post', [], $headers);
+                // ee($res_api);
+
+                //异常情况
+                if (empty($res_api) || $res_api['code'] != 0) {
+                    return ['error'=>2, 'msg'=>'此商品暂无法获取配置(005)，请联系管理'];
+                }
+                if (empty($res_api['result'])) {
+                    return ['error'=>2, 'msg'=>'此商品暂无法获取配置(006)，请联系管理'];
+                }
+
+                //生成此类的属性：用户余额
+                $this->apiMoney = $res_api['result']['usepoint'] ?? -999;
+
+                //转换分为元单位
+                if ($this->apiMoney > 0) {
+                    $this->apiMoney = $this->apiMoney/100;
+                }
+
+                $res['data'] = $res_api['result'];
+                break;
             default:
                 # code...
                 break;

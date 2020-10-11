@@ -205,7 +205,7 @@ class OrderLogic extends BaseLogic{
                     }
 
                     // ee($apiMoney);
-                    if ($apiMoney < $total_amount) {
+                    if ($apiMoney < $total_cost) {
                         //生成一条异常订单(admin_note为余额不足)
                         $admin_note = "余额{$apiMoney}，订单额{$total_amount}";
                         $updateOrderStatus = ['order_status'=>5, 'admin_note'=>$admin_note];

@@ -19,6 +19,7 @@
 							<!-- 内容区域 -->
 							<form class="layui-form myform tools-form" method="post" action="" id="myform">
 								<input type="hidden" name="goods_id" value="{$row.goods_id}">
+								<input type="hidden" name="cat_id" value="{$row.cat_id}">
 								<input type="hidden" name="price" id="sale_price" value="{$row.sale_price}">
 
 								<div class="layui-form-item">
@@ -152,7 +153,7 @@
 				var layerindex = layer.load(1); //加载层
 				$.ajax({
 					type: 'POST',
-					url: "{:U('home/order/create', ['s'=>$Request.get.s])}",
+					url: "{:U('home/tools/createOrder', ['s'=>$Request.get.s])}",
 					data: $('#myform').serialize(),
 					dataType: 'json',
 					success: function(result) {

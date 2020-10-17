@@ -74,6 +74,12 @@
                                 <td>{$vo.last_login}</td>
                                 <td>
                                     <div class="btn-group">
+                                        <a href='javascript:;' title="充值" onclick="go.addmoney({$vo.user_id}, true)">
+                                           <span class="btn btn-xs btn-success">
+                                                <i class="ace-icon fa fa-money bigger-120"></i>
+                                            </span>
+                                        </a>
+                                        
                                         <a href='{:url("info","id=$vo[id]")}' title="编辑查看"> 
                                            <span class="btn btn-xs btn-info">
                                                 <i class="ace-icon fa fa-pencil bigger-120"></i>

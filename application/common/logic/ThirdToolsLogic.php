@@ -98,7 +98,7 @@ class ThirdToolsLogic extends BaseLogic{
         }
 
         //判断设置单价是否低于成本价
-        $cost_price = $goodsRow['cost_price'];
+        $cost_price = fnum($goodsRow['cost_price'], 0, 4);
         if ($params['cm_price'] < $cost_price) {
             return ['error'=>1, 'msg'=>"抱歉，设置单价不能低于:{$cost_price}！"];
         }
@@ -297,14 +297,16 @@ class ThirdToolsLogic extends BaseLogic{
 
                 //设置headers
                 $headers = [
-                    'Content-Type:application/json',
+                    'Content-Type:application/json; charset=UTF-8',
                 ];
-                $this->apiUserinfo = $apiUserinfo = $this->getSupplierToken($supplier);
-                ee($apiUserinfo);
+                $apiUserinfoRes = $this->getSupplierToken($supplier);//获取用户信息,余额、评论单价等
+
                 //获取token异常情况
-                if ($apiUserinfo['error']) {
-                    return ['error'=>1, 'msg'=>$apiUserinfo['msg']];
+                if ($apiUserinfoRes['error']) {
+                    return ['error'=>1, 'msg'=>$apiUserinfoRes['msg']];
                 }
+
+                $this->apiUserinfo = $apiUserinfo = $apiUserinfoRes['data'];//返回用户信息,余额、评论单价等
 
                 //判断设置单价是否低于成本价
                 $cost_price = $apiUserinfo['useprice'];//再次校验,根据api数据
@@ -313,12 +315,11 @@ class ThirdToolsLogic extends BaseLogic{
                 }
 
                 $url_api = $goodsCfg['url_create_order'];
-                $apikey = $supplier['apikey'];
                 //提交参数
                 $postdatas = [
-                    'uid'      => 0,//用户id
-                    'usersign' => '',//用户签名 
-                    'title'    => $params['title'], //任务标题
+                    'uid'      => $apiUserinfo['uid'],//用户id
+                    'usersign' => $apiUserinfo['usersign'],//用户签名 
+                    'title'    => $params['cm_title'], //任务标题
                     'addr'     => $params['url'], //任务地址
                     'descr'    => $params['user_note'], //任务要求
                     'sens'     => $params['cm_sens'], //敏感词，多个词中间分号隔开,最多100字
@@ -326,12 +327,13 @@ class ThirdToolsLogic extends BaseLogic{
                     'max'      => $params['cm_max'], //最大评论量
                     'minchar'  => $params['cm_minchar'], //每条评论最小字数
                     'level'    => 0, //是否刷量(0，正常；1，刷量) 
-                    'price'    => $params['cm_price'], //每条评论的单价(单位分)
+                    'price'    => $params['cm_price']*100, //每条评论的单价(单位分),TODO这里需要根据用户填写价格做适量相对计算
                 ];
+                ee($postdatas);
 
                 $postdatasJson = json_encode($postdatas);
                 $res_api = apiget($url_api, $postdatasJson, 'post', [], $headers);
-
+                ee($res_api);
                 //异常情况
                 if (empty($res_api) || empty($res_api['code']) || $res_api['code'] != 0) {
                     $msg = $res_api['msg'] ?? "抱歉，创建任务出现异常，请联系管理员";

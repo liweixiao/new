@@ -50,6 +50,8 @@ class HttpCurl{
         curl_setopt_array($curl, $options);
 
         $return = curl_exec($curl); // 执行操作
+        // echo $return;
+        // ee($return);
         //关闭URL请求
         curl_close($curl);
         if ($returnArray) {

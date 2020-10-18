@@ -273,15 +273,30 @@ class BaseLogic {
                     return ['error'=>2, 'msg'=>'此商品暂无法获取配置(006)，请联系管理'];
                 }
 
-                //生成此类的属性：用户余额
-                $this->apiMoney = $res_api['result']['usepoint'] ?? -999;
+                $user_info = $res_api['result'] ?? [];
 
-                //转换分为元单位
-                if ($this->apiMoney > 0) {
-                    $this->apiMoney = $this->apiMoney/100;
+                //转换格式-价格分转为元
+                if (!empty($user_info)) {
+                    //累积金额
+                    if (isset($user_info['allpoint'])) {
+                        $user_info['allpoint'] = $user_info['allpoint']/100;//转换分为元单位
+                    }
+
+                    //剩余金额
+                    if (isset($user_info['usepoint'])) {
+                        $user_info['usepoint'] = $user_info['usepoint']/100;//转换分为元单位
+                    }
+
+                    //每条评论基础价格
+                    if (isset($user_info['useprice'])) {
+                        $user_info['useprice'] = $user_info['useprice']/100;//转换分为元单位
+                    }
                 }
 
-                $res['data'] = $res_api['result'];
+                //生成此类的属性：用户余额
+                $this->apiMoney = $user_info['usepoint'] ?? -999;
+
+                $res['data'] = $user_info;
                 break;
             default:
                 # code...

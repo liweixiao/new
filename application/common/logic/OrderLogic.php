@@ -23,8 +23,11 @@ use app\common\logic\BaseLogic;
  * @package Home\Logic
  */
 class OrderLogic extends BaseLogic{
+    public $isHome = 0;//是否前端调用
     //5=api余额不足
     public $orderStatusConfig = ['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废', '8'=>'手工单'];
+    //前端展示使用
+    public $orderStatusConfigHome = ['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'处理中', '6'=>'已退款', '7'=>'已作废', '8'=>'处理中'];
     //创建订单(逻辑改为先在自己平台下单,成功后在第三方平台下单,若第三方失败则回滚数据)
     public function createOrder($params = []){
         $res = ['error'=>0, 'msg'=>'恭喜，提交成功！', 'data'=>[]];
@@ -682,6 +685,7 @@ class OrderLogic extends BaseLogic{
         }
 
         //刷洗数据
+        $this->isHome = 1;
         $res_refresh = $this->refreshDatasByOutOrder($res, $goodsRow);//引用更新
         // ee($res_refresh);
         // ee($res);
@@ -723,6 +727,11 @@ class OrderLogic extends BaseLogic{
             return $res;
         }
 
+        $orderStatusConfig = $this->orderStatusConfig;
+        if ($this->isHome) {
+            $orderStatusConfig = $this->orderStatusConfigHome;
+        }
+
         //这里开始区分供应商
         switch ($supplier['code']) {
             case '10000':
@@ -736,7 +745,7 @@ class OrderLogic extends BaseLogic{
                 //先更新任务速度模式-防止前面无数据任务模式未更新
                 foreach ($rows as $k => $value) {
                     $rows[$k]['run_first_name'] = "{$value['first']}个/分钟";
-                    $rows[$k]['order_status_name'] = $this->orderStatusConfig[$value['order_status']] ?? '';
+                    $rows[$k]['order_status_name'] = $orderStatusConfig[$value['order_status']] ?? '';
                 }
 
 
@@ -793,7 +802,7 @@ class OrderLogic extends BaseLogic{
                     $rows[$key]['task_status_value'] = '';
 
                     //订单状态名称
-                    $rows[$k]['order_status_name'] = $this->orderStatusConfig[$value['order_status']] ?? '';
+                    $rows[$k]['order_status_name'] = $orderStatusConfig[$value['order_status']] ?? '';
 
                     //更新开始时间
                     $rows[$k]['stime'] = $value['ctime'];
@@ -859,7 +868,7 @@ class OrderLogic extends BaseLogic{
 
                 //先更新任务速度模式-防止前面无数据任务模式未更新
                 foreach ($rows as $k => $value) {
-                    $rows[$k]['order_status_name'] = $this->orderStatusConfig[$value['order_status']] ?? '';
+                    $rows[$k]['order_status_name'] = $orderStatusConfig[$value['order_status']] ?? '';
 
                     //更新开始时间
                     $rows[$k]['stime'] = $value['ctime'];
@@ -901,7 +910,6 @@ class OrderLogic extends BaseLogic{
                         continue;//失败的时候这里继续下一个
                     }
 
-
                     //异常情况
                     //更新任务状态
                     // ee($row);
@@ -927,50 +935,22 @@ class OrderLogic extends BaseLogic{
                     }
                 }
                 break;
-            //精品网络-因为批量接口有问题这里改为单条查询-已废弃
-            case '20000000':
-                $url_api = $goodsCfg['url_get_order_rows'];
+
+            case '40000':
+                //这里订单状态走定时脚本更新了，所以直接使用数据库里面的订单状态值即可
+                //定义本平台当前订单状态值
+                //['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废'];//5=api余额不足
+                //发布状态(0，停止；1，发布中；2，暂停中；3，排队中)
+                $orderStateArr = ['0'=>'1', '1'=>'2', '2'=>'4','3'=>'3'];//api状态=>本站状态
 
                 //先更新任务速度模式-防止前面无数据任务模式未更新
-                foreach ($rows as $key => $row) {
-                    //先更新任务速度模式-防止前面无数据任务模式未更新
-                    $rows[$key]['run_first_name'] = "{$row['first']}个/分钟";
+                foreach ($rows as $k => $value) {
+                    $rows[$k]['order_status_name'] = $orderStatusConfig[$value['order_status']] ?? '';
+                    $rows[$k]['task_status_value'] = $value['order_status'];
 
                     //更新开始时间
-                    $rows[$key]['stime'] = $row['ctime'];
-
-                    //获取订单任务ids
-                    $out_id = $row['out_id'];
-                    $postdatas = json_encode(['order_id'=>[$out_id]]);
-                    $res_api = apiget($url_api, $postdatas);
-                    // ee($res_api);
-                    //异常情况
-                    if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
-                        $msg = $res_api['message'] ?? '抱歉，创建任务时出现异常，请联系管理员';
-                        continue;//失败的时候这里继续下一个
-                    }
-                    // ee($res_api);
-
-                    if (empty($res_api['data'][0])) {
-                        continue;
-                    }
-
-                    $outOrder = $res_api['data'][0];
-                    // ee($outOrder);
-                    //更新任务状态
-                    $done_num = $outOrder['done_num'];//执行量
-                    $task_num = $outOrder['task_num'];//任务量
-                    if (isset($done_num) && isset($task_num)) {
-                        $order_status_name = "{$done_num}/{$task_num}";
-                        if ($done_num >0 && $done_num == $task_num) {
-                            $order_status_name = "已完成";//处理完了,默认显示
-                        }
-                        $rows[$key]['order_status_name'] = $order_status_name;
-                    }
-
+                    $rows[$k]['stime'] = $value['ctime'];
                 }
-
-                // ee($rows);
                 break;
             default:
                 return ['error'=>1, 'msg'=>'抱歉，配置未完善，暂时无法创建订单，请您联系管理员'];

@@ -419,6 +419,40 @@ go.dofeed = function(param){
     });
 }
 
+//复制评论内容
+go.copyComment = function(id){
+    var layerindex = layer.load(1);//加载层
+    $.ajax({
+        type: 'POST',
+        url: "/index.php/Home/tools/getTaskCommentCopyData",
+        data: {id:id},
+        dataType: 'json',
+        success: function(res){
+            layer.closeAll();
+            //TODO
+            if (res.error == 0){
+                
+                layer.open({
+                    'title': '按住CTRL+C复制即可',
+                    type: 1,
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['320px', '240px'], //宽高
+                    content: '<textarea class="copyBox">'+res.data+'</textarea>'
+                });
+                $('.copyBox').select();//选择
+                document.execCommand("Copy");//执行复制
+                // layer.msg('复制成功');
+            }else{
+                go.errorTips(res.msg);
+            }    
+        },
+        error: function(){
+            layer.closeAll();
+            console.log("服务器繁忙, 请联系管理员!");
+        }
+    });
+}
+
 
 
 

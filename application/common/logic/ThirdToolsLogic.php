@@ -329,14 +329,22 @@ class ThirdToolsLogic extends BaseLogic{
                     'level'    => 0, //是否刷量(0，正常；1，刷量) 
                     'price'    => $params['cm_price']*100, //每条评论的单价(单位分),TODO这里需要根据用户填写价格做适量相对计算
                 ];
-                ee($postdatas);
+                // ee($url_api);
 
-                $postdatasJson = json_encode($postdatas);
+                $postdatasJson = json_encode($postdatas);//JSON_UNESCAPED_UNICODE
                 $res_api = apiget($url_api, $postdatasJson, 'post', [], $headers);
-                ee($res_api);
+
+                //模拟成功数据
+                // $res_api = [
+                //     'result'=>['taskid'=>3142004],
+                //     'code'=>0,
+                //     'message'=>'发布成功',
+                // ];
+
+                // ee($res_api);
                 //异常情况
-                if (empty($res_api) || empty($res_api['code']) || $res_api['code'] != 0) {
-                    $msg = $res_api['msg'] ?? "抱歉，创建任务出现异常，请联系管理员";
+                if (empty($res_api) || !isset($res_api['code'])  || !isset($res_api['result']) || $res_api['code'] != 0) {
+                    $msg = $res_api['msg'] ?? "抱歉，创建任务出现异常，请联系管理员";//这里数据源错误字段描述是：message,所以这里只能是后者
                     return ['error'=>2, 'msg'=>$msg, 'post_params_api'=>json_encode($postdatas)];
                 }
 
@@ -352,5 +360,143 @@ class ThirdToolsLogic extends BaseLogic{
         return $res;
     }
 
+
+    //获取任务详情-评论列表-作废
+    protected function getTaskDetail_old($params = []){
+        $res = ['error'=>0, 'msg'=>'操作成功', 'data'=>[]];
+        if (empty($params)) {
+            return $res;
+        }
+
+        if (empty($params['id'])) {
+            return ['error'=>1, 'msg'=>'订单id不能为空'];
+        }
+
+        $order_id = $params['id'];
+        $status = $params['status'] ?? 2;//任务状态，默认2是获取所有
+
+        //获取订单信息
+        $orderRow = db('order')->where(['order_id'=>$order_id])->find();
+
+        if (empty($orderRow)) {
+            return ['error'=>1, 'msg'=>'抱歉，订单不存在，请联系管理员'];
+        }
+
+        $goods_id = $orderRow['goods_id'];
+
+        //获取商品信息
+        $goodsRow = $this->getGoodsRow($goods_id);
+        if (empty($goodsRow)) {
+            return ['error'=>1, 'msg'=>'抱歉，产品不存在，请联系管理员'];
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($goodsRow['supplier_id']);
+        if (empty($supplier)) {
+            $res = ['error'=>1, 'msg'=>'抱歉，系统异常(错误码00021)，请联系管理员！!'];
+            return $res;
+        }
+
+        //获取商品配置(第三方配置)
+        $goodsCfg = db('goods_config')->where(['goods_config_id'=>$goodsRow['goods_config_id']])->find();
+        if (empty($goodsCfg)) {
+            return ['error'=>1, 'msg'=>'抱歉，商品配置有误，请您联系管理员!'];
+        }
+        //检测配置-创建订单地址是否配置
+        if (empty($goodsCfg['url_get_order_row1'])) {
+            return ['error'=>1, 'msg'=>'抱歉，商品配置异常，请您联系管理员!'];
+        }
+
+        //设置headers
+        $headers = [
+            'Content-Type:application/json; charset=UTF-8',
+        ];
+        $apiUserinfoRes = $this->getSupplierToken($supplier);//获取用户信息,余额、评论单价等
+
+        //获取token异常情况
+        if ($apiUserinfoRes['error']) {
+            return ['error'=>1, 'msg'=>$apiUserinfoRes['msg']];
+        }
+
+        $apiUserinfo = $apiUserinfoRes['data'];//返回用户信息,余额、评论单价等
+        //提交参数
+        $postdatas = [
+            'uid'      => $apiUserinfo['uid'],//用户id
+            'usersign' => $apiUserinfo['usersign'],//用户签名 
+            'taskid'   => $orderRow['out_id'],
+            'status'   => $status,//审核状态(0，待审核；1，已审核)
+        ];
+
+        $url_api = $goodsCfg['url_get_order_row1'];//基础url
+
+        $postdatasJson = json_encode($postdatas);//JSON_UNESCAPED_UNICODE
+        $res_api = apiget($url_api, $postdatasJson, 'post', [], $headers);
+
+        // $res_api = '{"code":0,"message":"success","result":{"data":[{"taskid":3142809,"commid":189986002,"cont":"[坏笑]戴口罩的时候头大真的是很不舒服","status":0},{"taskid":3142809,"commid":189986065,"cont":"爱流鼻涕的人戴口罩也太难受了吧。","status":0}]}}';
+        // $res_api = json_decode($res_api, true);
+
+        
+        // ee(json_encode($res_api['result']['data'],JSON_UNESCAPED_UNICODE));
+        // ee($res_api);
+
+        //异常情况
+        if (empty($res_api) || !isset($res_api['code'])  || !isset($res_api['result']) || $res_api['code'] != 0) {
+            $msg = $res_api['message'] ?? "抱歉，任务详情获取出现异常(错误码0026)，请联系管理员";
+            return ['error'=>1, 'msg'=>$msg];
+        }
+
+
+        if (!isset($res_api['result']['data'])) {
+            $msg = "抱歉，任务详情获取出现异常(错误码027)，请联系管理员";
+            return ['error'=>1, 'msg'=>$msg];
+        }
+        $res['data'] = $res_api['result']['data'];
+        return $res;
+    }
+
+
+    //获取评论内容-用户复制
+    public function getTaskCommentCopyData($params = []){
+        $res = ['error'=>0, 'msg'=>'操作成功', 'data'=>[]];
+        $comments = [];//默认返回数据格式
+        $result = $this->getTaskDetail($params);
+
+        if ($result['error']) {
+            return ['error'=>1, 'msg'=>$result['msg']];
+        }
+        $commentsList = $result['data'];
+
+        if (!empty($commentsList)) {
+            foreach ($commentsList as $comment) {
+                $comments[] = $comment['cont'];
+            }
+        }
+
+        $res['data'] = implode(PHP_EOL, $comments);//用换行符来连接
+        // ee($res);
+        return $res;
+    }
+
+
+    //获取任务详情-评论列表
+    public function getTaskDetail($params = []){
+        $res = ['error'=>0, 'msg'=>'操作成功', 'data'=>[]];
+        if (empty($params)) {
+            return $res;
+        }
+
+        if (empty($params['id'])) {
+            return ['error'=>1, 'msg'=>'订单id不能为空'];
+        }
+
+        $order_id = $params['id'];
+
+        //获取订单信息
+        $row = db('task_comments')->where(['order_id'=>$order_id])->find();
+        $comments = json_decode($row['content'], true);
+
+        $res['data'] = $comments;
+        return $res;
+    }
 
 }

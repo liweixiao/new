@@ -30,7 +30,7 @@ class Order extends Base {
 
         $params = I('get.');//请求参数
         $cat_id = $data['cat_id'] = I('cid', 1);//商品一级分类id
-        $goods_id = $data['goods_id'] = I('gid', 1);//商品id
+        $goods_id = $data['goods_id'] = I('gid', 0);//商品id
 
         $userInfo = $data['userInfo'] = $this->UsersLogic->get_user_info($this->user_id);
         if (empty($userInfo)) {
@@ -39,10 +39,6 @@ class Order extends Base {
 
         if (empty($cat_id)) {
             $this->error('抱歉，分类参数有误');
-        }
-
-        if (empty($goods_id)) {
-            $this->error('抱歉，商品参数有误');
         }
 
         //获取当前分类下面所有子分类
@@ -56,6 +52,11 @@ class Order extends Base {
         }
 
         $data['goodsRows'] = $this->OrderLogic->getCatGoodsList($subCatIds);
+
+        //如果未传递商品id即gid,则默认取此分类下面所有商品id列表的第一个
+        if (empty($goods_id)) {
+            $goods_id = $data['goods_id'] = $data['goodsRows'][0]['goods_id'] ?? 0;
+        }
 
         //获取用户订单列表
         $params['user_id'] = $this->user_id;
@@ -73,9 +74,7 @@ class Order extends Base {
         //获取商品订单统计(统计每个商品下单数量)
         $data['orderGoodsStat'] = $this->OrderLogic->getOrderGoodsStat($params);
 
-
         // ee($data);
-        // ee($rows);
         $this->assign('tags', $tags);
         $this->assign('data', $data);
         return $this->fetch();

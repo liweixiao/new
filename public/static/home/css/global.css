@@ -932,6 +932,14 @@ em{font-style: normal;}
 .list-fk{
     
 }
+.copy{
+    cursor: pointer;
+    color: #47b3e3;
+}
+textarea.copyBox{
+    width: 300px;
+    height: 220px;
+}
 
 .tools-form .layui-textarea {
     min-height: 50px;

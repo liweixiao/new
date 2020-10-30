@@ -111,4 +111,30 @@ class Tools extends Base {
 
 	}
 
+	//获取评论详情-任务详情
+	public function getTaskDetail() {
+		$params = input('get.');
+	    $ThirdToolsLogic = new ThirdToolsLogic;
+
+	    $res = $ThirdToolsLogic->getTaskDetail($params);
+
+	    if ($res['error']) {
+	        $this->error($res['msg']);
+	    }
+
+	    $rows = $res['data'];
+	    $this->assign('rows', $rows);
+	    return $this->fetch();
+	}
+
+
+	//获取评论内容-用户复制
+	public function getTaskCommentCopyData() {
+		$params = input('post.');
+	    $ThirdToolsLogic = new ThirdToolsLogic;
+
+	    $res = $ThirdToolsLogic->getTaskCommentCopyData($params);
+	    $this->ajaxReturn($res);
+	}
+
 }

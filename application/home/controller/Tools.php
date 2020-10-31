@@ -164,7 +164,7 @@ class Tools extends Base {
 
 	    $rows = $res['data'];
 	    $this->assign('rows', $rows);
-	    return $this->fetch();
+	    return $this->fetch('getTaskDetail');
 	}
 
 

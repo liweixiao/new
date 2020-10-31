@@ -14,7 +14,7 @@
                         <ul class="layui-tab-title">
                             {volist name="data.catList" id="vo"}
                             <a href="{:U('Admin/order/list', ['cid'=>$vo.cat_id])}">
-                            <li class="{if condition='$vo.cat_id eq $Think.get.cid'}layui-this{/if}" cat_id="{$vo.cat_id}">{$vo.cat_name}</li>
+                            <li class="{if condition='$vo.cat_id eq $data.cat_id'}layui-this{/if}" cat_id="{$vo.cat_id}">{$vo.cat_name}</li>
                             </a>
                             {/volist}
                         </ul>

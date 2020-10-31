@@ -267,7 +267,7 @@ class BaseLogic {
 
                 //异常情况
                 if (empty($res_api) || $res_api['code'] != 0) {
-                    return ['error'=>2, 'msg'=>'此商品暂无法获取配置(005)，请联系管理'];
+                    return ['error'=>2, 'msg'=>'此商品暂无法获取配置-未授权(005)，请联系管理'];
                 }
                 if (empty($res_api['result'])) {
                     return ['error'=>2, 'msg'=>'此商品暂无法获取配置(006)，请联系管理'];
@@ -390,6 +390,36 @@ class BaseLogic {
                     $res_token = $this->getSupplierToken($supplier);//这里通过获取token即可知道余额
                     $res = $this->apiMoney;
                 }
+                break;
+
+            case '40000':
+                $headers = [
+                    'Content-Type:application/json; charset=UTF-8',
+                ];
+                $url_api = $supplier['url'];
+                $postdatas = ['acco'=>$supplier['api_account'], 'pswd'=>base64_encode($supplier['api_password'])];
+                $postdatasJson = json_encode($postdatas);
+                $res_api = apiget($url_api, $postdatasJson, 'post', [], $headers);
+                // ee($res_api);
+
+                //异常情况
+                if (empty($res_api) || $res_api['code'] != 0) {
+                    return $res;
+                }
+                if (empty($res_api['result'])) {
+                    return $res;
+                }
+
+                $user_info = $res_api['result'] ?? [];
+
+                //转换格式-价格分转为元
+                if (!empty($user_info)) {
+                    //剩余金额
+                    if (isset($user_info['usepoint'])) {
+                        $res = $user_info['usepoint']/100;//转换分为元单位
+                    }
+                }
+
                 break;
             
             default:

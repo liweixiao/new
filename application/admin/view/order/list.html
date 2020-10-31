@@ -77,7 +77,7 @@
                                 <th width="50">设备</th>
                                 <th>任务数量</th>
 
-                                <th><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>开始时间</th>
+                                <th><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>下单时间</th>
                                 <th>操作</th>
 
                             </tr>
@@ -122,7 +122,7 @@
                                 </td>
 
                                 <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
-                                <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
+                                <td>{$vo.ctime|strtotime|date='Y-m-d H:i',###}</td>
                                 <td>
                                     <div class="btn-group">
                                         {if condition='$vo.order_status eq 5'}

@@ -23,6 +23,9 @@ class Goods extends Base {
         $tag = I('tag/d', 0);//商品tag
         $params = I('get.');//参数
 
+        //默认详情链接地址
+        $detailUrl = 'home/goods/detail';
+
         if (empty($cat_id)) {
             $this->error('地址有误!请检查');
         }
@@ -31,6 +34,11 @@ class Goods extends Base {
         // $catList = $this->ToolsLogic->getCatList($cat_id);
 
         $cat = $this->ToolsLogic->getCatRow($cat_id);
+
+        //如果是写评论的大分类,有个特殊处理，就是商品详情地址与其他不一样
+        if ($cat['supplier_id'] == 5) {
+            $detailUrl = 'home/tools/gcdetail';
+        }
 
         //获取当前分类下面所有子分类ids
         $subCatIds = $this->ToolsLogic->getSubCatIds($cat_id);
@@ -42,6 +50,7 @@ class Goods extends Base {
         $tags = $this->ToolsLogic->getAllTags('goods_tag', $cat_id);
 
         $this->assign('cat', $cat);
+        $this->assign('detailUrl', $detailUrl);
         $this->assign('rows', $rows);
         $this->assign('tags', $tags);
         return $this->fetch('list');

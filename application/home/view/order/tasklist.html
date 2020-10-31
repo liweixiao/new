@@ -50,9 +50,9 @@
               <tr>
                 <th>订单编号</th>
                 <th>产品名称</th>
-                <th>任务模式</th>
                 <th>目标</th>
                 <th>实时状态</th>
+                {if condition="$vo.supplier_id eq 5"}<th>详情</th><th>复制</th>{/if}
                 <th>备注</th>
                 <th>开始时间</th>
                 <th>任务数量</th>
@@ -65,16 +65,28 @@
               <tr>
                 <td>{$vo.order_sn}</td>
                 <td>{$vo.goods.0.goods_name|default=''}</td>
-                <td>{$vo.run_first_name|default=''}</td>
                 <td><a href="{$vo.url}" class="task_url omit" title="{$vo.url}" target="_blank">{$vo.url}</a></td>
                 <td>{$vo.order_status_name}</td>
+                {if condition="$vo.supplier_id eq 5"}
+                <td>
+                    {//只有comment_id大于0才说明有评论内容}
+                    {if condition="$vo.comment_id gt 0"}
+                    <a href="{:U('Home/tools/getTaskDetail',['id'=>$vo.order_id])}" class="task_url omit" target="_blank">查看</a>
+                    {/if}
+                </td>
+                <td>
+                    {if condition="$vo.comment_id gt 0"}
+                    <span class="copy" onclick="go.copyComment({$vo.order_id})">复制</span>
+                    {/if}
+                </td>
+                {/if}
                 <td>{$vo.order_note}</td>
                 <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
                 <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
                 <td>{$vo.total_amount|fnum}</td>
                 <td class="my-opt">
                     {//['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废']}
-                    {if condition="!empty($vo.task_status_value) and $vo.task_status_value neq '1'"}
+                    {if condition="!empty($vo.task_status_value) and $vo.task_status_value neq '1' and $vo.supplier_id neq '5'"}
                         {if condition="$vo.task_status_value eq '4'"}
                         <span class="opt-set" order_id="{$vo.order_id}" type="continue" onclick="go.setOrder(this)">继续</span>
                         {elseif condition="$vo.task_status_value eq '3'"/}

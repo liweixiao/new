@@ -58,6 +58,46 @@ class Tools extends Base {
 	    $this->ajaxReturn($res);
 	}
 
+
+	//商品详情-写评论(gcdetail=goods comment detail)
+	public function gcdetail(){
+	    $goods_id = I('id', 0);//商品id
+	    $ThirdToolsLogic = new ThirdToolsLogic;
+	    $ToolsLogic  = new ToolsLogic();
+	    $row = $ThirdToolsLogic->getTaskGoodsRow($goods_id, $this->user_id);
+	    if (empty($row)) {
+	        $this->error('非法请求');
+	    }
+
+	    //异常情况监测
+	    if ($ThirdToolsLogic->setPriceRateError) {
+	        $this->error('抱歉，此商品售价设置有误(错误码0012)，请联系管理员！');
+	    }
+
+	    $ToolsLogic->delFields($row, ['out_url'], 1);//剔除字段
+
+
+	    //获取商品模板
+	    $goodsTemplate = $row['tpl'];
+	    if (empty($goodsTemplate)) {
+	        $this->error('抱歉，商品模板配置有误，请联系管理员！');
+	    }
+
+	    $cat_id = $row['cat_id'];
+	    $cat = $ToolsLogic->getCatRow($cat_id);
+	    if (empty($cat)) {
+	        $this->error('抱歉，请联系管理员！');
+	    }
+
+	    $tags = $ToolsLogic->getAllTags('', 0, false);//第三个参数为false则获取所有字段，这在模板里面要注意
+	    $shop_info = tpCache('shop_info');
+	    $this->assign('shop_info',$shop_info);
+	    $this->assign('row', $row);
+	    $this->assign('cat', $cat);
+	    $this->assign('tags', $tags);
+	    return $this->fetch($goodsTemplate);
+	}
+
 	//创建订单-写评论
 	public function createOrder(){
 	    $res = ['error'=>0, 'msg'=>'恭喜，提交成功'];

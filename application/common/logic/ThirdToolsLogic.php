@@ -25,8 +25,46 @@ use think\Image;
  */
 class ThirdToolsLogic extends BaseLogic{
     public $orderStatusConfig = [];//注意,这里不用重复写,这个值由此类实例化后从OrderLogic的属性orderStatusConfig复制过来！
+    public $setPriceRateError = 0;//设置抽成比率错误检测,用来检测设置的值是否大于100，或者非法
+    public $priceRate = 0;//抽成比率-小数
+    public $apiUserinfo = [];//api用户信息
+
+    /**
+     * 获取会员抽成比率
+     * 会员价逻辑:会员users表中的level对应user_level的id，而user_level有个字段sale_price_field，这个正好是goods表中设置的售价
+     * 换句话说:会员价直接与会员的level级别有关系
+     * @param int $goods_id 商品id
+     * @param int $user_id 用户id
+     * @return number
+     */
+    public function getSetPiceRate($goods_id=0, $user_id=0){
+        $res = 0;//返回销售总价、会员真实购买价
+        if (empty($goods_id)) {
+            return $res;
+        }
+
+        //查找商品销售价-比率
+        $goodsRow = db('goods')->field('goods_id, sale_price, user_price, min_num')->where('goods_id', $goods_id)->find();
+        if (empty($goodsRow)) {
+            return $res;
+        }
+        $price = $goodsRow['sale_price'];
+
+        //如果设置了会员价
+        if ($user_id) {
+            $goodsUserPrice = $this->getGoodsUserPrice($goods_id, $user_id, $goodsRow);
+            if ($goodsUserPrice) {
+                $price = $goodsUserPrice;//修改最终成交价格为会员价
+            }
+        }
+
+        $res = fnum($price, 0, 2);
+        $this->priceRate = $res/100;//抽成
+        return $res;
+    }
 
     //预算总价
+    //重要说明:数据库会员等级价、私有价、销售价设置说明，在数据库设置三个值时候数值均代表成本的抽成百分比！当计算最终销售价的时候均根据用户输入价格计算
     public function budgetTotalAmount($num=0, $price=0){
         $res = 0;//返回销售总价、会员真实购买价
         if (empty($num)) {
@@ -44,6 +82,133 @@ class ThirdToolsLogic extends BaseLogic{
         $resPrice = $num*$price;
 
         $res = fnum($resPrice, 0, 2);
+        return $res;
+    }
+
+    //获取最小设置价格(成本价/百分比率)
+    public function getMinSetPrice($goods_id=0, $user_id=0){
+        $res = 0;
+        //直接通过这个方法，可先获取抽成比率
+        $rate = $this->getSetPiceRate($goods_id, $user_id);//注意这里的num必须传递值为1
+
+        //转换百分比制
+        $rate = $rate/100;
+
+        //检测数据库设置的非法数值
+        if ($rate < 0) {
+            $this->setPriceRateError = 1;
+        }
+        if ($rate >= 1) {
+            $this->setPriceRateError = 2;
+        }
+
+        //获取成本
+        $goodsRow = db('goods')->field('goods_id, cost_price')->where('goods_id', $goods_id)->find();
+        if (empty($goodsRow)) {
+            return $res;
+        }
+
+        $cost_price = $goodsRow['cost_price'];
+
+        $res = $cost_price/(1-$rate);//计算最小可设置价
+
+        //TODO，这里有小数点四舍五入问题，可能要把自低价调高些
+
+        $res = fnum($res, 0, 2);//转换格式
+
+        return $res;
+    }
+
+
+    /**
+     * 计算订单总成本价(注意:这里的成本价与用户设置有关，与数据库cost_price没有直接关系,cost_price只作为最低提交价格计算参考！)
+     * @param int $num 购买数量
+     * @param int $goods_id 商品id
+     * @param number $set_price 用户设置价格
+     * @param number $priceRate 抽成比率,小数
+     * @return number
+     */
+    public function calcTotalCost($num=0, $goods_id=0, $set_price=0, $priceRate=0){
+        $res = 0;
+        if (empty($num)) {
+            return $res;
+        }
+        if (empty($goods_id)) {
+            return $res;
+        }
+
+        //查找商品销售价
+        $goodsRow = db('goods')->field('goods_id, cost_price, min_num')->where('goods_id', $goods_id)->find();
+        if (empty($goodsRow)) {
+            return $res;
+        }
+        $cost_price = $goodsRow['cost_price'];
+
+        //任务数量
+        $num = floatval($num);
+        $min_num = $goodsRow['min_num'];
+        //如果设置了最低量
+        if (!empty($min_num) && $min_num > 0) {
+            $min_num = floatval($min_num);
+            if ($num < $min_num) {
+                $num = $min_num;
+            }
+        }
+
+        $set_price = floatval($set_price);
+
+        //检测数据库设置的非法数值
+        if ($priceRate < 0) {
+            $this->setPriceRateError = 3;
+        }
+        if ($priceRate >= 1) {
+            $this->setPriceRateError = 4;
+        }
+
+        $res = $num*$set_price*(1-$priceRate);
+        $res = fnum($res, 0, 2);
+        return $res;
+    }
+
+    /**
+     * 计算订单成本单价-可以作为提交api价格使用、最终成交价
+     * @param number $set_price 用户设置价格
+     * @param number $priceRate 抽成比率,小数
+     * @return number
+     */
+    public function calcCostPrice($set_price=0, $priceRate=0){
+        $res = 0;
+
+        $set_price = floatval($set_price);
+
+        //检测数据库设置的非法数值
+        if ($priceRate < 0) {
+            $this->setPriceRateError = 5;
+        }
+        if ($priceRate >= 1) {
+            $this->setPriceRateError = 6;
+        }
+
+        $res = $set_price*(1-$priceRate);
+        $res = fnum($res, 0, 2);//根据api要求，保留2位
+        return $res;
+    }
+
+    //获取商品-任务-评论专用
+    public function getTaskGoodsRow($goods_id=0, $user_id=0){
+        $where = ['is_show'=>1, 'goods_id'=>$goods_id];
+        $res = db('goods')->where($where)->find();
+        if (!$res) {
+            return $res;
+        }
+
+        $res['sale_price'] = $res['cost_price'];//先给个默认
+
+        //获取会员设置最低价
+        $minSetPrice = $this->getMinSetPrice($goods_id, $user_id);
+        if ($minSetPrice) {
+            $res['sale_price'] = $minSetPrice;
+        }
         return $res;
     }
 
@@ -98,9 +263,15 @@ class ThirdToolsLogic extends BaseLogic{
         }
 
         //判断设置单价是否低于成本价
-        $cost_price = fnum($goodsRow['cost_price'], 0, 4);
-        if ($params['cm_price'] < $cost_price) {
-            return ['error'=>1, 'msg'=>"抱歉，设置单价不能低于:{$cost_price}！"];
+        $minSetPrice = $this->getMinSetPrice($goodsRow['goods_id'], $user_id);//获取此会员可设置的最低价
+
+        //此处利用上面方法里面检测过的条件，如果数据库设置抽成非法则阻止提交订单
+        if ($this->setPriceRateError) {
+            return ['error'=>1, 'msg'=>'抱歉，此商品售价设置有误(错误码0012)，请联系管理员！'];
+        }
+
+        if ($params['cm_price'] < $minSetPrice) {
+            return ['error'=>1, 'msg'=>"抱歉，设置单价不能低于:{$minSetPrice}！"];
         }
 
 
@@ -109,10 +280,9 @@ class ThirdToolsLogic extends BaseLogic{
         $data['user_id']         = $user_id;
         $data['url']             = $params['url'] ?? '';
         $data['out_id']          = $params['out_id'] ?? 0;//外部订单id-改为后面更新了
-        $data['first']           = $params['first'] ?? '';//优先级
         $data['user_note']       = $params['user_note'] ?? '';//备注
         $data['task_num']        = $params['task_num'] ?? 0;//下单数量
-        $data['supplier_id']     = $goodsRow['supplier_id'];//供应商id??
+        $data['supplier_id']     = $goodsRow['supplier_id'];//供应商id
         $data['goods_config_id'] = $goodsRow['goods_config_id'];//商品配置id
         $data['goods_id']        = $params['goods_id'] ?? 0;//商品id
 
@@ -121,24 +291,30 @@ class ThirdToolsLogic extends BaseLogic{
             return ['error'=>1, 'msg'=>'请勿重复提交,您可以修改一些参数后再次提交'];
         }
 
-        //最终成交价
-        $this->final_price = $params['cm_price'];
 
         //计算订单总价
-        $total_amount = $this->budgetTotalAmount($params['task_num'], $params['cm_price']);//TODO这里价格需要收取平台费
-        // ee($total_amount);
+        $total_amount = $this->budgetTotalAmount($params['task_num'], $params['cm_price']);
+
         //销售额为0,默认不允许下单
         if ($total_amount <= 0) {
-            return ['error'=>1, 'msg'=>'抱歉，订单总价不能为空，请联系管理员'];
+            return ['error'=>1, 'msg'=>'抱歉，订单总价计算后为空，请联系管理员'];
         }
 
         //检查用户余额是否充足
         if ($total_amount > $userInfo['user_money']) {
             return ['error'=>1, 'msg'=>'抱歉，余额不足，请充值.'];
         }
+
+        //最终成交价
+        $this->cost_price = $this->calcCostPrice($params['cm_price'], $this->priceRate);
         
         //计算订单总成本价
-        $total_cost = $this->getTotalCost($data['task_num'], $data['cm_price']);
+        $total_cost = $this->calcTotalCost($data['task_num'], $goodsRow['goods_id'], $params['cm_price'], $this->priceRate);
+
+        //此处利用上面方法里面检测过的条件，如果数据库设置抽成非法则阻止提交订单
+        if ($this->setPriceRateError) {
+            return ['error'=>1, 'msg'=>'抱歉，此商品售价设置有误(错误码0013)，请联系管理员！'];
+        }
 
         // 启动事务
         Db::startTrans();
@@ -178,8 +354,8 @@ class ThirdToolsLogic extends BaseLogic{
             $goods['goods_sn']        = $goodsRow['goods_sn'];
             $goods['goods_num']       = $data['task_num'];
             $goods['unit']            = $goodsRow['unit'];
-            $goods['final_price']     = $this->final_price;//成交价格
-            $goods['cost_price']      = $goodsRow['cost_price'];//成本价
+            $goods['final_price']     = $params['cm_price'];//成交价格=用户设置价格
+            $goods['cost_price']      = $this->cost_price;//成本价=用户设置价格-抽成
             $goods['goods_config_id'] = $goodsRow['goods_config_id'];//商品配置id
             
             $goods['ctime']           = $ctime;
@@ -200,19 +376,19 @@ class ThirdToolsLogic extends BaseLogic{
                 return ['error'=>1, 'msg'=>'抱歉，更新用户消费日志失败，请联系管理员'];
             }
 
-            //生成第三方数据
-            $create_res = $this->createThirdOrderBySupplier($supplier, $goodsCfg, $params, $cat, $goodsRow);
+            //生成第三方数据-这一步会生成$this->apiMoney数据
+            $create_res = $this->createThirdOrderBySupplier($supplier, $goodsCfg, $params, $cat, $goodsRow, $this->cost_price);
             if ($create_res['error']) {
                 //注意这里分为两种情况:1.api报错,2.平台报错-非法，如果是2则直接回滚数据
                 //api返回错误情况
                 if ($create_res['error'] == 2) {
                     ///注意这里只记录余额不足情况
                     //检测余额是否充足
-                    $apiMoney = $this->getApiMoneyBySupplier($supplier['supplier_id']);
+                    $apiMoney = $this->apiMoney ?? -999;
                     //未获取到情况
                     if ($apiMoney == -999) {
                         Db::rollback();// 回滚事务
-                        return ['error'=>1, 'msg'=>'抱歉，更新订单状态时候出错(错误码009)，请联系管理员'];
+                        return ['error'=>1, 'msg'=>'抱歉，更新订单状态时候出错(错误码0099)，请联系管理员'];
                     }
 
                     // ee($apiMoney);
@@ -261,7 +437,7 @@ class ThirdToolsLogic extends BaseLogic{
             }
 
             //更新out_id
-            $updateOrder = ['out_id'=>$create_res['data']['out_id'], 'order_status'=>3];
+            $updateOrder = ['out_id'=>$create_res['data']['out_id'], 'order_status'=>2];
             $res_update = db("order")->where('order_id', $order_id)->update($updateOrder);
             // sql();
             if (!$res_update) {
@@ -284,7 +460,7 @@ class ThirdToolsLogic extends BaseLogic{
      * 创建订单(根据供应商不同而不同)
      * @return array $res 结果
      */
-    public function createThirdOrderBySupplier($supplier, $goodsCfg=[], $params=[], $cat=[], $goodsRow=[]){
+    public function createThirdOrderBySupplier($supplier, $goodsCfg=[], $params=[], $cat=[], $goodsRow=[], $cost_price){
         $res = ['error'=>0, 'msg'=>'获取成功！', 'data'=>[], 'res_api'=>[], 'post_params_api'=>''];
         if (empty($supplier)) {
             return ['error'=>1, 'msg'=>'抱歉，配置有误，无法获取数据，请联系管理员'];
@@ -308,12 +484,6 @@ class ThirdToolsLogic extends BaseLogic{
 
                 $this->apiUserinfo = $apiUserinfo = $apiUserinfoRes['data'];//返回用户信息,余额、评论单价等
 
-                //判断设置单价是否低于成本价
-                $cost_price = $apiUserinfo['useprice'];//再次校验,根据api数据
-                if ($params['cm_price'] < $cost_price) {
-                    return ['error'=>1, 'msg'=>"抱歉，设置单价不能低于:{$cost_price}！"];
-                }
-
                 $url_api = $goodsCfg['url_create_order'];
                 //提交参数
                 $postdatas = [
@@ -327,7 +497,7 @@ class ThirdToolsLogic extends BaseLogic{
                     'max'      => $params['cm_max'], //最大评论量
                     'minchar'  => $params['cm_minchar'], //每条评论最小字数
                     'level'    => 0, //是否刷量(0，正常；1，刷量) 
-                    'price'    => $params['cm_price']*100, //每条评论的单价(单位分),TODO这里需要根据用户填写价格做适量相对计算
+                    'price'    => $cost_price*100, //每条评论的单价(单位分)
                 ];
                 // ee($url_api);
 

@@ -75,6 +75,7 @@ class Order extends Base {
 
         //获取当前分类下面所有子分类
         $data['catList'] = $this->OrderLogic->getCatList(0);
+        // ee($data['catList']);
 
         //获取当前分类下面所有子分类ids
         $subCatIds = $this->OrderLogic->getSubCatIds($cat_id);

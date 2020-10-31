@@ -335,6 +335,72 @@ class BaseLogic {
         return $res;
     }
 
+
+    /**
+     * 获取api余额
+     * @return array $res 结果
+     */
+    public function getApiMoneyBySupplier($supplier_id=0){
+        $res = -999;//这里应该是默认未获取到余额
+        if (empty($supplier_id)) {
+            return $res;
+        }
+
+        //获取供应商
+        $supplier = $this->getSupplier($supplier_id);
+        if (empty($supplier)) {
+            return $res;
+        }
+
+        switch ($supplier['code']) {
+            case '10000':
+                $url_api = $supplier['url'] . $supplier['url_money'];
+                $apikey = $supplier['apikey'];
+                $params = ['apikey'=>$apikey, 'renwuid'=>100, 'type'=>'balance'];//提交参数
+                $res_api = apiget($url_api, $params);
+                //异常情况
+                if (empty($res_api) || empty($res_api['ret']) || $res_api['ret'] != 1) {
+                    return $res;
+                }
+                if (isset($res_api['msg'])) {
+                    $res = $res_api['msg'];
+                }
+                break;
+
+            case '20000':
+                $apikey = $supplier['apikey'];
+                $url_api = $supplier['url'] . $supplier['url_money'] . $apikey;
+                $res_api = apiget($url_api);
+                //异常情况
+                if (empty($res_api) || empty($res_api['success']) || !$res_api['success']) {
+                    return $res;
+                }
+
+                if (isset($res_api['balance'])) {
+                    $res = floatval($res_api['balance']);
+                    $res = $res/100;//这里他这里单位是分
+                }
+                break;
+
+            case '30000':
+                //这种情况是下单的时候已经登录了，查询过余额了
+                if (!empty($this->apiMoney)) {
+                    $res = $this->apiMoney;//注意，这里是在类调用getSupplierToken()方法的时候，此类属性(apiMoney)已经生成
+                }else{
+                    $res_token = $this->getSupplierToken($supplier);//这里通过获取token即可知道余额
+                    $res = $this->apiMoney;
+                }
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $res = floatval($res);
+        return $res;
+    }
+
     //获取分类
     public function getCatRow($cat_id=0){
         $where = ['is_show'=>1, 'cat_id'=>$cat_id];
@@ -348,7 +414,7 @@ class BaseLogic {
         if ($parent_id != -1) {
             $where['parent_id'] = $parent_id;
         }
-        $field = 'cat_id, cat_name, parent_id, level, icon';
+        $field = 'cat_id, cat_name, parent_id, supplier_id, level, icon';
         $res = db('goods_cat')->field($field)->where($where)->order('sort')->select();
         return $res;
     }
@@ -464,6 +530,15 @@ class BaseLogic {
                 //显示定制价格-优先级最高
                 if (!empty($row['user_sale_price']) && $row['user_sale_price'] > 0) {
                     $res[$key]['sale_price'] = $row['user_sale_price'];
+                }
+
+                //发布任务价格-优先级最最高(通过抽成比率计算)
+                if ($row['supplier_id'] == 5) {
+                    $priceRate = $res[$key]['sale_price']/100;//抽成
+                    $cost_price = $row['cost_price'];
+                    $sale_price = $cost_price/(1-$priceRate);//计算最小可设置价
+                    $sale_price = fnum($sale_price, 0, 2);//转换格式
+                    $res[$key]['sale_price'] = $sale_price;
                 }
             }
         }

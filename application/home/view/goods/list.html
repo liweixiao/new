@@ -40,13 +40,13 @@
 								<!-- 角标 -->
 								{notempty name="$vo.icon_text"}<!-- <span class="icon_text">{$vo.icon_text}</span> -->{/notempty}
 								<!-- 角标 -->
-								<a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}">
+								<a href="{:U($detailUrl,['id'=>$vo.goods_id])}">
 									<div class="img-box">
 										<img src="__STATIC__/images{$vo.logo}">
 									</div>
 								</a>
 
-								<a href="{:U('home/goods/detail',['id'=>$vo.goods_id])}">
+								<a href="{:U($detailUrl,['id'=>$vo.goods_id])}">
 									<div class="item-content">
 										<h3>
 											{notempty name="$vo.icon"}<span class="iconfont {$vo.icon}"></span>{/notempty}

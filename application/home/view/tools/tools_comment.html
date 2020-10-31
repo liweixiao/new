@@ -65,29 +65,29 @@
 								</div>
 
 								<div class="layui-form-item">
-									<label class="layui-form-label">最大评论量</label>
-									<div class="layui-input-block">
-										<input type="text" name="cm_max" id="cm_max" value="{$row.max_num|fnum=0,0}"
-										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
-										 <span class="note">设置最大评论数量</span>
-									</div>
-								</div>
-
-								<div class="layui-form-item">
 									<label class="layui-form-label">最少字数</label>
 									<div class="layui-input-block">
-										<input type="text" name="cm_minchar" id="cm_minchar" value="{$row.min_num|fnum=0,0}"
+										<input type="text" name="cm_minchar" id="cm_minchar" value="10"
 										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
 										<span class="note">设置每条评论最小字数</span>
 									</div>
 								</div>
 
 								<div class="layui-form-item">
+									<label class="layui-form-label">最大评论量</label>
+									<div class="layui-input-block">
+										<input type="text" name="cm_max" id="task_num" value="{$row.min_num|fnum=0,0}"
+										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
+										 <span class="note">设置最大评论数量</span>
+									</div>
+								</div>
+
+								<div class="layui-form-item">
 									<label class="layui-form-label">设置单价</label>
 									<div class="layui-input-block">
-										<input type="text" name="cm_price" id="cm_price" value="0.1"
+										<input type="text" name="cm_price" id="set_price" value="{$row.sale_price|fnum}"
 										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
-										<span class="note">每条评论的单价(元)</span>
+										<span class="note">每条评论的最低单价(元)</span>
 									</div>
 								</div>
 
@@ -112,9 +112,6 @@
 									</div>
 								</div>
 
-
-
-
 							</form>
 							<!-- 内容区域 -->
 						</div>
@@ -138,10 +135,10 @@
 					laydate = layui.laydate;
 
 				//预估总价
-				$("#task_num").bind("input propertychange", function() {
+				$("#task_num, #set_price").bind("input propertychange", function() {
 					var totalAmount = '';
-					var price = $.trim($('#sale_price').val());
-					var task_num = $.trim($(this).val());
+					var price = $.trim($('#set_price').val());
+					var task_num = $.trim($('#task_num').val());
 					task_num = parseFloat(task_num);
 					totalAmount = go.calcTotalAmount(task_num, price);
 					$('.gs-price').text(totalAmount);

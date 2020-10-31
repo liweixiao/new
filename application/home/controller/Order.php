@@ -27,6 +27,7 @@ class Order extends Base {
 
     public function index(){
         $data = [];
+        $tpl  = 'index';//默认模板
 
         $params = I('get.');//请求参数
         $cat_id = $data['cat_id'] = I('cid', 1);//商品一级分类id
@@ -39,6 +40,16 @@ class Order extends Base {
 
         if (empty($cat_id)) {
             $this->error('抱歉，分类参数有误');
+        }
+
+        //获取当前分类
+        $catRow = $this->ToolsLogic->getCatRow($cat_id);
+        if (empty($catRow)) {
+            $this->error('抱歉，此分类不存在');
+        }
+        //有些分类的模板不同-比如评论带复制、查看评论详情
+        if ($catRow['supplier_id'] == 5) {
+            $tpl = 'tasklist';
         }
 
         //获取当前分类下面所有子分类
@@ -77,7 +88,7 @@ class Order extends Base {
         // ee($data);
         $this->assign('tags', $tags);
         $this->assign('data', $data);
-        return $this->fetch();
+        return $this->fetch($tpl);
     }
 
     //订单状态-平台ip121.199.15.68

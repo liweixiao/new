@@ -45,6 +45,24 @@
 									</div>
 								</div>
 
+								<div class="layui-form-item task_type">
+									<label class="layui-form-label">任务类型</label>
+									<div class="layui-input-block">
+										<input type="checkbox" name="pingLun" lay-skin="primary" value="1" title="评论" checked>
+										<input type="checkbox" name="dianZhan" lay-skin="primary" value="1" title="点赞">
+										<input type="checkbox" name="zhuanFa" lay-skin="primary" value="1" title="转发">
+										<input type="checkbox" name="guanZhu" lay-skin="primary" value="1" title="关注">
+									</div>
+								</div>
+
+								<div class="layui-form-item layui-form-text textarea-box">
+									<label class="layui-form-label">评论内容</label>
+									<div class="layui-input-block">
+										<textarea placeholder="请输入评论内容,回车换行,一行为一条内容" name="sendValue" class="layui-textarea appoint_content"></textarea>
+										<span class="note">当前统计输入<b>0</b>行</span>
+									</div>
+								</div>
+
 								<div class="layui-form-item">
 									<label class="layui-form-label">最大评论量</label>
 									<div class="layui-input-block">
@@ -114,6 +132,12 @@
 					task_num = parseFloat(task_num);
 					totalAmount = go.calcTotalAmount(task_num, price);
 					$('.gs-price').text(totalAmount);
+				})
+
+				//textarea值改变-提示输入条数
+				$(".appoint_content").bind("input propertychange", function() {
+					var rowNum = $(this).val().split("\n").length;
+					$(this).closest('.textarea-box').find('.note b').text(rowNum);
 				})
 
 			});

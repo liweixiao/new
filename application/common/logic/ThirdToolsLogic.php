@@ -504,13 +504,13 @@ class ThirdToolsLogic extends BaseLogic{
                     $postdatas['minchar'] = $params['cm_minchar']; //每条评论最小字数
                     $postdatas['level']   = 0; //是否刷量(0，正常；1，刷量) 
                 }elseif (in_array($cat_id, [23])) {
-                    $postdatas['sendValue'] = '';
+                    $postdatas['sendValue'] = $params['sendValue'];
                     $postdatas['device']    = 0;
                     $postdatas['userIp']    = 0;
-                    $postdatas['guanZhu']   = 0;
-                    $postdatas['dianZhan']  = 0;
-                    $postdatas['zhuanFa']   = 0;
-                    $postdatas['pingLun']   = 1;
+                    $postdatas['guanZhu']   = $params['guanZhu'] ?? 0;
+                    $postdatas['dianZhan']  = $params['dianZhan'] ?? 0;
+                    $postdatas['zhuanFa']   = $params['zhuanFa'] ?? 0;
+                    $postdatas['pingLun']   = $params['pingLun'] ?? 0;
                 }else{
                     //不在分类直接异常
                     return ['error'=>1, 'msg'=>'抱歉，商品分类配置有误(错误码0028)，暂时无法创建订单，请联系管理员增加配置'];

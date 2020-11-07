@@ -39,7 +39,7 @@ class HandleOrdersState extends Command
 
         //查询出所有未更新状态订单
         $rows = db('order')
-            ->field('order_id, out_id, goods_config_id, order_status, mtime')
+            ->field('order_id, out_id, task_num, done_num, goods_config_id, order_status, mtime')
             ->where($wheres)
             ->order('mtime')
             ->limit(5)
@@ -149,12 +149,18 @@ class HandleOrdersState extends Command
                     continue;
                 }
 
+                //如果已经更新的数量不小于目前数量，则不更新，直接跳过
+                if ($row['done_num'] >= $done_num) {
+                    $output->writeln("无需更新，评论数量未变化，订单号{$order_id}(错误码00201)");
+                    continue;
+                }
+
                 if ($done_num >= $task_num) {
                     $new_order_status = 1;//这种情况为已完成状态
                 }
 
                 //更新订单状态-状态不同的时候才执行更新
-                $updateData = ['order_status'=>$new_order_status, 'mtime'=>$datetime];
+                $updateData = ['order_status'=>$new_order_status, 'done_num'=>$done_num, 'mtime'=>$datetime];
                 $res = db('order')->where(['order_id'=>$order_id])->save($updateData);
 
 
@@ -166,8 +172,7 @@ class HandleOrdersState extends Command
                     $commentsDatas = json_encode($res_api2['result']['data'], JSON_UNESCAPED_UNICODE);
 
                     $field = [
-                        'content' => $commentsDatas,
-                        'num'     => $done_num,
+                        'content' => $commentsDatas
                     ];
 
                     $comment = db('task_comments')->where(['order_id'=>$order_id])->find();
@@ -183,7 +188,7 @@ class HandleOrdersState extends Command
                         }
                     }else{
                         //这里得看情况，是否需要更新，如果评论数量不变则不更新
-                        $commentsCount = $comment['num'];
+                        $commentsCount = $row['done_num'];
 
                         //无需更新情况
                         if ($done_num <= $commentsCount) {

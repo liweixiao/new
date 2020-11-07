@@ -26,8 +26,90 @@ use think\Image;
 class ThirdToolsLogic extends BaseLogic{
     public $orderStatusConfig = [];//注意,这里不用重复写,这个值由此类实例化后从OrderLogic的属性orderStatusConfig复制过来！
     public $setPriceRateError = 0;//设置抽成比率错误检测,用来检测设置的值是否大于100，或者非法
+    public $combinPriceError = 0;//组合任务价格设置有误
+    public $comCostPrice = 0;//组合价格
+
     public $priceRate = 0;//抽成比率-小数
     public $apiUserinfo = [];//api用户信息
+
+    //账号基础价格
+    public $basicPrice = [
+        'pingLun' => 0.3,//评论
+        'zhuanFa' => 0.3,//转发
+        'dianZhan' => 0.25,//点赞
+        'guanZhu' => 0.25,//关注
+    ];
+
+    //账号基础价格组合规则(成本计算规则)-总共14中组合
+    public $basicPriceCombinRule = [
+        //一一组合
+        1  => [
+            'name' => ['pingLun'],
+            'value' => 0.3,
+        ],
+        2  => [
+            'name' => ['zhuanFa'],
+            'value' => 0.3,
+        ],
+        3  => [
+            'name' => ['dianZhan'],
+            'value' => 0.25,
+        ],
+        4  => [
+            'name' => ['guanZhu'],
+            'value' => 0.25,
+        ],
+
+        //两两组合
+        5  => [
+            'name' => ['pingLun', 'zhuanFa'],
+            'value' => 0.5,
+        ],
+        6  => [
+            'name' => ['pingLun', 'dianZhan'],
+            'value' => 0.5,
+        ],
+        7  => [
+            'name' => ['pingLun', 'guanZhu'],
+            'value' => 0.5,
+        ],
+        8  => [
+            'name' => ['zhuanFa', 'dianZhan'],
+            'value' => 0.5,
+        ],
+        9  => [
+            'name' => ['zhuanFa', 'guanZhu'],
+            'value' => 0.5,
+        ],
+        10  => [
+            'name' => ['dianZhan', 'guanZhu'],
+            'value' => 0.45,
+        ],
+
+        //三三组合
+        11  => [
+            'name' => ['pingLun', 'zhuanFa', 'dianZhan'],
+            'value' => 0.7,
+        ],
+        12  => [
+            'name' => ['pingLun', 'zhuanFa', 'guanZhu'],
+            'value' => 0.7,
+        ],
+        13  => [
+            'name' => ['pingLun', 'dianZhan', 'guanZhu'],
+            'value' => 0.7,
+        ],
+        14  => [
+            'name' => ['zhuanFa', 'dianZhan', 'guanZhu'],
+            'value' => 0.7,
+        ],
+
+        //四个组合
+        15  => [
+            'name' => ['pingLun', 'zhuanFa', 'dianZhan', 'guanZhu'],
+            'value' => 0.9,
+        ],
+    ];
 
     /**
      * 获取会员抽成比率
@@ -85,8 +167,57 @@ class ThirdToolsLogic extends BaseLogic{
         return $res;
     }
 
-    //获取最小设置价格(成本价/百分比率)
-    public function getMinSetPrice($goods_id=0, $user_id=0){
+    /**
+     * 获取组合成本价格(计算后相当于数据库里面的cost_price字段值)-评论、转发、点赞、关注等14中组合后的成本
+     * @param number $pingLun 评论基础价格
+     * @return number
+     */
+    public function calcCombinCostPrice($pingLun=0, $zhuanFa=0, $dianZhan=0, $guanZhu=0){
+        $res = 0;
+
+        $userSet = [];//用户设置的任务类型
+        $basicPriceCombinRule = $this->basicPriceCombinRule;
+
+        if ($pingLun > 0) {
+            $userSet[] = 'pingLun';
+        }
+
+        if($zhuanFa > 0) {
+            $userSet[] = 'zhuanFa';
+        }
+
+        if($dianZhan > 0) {
+            $userSet[] = 'dianZhan';
+        }
+
+        if($guanZhu > 0) {
+            $userSet[] = 'guanZhu';
+        }
+
+        //开始循环匹配对应的组合价格规则
+        //异常提示内容为:抱歉任务组合价格设置规则有误，请联系管理员,错误码(0056)
+        foreach ($basicPriceCombinRule as $row) {
+            if(count(array_diff($row['name'], $userSet)) == 0 && count(array_diff($userSet, $row['name'])) == 0 ) { 
+                $res = $row['value'];
+                break;
+            }
+        }
+        // ee($res);
+        //此处原因是价格规则没有匹配到,报异常
+        if ($res == 0) {
+            $this->combinPriceError = 1;
+        }
+
+        $res = fnum($res, 0, 2);//根据api要求，保留2位
+        return $res;
+    }
+
+    /**
+     * 获取最小设置价格(成本价/百分比率)
+     * @param number $com_cost_price 成本价格,如果是人工互助，则成本由组合任务确定
+     * @return number
+     */
+    public function getMinSetPrice($goods_id=0, $user_id=0, $com_cost_price=0){
         $res = 0;
         //直接通过这个方法，可先获取抽成比率
         $rate = $this->getSetPiceRate($goods_id, $user_id);//注意这里的num必须传递值为1
@@ -109,6 +240,12 @@ class ThirdToolsLogic extends BaseLogic{
         }
 
         $cost_price = $goodsRow['cost_price'];
+
+        //如果是人工互助
+        if ($com_cost_price > 0) {
+            $cost_price = $com_cost_price;
+        }
+        
 
         $res = $cost_price/(1-$rate);//计算最小可设置价
 
@@ -194,6 +331,7 @@ class ThirdToolsLogic extends BaseLogic{
         return $res;
     }
 
+
     //获取商品-任务-评论专用
     public function getTaskGoodsRow($goods_id=0, $user_id=0){
         $where = ['is_show'=>1, 'goods_id'=>$goods_id];
@@ -263,7 +401,17 @@ class ThirdToolsLogic extends BaseLogic{
         }
 
         //判断设置单价是否低于成本价
-        $minSetPrice = $this->getMinSetPrice($goodsRow['goods_id'], $user_id);//获取此会员可设置的最低价
+        if (in_array($goodsRow['cat_id'], [23])) {
+            //人工互助情况-价格由任务组合决定
+            $this->comCostPrice = $this->calcCombinCostPrice($params['pingLun'], $params['zhuanFa'], $params['dianZhan'], $params['guanZhu']);
+            if ($this->combinPriceError) {
+                return ['error'=>1, 'msg'=>'抱歉,任务组合价格设置规则有误，请联系管理员,错误码(0056)'];
+            }
+            $minSetPrice = $this->getMinSetPrice($goodsRow['goods_id'], $user_id, $this->comCostPrice);//获取此会员可设置的最低价
+
+        }else{
+            $minSetPrice = $this->getMinSetPrice($goodsRow['goods_id'], $user_id);//获取此会员可设置的最低价
+        }
 
         //此处利用上面方法里面检测过的条件，如果数据库设置抽成非法则阻止提交订单
         if ($this->setPriceRateError) {
@@ -274,6 +422,7 @@ class ThirdToolsLogic extends BaseLogic{
             return ['error'=>1, 'msg'=>"抱歉，设置单价不能低于:{$minSetPrice}！"];
         }
 
+        // ee($minSetPrice);
 
         //可供检测重复提交数据使用
         $data['cat_id']          = $goodsRow['cat_id'] ?? 0;
@@ -310,6 +459,7 @@ class ThirdToolsLogic extends BaseLogic{
         
         //计算订单总成本价
         $total_cost = $this->calcTotalCost($data['task_num'], $goodsRow['goods_id'], $params['cm_price'], $this->priceRate);
+        // ee($total_cost);
 
         //此处利用上面方法里面检测过的条件，如果数据库设置抽成非法则阻止提交订单
         if ($this->setPriceRateError) {
@@ -476,7 +626,7 @@ class ThirdToolsLogic extends BaseLogic{
                     'Content-Type:application/json; charset=UTF-8',
                 ];
                 $apiUserinfoRes = $this->getSupplierToken($supplier);//获取用户信息,余额、评论单价等
-                ee($apiUserinfoRes);
+                // ee($apiUserinfoRes);
 
                 //获取token异常情况
                 if ($apiUserinfoRes['error']) {

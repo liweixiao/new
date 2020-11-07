@@ -48,10 +48,11 @@
 								<div class="layui-form-item task_type">
 									<label class="layui-form-label">任务类型</label>
 									<div class="layui-input-block">
-										<input type="checkbox" name="pingLun" lay-skin="primary" value="1" title="评论" checked>
-										<input type="checkbox" name="dianZhan" lay-skin="primary" value="1" title="点赞">
-										<input type="checkbox" name="zhuanFa" lay-skin="primary" value="1" title="转发">
-										<input type="checkbox" name="guanZhu" lay-skin="primary" value="1" title="关注">
+										<input type="checkbox" name="pingLun" lay-skin="primary" value="1" title="人工评论" checked>
+										<input type="checkbox" name="zhuanFa" lay-skin="primary" value="1" title="人工转发">
+
+										<input type="checkbox" name="dianZhan" lay-skin="primary" value="1" title="人工点赞">
+										<input type="checkbox" name="guanZhu" lay-skin="primary" value="1" title="人工关注">
 									</div>
 								</div>
 
@@ -139,6 +140,63 @@
 					var rowNum = $(this).val().split("\n").length;
 					$(this).closest('.textarea-box').find('.note b').text(rowNum);
 				})
+
+
+				//选择任务类型
+				form.on('checkbox', function(data) {
+					// console.log(data.elem); //得到radio原始DOM对象
+					//console.log(data.elem.checked); //是否被选中，true或者false
+					// console.log(data.value); //被点击的radio的value值
+
+					var params = {};
+					params.goods_id = $('input[name=goods_id]').val()
+					$('input[type="checkbox"]').each(function (i, o) {
+				        if ($(this).is(':checked')) {
+				        	var inputName = $(this).attr('name');
+				        	params[inputName] = $(this).val();
+				        }
+				    });
+
+					//异步计算组合价格
+					var layerindex = layer.load(1); //加载层
+					$.ajax({
+						type: 'POST',
+						url: "{:U('home/tools/getComSetMinPrice')}",
+						data: params,
+						dataType: 'json',
+						success: function(result) {
+							layer.closeAll();
+
+							if (result.error == 1) {
+								layer.msg(result.msg);
+							} else {
+								//动态改变设置最低单价
+								$('#set_price').val(result.data);
+
+								//重新计算预计价格
+								var totalAmount = '';
+								var price = $.trim($('#set_price').val());
+								var task_num = $.trim($('#task_num').val());
+								task_num = parseFloat(task_num);
+								totalAmount = go.calcTotalAmount(task_num, price);
+								$('.gs-price').text(totalAmount);
+							}
+						},
+						error: function() {
+							layer.closeAll();
+							layer.alert("服务器繁忙, 请联系管理员!");
+						}
+					});
+
+
+
+
+
+
+
+					var label_value = $(data.elem).attr('data-id');
+					
+				});
 
 			});
 

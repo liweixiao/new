@@ -95,6 +95,7 @@ class Tools extends Base {
 	    $this->assign('row', $row);
 	    $this->assign('cat', $cat);
 	    $this->assign('tags', $tags);
+	    // ee($goodsTemplate);
 	    return $this->fetch($goodsTemplate);
 	}
 
@@ -175,6 +176,37 @@ class Tools extends Base {
 
 	    $res = $ThirdToolsLogic->getTaskCommentCopyData($params);
 	    $this->ajaxReturn($res);
+	}
+
+	//异步计算组合价格
+	public function getComSetMinPrice() {
+		$params = input('post.');
+	    $ThirdToolsLogic = new ThirdToolsLogic;
+		$goods_id  = $params['goods_id'] ?? 0;//商品id
+
+
+		$pingLun  = $params['pingLun'] ?? 0;
+		$zhuanFa  = $params['zhuanFa'] ?? 0;
+		$dianZhan = $params['dianZhan'] ?? 0;
+		$guanZhu  = $params['guanZhu'] ?? 0;
+
+		if ($pingLun+$zhuanFa+$dianZhan+$guanZhu == 0) {
+		    $this->ajaxReturn(['error'=>1, 'msg'=>'错误，必须选择一项任务类型']);
+		}
+
+		//获取组合成本价
+	    $comCostPrice = $ThirdToolsLogic->calcCombinCostPrice($pingLun, $zhuanFa, $dianZhan, $guanZhu);
+	    if ($ThirdToolsLogic->combinPriceError) {
+	        $this->ajaxReturn(['error'=>1, 'msg'=>'抱歉,任务组合价格设置规则有误，请联系管理员,错误码(0056)']);
+	    }
+
+	    //获取最小设置价格
+	    $res = $ThirdToolsLogic->getMinSetPrice($goods_id, $this->user_id, $comCostPrice);
+	    if ($ThirdToolsLogic->setPriceRateError) {
+	        return ['error'=>1, 'msg'=>'抱歉，此商品售价设置有误(错误码00121)，请联系管理员！'];
+	    }
+
+	    $this->ajaxReturn(['error'=>0, 'msg'=>'获取成功', 'data'=>$res]);
 	}
 
 }

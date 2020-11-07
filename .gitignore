@@ -6,3 +6,5 @@ composer.lock
 /public/upload
 /application/database.php
 /application/config.php
+/public/nginx.htaccess
+/public/.htaccess

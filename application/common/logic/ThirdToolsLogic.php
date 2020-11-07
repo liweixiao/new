@@ -493,13 +493,29 @@ class ThirdToolsLogic extends BaseLogic{
                     'title'    => $params['cm_title'], //任务标题
                     'addr'     => $params['url'], //任务地址
                     'descr'    => $params['user_note'], //任务要求
-                    'sens'     => $params['cm_sens'], //敏感词，多个词中间分号隔开,最多100字
-                    'face'     => implode(';', $params['cm_face']), //评论方向(赞美、中性、询问、调侃、吐槽) 中间分号隔开
                     'max'      => $params['cm_max'], //最大评论量
-                    'minchar'  => $params['cm_minchar'], //每条评论最小字数
-                    'level'    => 0, //是否刷量(0，正常；1，刷量) 
                     'price'    => $cost_price*100, //每条评论的单价(单位分)
                 ];
+
+
+                if (in_array($cat_id, [22])) {
+                    $postdatas['sens']    = $params['cm_sens'];//敏感词，多个词中间分号隔开,最多100字
+                    $postdatas['face']    = implode(';', $params['cm_face']); //评论方向(赞美、中性、询问、调侃、吐槽) 中间分号隔开
+                    $postdatas['minchar'] = $params['cm_minchar']; //每条评论最小字数
+                    $postdatas['level']   = 0; //是否刷量(0，正常；1，刷量) 
+                }elseif (in_array($cat_id, [23])) {
+                    $postdatas['sendValue'] = $params['sendValue'];
+                    $postdatas['device']    = 0;
+                    $postdatas['userIp']    = 0;
+                    $postdatas['guanZhu']   = $params['guanZhu'] ?? 0;
+                    $postdatas['dianZhan']  = $params['dianZhan'] ?? 0;
+                    $postdatas['zhuanFa']   = $params['zhuanFa'] ?? 0;
+                    $postdatas['pingLun']   = $params['pingLun'] ?? 0;
+                }else{
+                    //不在分类直接异常
+                    return ['error'=>1, 'msg'=>'抱歉，商品分类配置有误(错误码0028)，暂时无法创建订单，请联系管理员增加配置'];
+                }
+
                 // ee($url_api);
 
                 $postdatasJson = json_encode($postdatas);//JSON_UNESCAPED_UNICODE

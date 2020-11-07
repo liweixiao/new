@@ -476,7 +476,7 @@ class ThirdToolsLogic extends BaseLogic{
                     'Content-Type:application/json; charset=UTF-8',
                 ];
                 $apiUserinfoRes = $this->getSupplierToken($supplier);//获取用户信息,余额、评论单价等
-                // ee($apiUserinfoRes);
+                ee($apiUserinfoRes);
 
                 //获取token异常情况
                 if ($apiUserinfoRes['error']) {

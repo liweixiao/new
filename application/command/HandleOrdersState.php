@@ -121,11 +121,6 @@ class HandleOrdersState extends Command
                     continue;
                 }
 
-                if (!isset($res_api['result']['status'])) {
-                    $output->writeln("抱歉，订单号{$order_id}，未能提供status字段(错误码00018)");
-                    continue;
-                }
-
                 ///获取评论列表以及数量
                 //提交参数
                 $postdatas2 = [
@@ -134,6 +129,7 @@ class HandleOrdersState extends Command
                     'taskid'   => $out_id,
                     'status'   => 2,//所有评论
                 ];
+                // aa($out_id);
 
                 $url_api2 = $goodsCfg['url_get_order_row1'];//获取评论url
                 $postdatasJson2 = json_encode($postdatas2);//JSON_UNESCAPED_UNICODE
@@ -171,6 +167,7 @@ class HandleOrdersState extends Command
 
                     $field = [
                         'content' => $commentsDatas,
+                        'num'     => $done_num,
                     ];
 
                     $comment = db('task_comments')->where(['order_id'=>$order_id])->find();
@@ -186,7 +183,7 @@ class HandleOrdersState extends Command
                         }
                     }else{
                         //这里得看情况，是否需要更新，如果评论数量不变则不更新
-                        $commentsCount = json_encode($comment['content'], true);
+                        $commentsCount = $comment['num'];
 
                         //无需更新情况
                         if ($done_num <= $commentsCount) {

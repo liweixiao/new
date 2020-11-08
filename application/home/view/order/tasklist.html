@@ -54,8 +54,9 @@
                 <th>实时状态</th>
                 {if condition="$vo.supplier_id eq 5"}<th>详情</th><th>复制</th>{/if}
                 <th>备注</th>
-                <th>开始时间</th>
+                <th>下单时间</th>
                 <th>任务数量</th>
+                <th>已完成</th>
                 <th>金额</th>
                 <th>操作</th>
               </tr> 
@@ -81,8 +82,9 @@
                 </td>
                 {/if}
                 <td>{$vo.order_note}</td>
-                <td>{$vo.stime|strtotime|date='Y-m-d H:i',###}</td>
-                <td>{$vo.goods.0.goods_num*$vo.goods.0.unit|fnum=true,0}</td>
+                <td>{$vo.ctime|strtotime|date='Y-m-d H:i',###}</td>
+                <td>{$vo.task_num|fnum=true,0}</td>
+                <td>{$vo.done_num > 0 ? $vo.done_num : ''}</td>
                 <td>{$vo.total_amount|fnum}</td>
                 <td class="my-opt">
                     {//['1'=>'已完成', '2'=>'待处理', '3'=>'处理中', '4'=>'暂停中', '5'=>'余额不足', '6'=>'已退款', '7'=>'已作废']}

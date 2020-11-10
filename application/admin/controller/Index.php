@@ -37,13 +37,13 @@ class Index extends Base {
         $data['today_total_amount'] = db('order')->where($where)->sum('total_amount');
 
         //成本
-        $data['today_total_cost'] = db('order')->where($where)->sum('total_cost');
+        $data['today_total_cost'] = db('order')->where($where)->whereNotIn('order_status', [6,7])->sum('total_cost');
 
         //无效订单=作废6、退款7
         $data['today_invalid_amount'] = db('order')->where($where)->where('order_status', 'IN', [6,7])->sum('total_amount');
 
         //利润
-        $data['today_profit'] = $data['today_total_amount'] - $data['today_total_cost'] - $data['today_invalid_amount'];
+        $data['today_profit'] = $data['today_total_amount'] - $data['today_invalid_amount'] - $data['today_total_cost'];
 
 
 
@@ -80,13 +80,13 @@ class Index extends Base {
         $data['cmonth_total_amount'] = db('order')->where($where)->sum('total_amount');
         // sql();
         //成本
-        $data['cmonth_total_cost'] = db('order')->where($where)->sum('total_cost');
+        $data['cmonth_total_cost'] = db('order')->where($where)->whereNotIn('order_status', [6,7])->sum('total_cost');
 
         //无效订单=作废6、退款7
         $data['cmonth_invalid_amount'] = db('order')->where($where)->where('order_status', 'IN', [6,7])->sum('total_amount');
 
         //利润
-        $data['cmonth_profit'] = $data['cmonth_total_amount'] - $data['cmonth_total_cost'] - $data['cmonth_invalid_amount'];
+        $data['cmonth_profit'] = $data['cmonth_total_amount'] - $data['cmonth_invalid_amount'] - $data['cmonth_total_cost'];
 
 
 

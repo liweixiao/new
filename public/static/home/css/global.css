@@ -942,7 +942,7 @@ textarea.copyBox{
 }
 
 .tools-form .layui-textarea {
-    min-height: 50px;
+    min-height: 100px;
 }
 
 

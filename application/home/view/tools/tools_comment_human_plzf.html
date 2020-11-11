@@ -50,9 +50,6 @@
 									<div class="layui-input-block">
 										<input type="checkbox" name="pingLun" lay-skin="primary" value="1" title="人工评论" checked>
 										<input type="checkbox" name="zhuanFa" lay-skin="primary" value="1" title="人工转发">
-
-										<input type="checkbox" name="dianZhan" lay-skin="primary" value="1" title="人工点赞">
-										<input type="checkbox" name="guanZhu" lay-skin="primary" value="1" title="人工关注">
 									</div>
 								</div>
 
@@ -234,7 +231,7 @@
 							go.successTips(result.msg);
 							
 							go.pushMessageOrder({order_id:result.data.order_id});//下单提醒
-							setTimeout(function(){location.reload()}, 2000);
+                            setTimeout(function(){location.reload()}, 2000);
 						}
 					},
 					error: function() {

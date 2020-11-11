@@ -110,6 +110,7 @@ class Index extends Base {
         foreach ($suppliersList as $key=>$supplier) {
             $suppliersList[$key]['money'] = $OrderLogic->getApiMoneyBySupplier($supplier['supplier_id']);
         }
+        // ee($suppliersList);
         $data['suppliersList'] = $suppliersList;
 
         //异常订单统计-重要的订单

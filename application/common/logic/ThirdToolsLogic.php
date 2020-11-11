@@ -534,7 +534,8 @@ class ThirdToolsLogic extends BaseLogic{
                 if ($create_res['error'] == 2) {
                     ///注意这里只记录余额不足情况
                     //检测余额是否充足
-                    $apiMoney = $this->apiMoney ?? -999;
+                    // $apiMoney = $this->apiMoney ?? -999;
+                    $apiMoney = $this->getApiMoneyBySupplier($supplier['supplier_id']);
                     //未获取到情况
                     if ($apiMoney == -999) {
                         Db::rollback();// 回滚事务

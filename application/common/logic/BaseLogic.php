@@ -293,8 +293,8 @@ class BaseLogic {
                     }
                 }
 
-                //生成此类的属性：用户余额
-                $this->apiMoney = $user_info['usepoint'] ?? -999;
+                //生成此类的属性：用户余额-这里不准确-放弃使用
+                // $this->apiMoney = $user_info['usepoint'] ?? -999;
 
                 $res['data'] = $user_info;
                 break;
@@ -410,6 +410,25 @@ class BaseLogic {
                     return $res;
                 }
 
+                //登录信息-登录信息获取余额不准确
+                $login_info = $res_api['result'] ?? [];
+
+
+                //获取用户信息-通过用户信息获取余额比较准确
+                $url_api_userinfo = 'http://120.77.67.120:8081/api/syhz/tt/userinfo';
+                $postdatas = ['uid'=>$login_info['uid'], 'usersign'=>$login_info['usersign']];
+                $postdatasJson = json_encode($postdatas);
+                $res_api = apiget($url_api_userinfo, $postdatasJson, 'post', [], $headers);
+                // ee($res_api);
+
+                //异常情况
+                if (empty($res_api) || $res_api['code'] != 0) {
+                    return $res;
+                }
+                if (empty($res_api['result'])) {
+                    return $res;
+                }
+
                 $user_info = $res_api['result'] ?? [];
 
                 //转换格式-价格分转为元
@@ -417,6 +436,7 @@ class BaseLogic {
                     //剩余金额
                     if (isset($user_info['usepoint'])) {
                         $res = $user_info['usepoint']/100;//转换分为元单位
+                        $this->apiMoney = $res;
                     }
                 }
 

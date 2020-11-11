@@ -332,6 +332,39 @@ class ThirdToolsLogic extends BaseLogic{
     }
 
 
+    /**
+     * 获取任务类型-名称-多个用逗号分隔
+     * @return string
+     */
+    public function getTaskTypeNames($pingLun=0, $zhuanFa=0, $dianZhan=0, $guanZhu=0){
+        $res = '';
+
+        $userSet = [];//用户设置的任务类型
+
+        if ($pingLun > 0) {
+            $userSet[] = '评论';
+        }
+
+        if($zhuanFa > 0) {
+            $userSet[] = '转发';
+        }
+
+        if($dianZhan > 0) {
+            $userSet[] = '点赞';
+        }
+
+        if($guanZhu > 0) {
+            $userSet[] = '关注';
+        }
+
+        if (!empty($userSet)) {
+            $res = implode(',', $userSet);
+        }
+
+        return $res;
+    }
+
+
     //获取商品-任务-评论专用
     public function getTaskGoodsRow($goods_id=0, $user_id=0){
         $where = ['is_show'=>1, 'goods_id'=>$goods_id];
@@ -472,6 +505,8 @@ class ThirdToolsLogic extends BaseLogic{
             $data['order_sn'] = $order_sn = get_order_sn();
             $data['ctime'] = $ctime;
             $data['ip'] = $request->ip();
+            $data['order_name'] = $params['cm_title'];//任务标题
+            $data['order_type_name'] = $this->getTaskTypeNames($params['pingLun'], $params['zhuanFa'], $params['dianZhan'], $params['guanZhu']);
 
             //设备信息
             $data['user_system'] = $Guestinfo->equipmentSystem();//设备
@@ -654,7 +689,7 @@ class ThirdToolsLogic extends BaseLogic{
                     $postdatas['face']    = implode(';', $params['cm_face']); //评论方向(赞美、中性、询问、调侃、吐槽) 中间分号隔开
                     $postdatas['minchar'] = $params['cm_minchar']; //每条评论最小字数
                     $postdatas['level']   = 0; //是否刷量(0，正常；1，刷量) 
-                }elseif (in_array($cat_id, [23])) {
+                }elseif (in_array($cat_id, [23,25,26])) {
                     $postdatas['sendValue'] = $params['sendValue'];
                     $postdatas['device']    = 0;
                     $postdatas['userIp']    = 0;

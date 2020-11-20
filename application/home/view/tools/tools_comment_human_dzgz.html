@@ -41,7 +41,7 @@
 								<div class="layui-form-item layui-form-text textarea-box">
 									<label class="layui-form-label">任务要求</label>
 									<div class="layui-input-block">
-										<textarea placeholder="例如：好好写，否则罚款" name="user_note" id="user_note" class="layui-textarea h50"></textarea>
+										<textarea placeholder="例如：好好做，否则罚款" name="user_note" id="user_note" class="layui-textarea h50"></textarea>
 									</div>
 								</div>
 
@@ -53,20 +53,12 @@
 									</div>
 								</div>
 
-								<div class="layui-form-item layui-form-text textarea-box">
-									<label class="layui-form-label">评论内容</label>
-									<div class="layui-input-block">
-										<textarea placeholder="请输入评论内容,回车换行,一行为一条内容" name="sendValue" class="layui-textarea appoint_content"></textarea>
-										<span class="note">当前统计输入<b>0</b>行</span>
-									</div>
-								</div>
-
 								<div class="layui-form-item">
-									<label class="layui-form-label">最大评论量</label>
+									<label class="layui-form-label">任务数量</label>
 									<div class="layui-input-block">
 										<input type="text" name="cm_max" id="task_num" value="{$row.min_num|fnum=0,0}"
 										 autocomplete="off" class="layui-input w180" onkeyup="go.filterNum(this)">
-										 <span class="note">设置最大评论数量</span>
+										 <span class="note">设置任务数量</span>
 									</div>
 								</div>
 
@@ -133,10 +125,10 @@
 				})
 
 				//textarea值改变-提示输入条数
-				$(".appoint_content").bind("input propertychange", function() {
-					var rowNum = $(this).val().split("\n").length;
-					$(this).closest('.textarea-box').find('.note b').text(rowNum);
-				})
+				// $(".appoint_content").bind("input propertychange", function() {
+				// 	var rowNum = $(this).val().split("\n").length;
+				// 	$(this).closest('.textarea-box').find('.note b').text(rowNum);
+				// })
 
 
 				//选择任务类型

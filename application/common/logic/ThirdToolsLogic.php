@@ -434,7 +434,7 @@ class ThirdToolsLogic extends BaseLogic{
         }
 
         //判断设置单价是否低于成本价
-        if (in_array($goodsRow['cat_id'], [23])) {
+        if (in_array($goodsRow['cat_id'], [23,25,26])) {
             //人工互助情况-价格由任务组合决定
             $this->comCostPrice = $this->calcCombinCostPrice($params['pingLun'], $params['zhuanFa'], $params['dianZhan'], $params['guanZhu']);
             if ($this->combinPriceError) {

@@ -872,4 +872,27 @@ class ThirdToolsLogic extends BaseLogic{
         return $res;
     }
 
+
+    //获取某个用户已经写好的评论列表(任务标题+完成数量)，便于转评方便使用；只获取最近N条数据
+    public function getUserCommentedTaskDatas($user_id, $num=10){
+        $res = ['error'=>0, 'msg'=>'操作成功', 'data'=>[]];
+
+        if (empty($user_id)) {
+            return $res;
+        }
+
+        $where['user_id'] = $user_id;
+
+        $field = 'comment_id,order_id,order_name,url,task_num,done_num,user_note,order_ctime';
+        $rows = db('v_task_comments')->field($field)->where($where)->order('order_ctime desc')->limit($num)->select();
+
+        foreach ($rows as $key => $row) {
+            $rows[$key]['task_num'] = (int)$row['task_num'];
+            $rows[$key]['done_num'] = (int)$row['done_num'];
+        }
+        $res['data'] = $rows;
+        // ee($res);
+        return $res;
+    }
+
 }

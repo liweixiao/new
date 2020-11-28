@@ -209,4 +209,13 @@ class Tools extends Base {
 	    $this->ajaxReturn(['error'=>0, 'msg'=>'获取成功', 'data'=>$res]);
 	}
 
+
+	//获取某个用户已经写好的评论列表
+	public function getUserCommentedTaskDatas() {
+	    $ThirdToolsLogic = new ThirdToolsLogic;
+
+	    $res = $ThirdToolsLogic->getUserCommentedTaskDatas($this->user_id, 10);
+	    $this->ajaxReturn($res);
+	}
+
 }

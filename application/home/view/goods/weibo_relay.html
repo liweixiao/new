@@ -90,8 +90,16 @@
 												</div>
 											</div>
 
+											<div class="layui-inline mb15 appoint-relate">
+												<label class="layui-form-label">使用已写评论</label>
+												<div class="layui-input-inline">
+													<select class="commented-task-datas" lay-filter="commented-task-datas" lay-verify="required" lay-search="">
+													</select>
+												</div>
+											</div>
 
-											<div class="layui-form-item layui-form-text textarea-box">
+
+											<div class="layui-form-item layui-form-text textarea-box appoint-relate">
 												<label class="layui-form-label">输入内容</label>
 												<div class="layui-input-block">
 													<textarea placeholder="请输入内容,回车换行,一行为一条内容" name="appoint_content" class="layui-textarea appoint_content"></textarea>
@@ -239,10 +247,67 @@
 					// console.log(data.value); //被点击的radio的value值
 					var label_value = $(data.elem).attr('data-id');
 					if (label_value == 2) {
-						$('.textarea-box').removeClass('hide');
+						$('.appoint-relate').removeClass('hide');
 					} else {
-						$('.textarea-box').addClass('hide');
+						$('.appoint-relate').addClass('hide');
 					}
+				});
+
+
+				//获取某个用户已经写好的评论列表&&添加到下拉框中
+				$.ajax({
+					url: "{:U('home/tools/getUserCommentedTaskDatas')}",
+					dataType: 'json',
+					type: 'get',
+					success: function (result) {
+						if (!result.error) {
+							var datas = result.data;
+							var html = "<option value=''>请选择评论</option>";
+							if (datas.length) {
+					            for (var x in datas){
+					            	var taskName = datas[x].order_name;
+					            	if (!taskName) {
+					            		taskName = datas[x].order_ctime;
+					            	}
+					            	taskName += "("+datas[x].done_num+"/"+datas[x].task_num+")";//显示格式
+					                html+= "<option value='"+datas[x].order_id+"'>"+ taskName +"</option>";
+					            }
+					            $('.commented-task-datas').empty().html(html);
+								layui.form.render("select");
+							}
+						}
+
+					}
+				})
+
+				//点击已写评论select下拉框
+				form.on('select(commented-task-datas)', function(data) {
+					// console.log(data.elem); //得到radio原始DOM对象
+					// console.log(data.value); //被点击的radio的value值
+					var order_id = data.value;//评论id
+					var layerindex = layer.load(1); //加载层
+
+					//获取当前评论内容，并写入到textarea输入内容里面
+					$.ajax({
+						url: "{:U('home/tools/getTaskCommentCopyData')}",
+						dataType: 'json',
+						type: 'post',
+						data: {id:order_id},
+						success: function (result) {
+							layer.closeAll();
+							if (!result.error) {
+								if (result.data) {
+						            $('.appoint_content').empty().html(result.data);
+								}
+							}
+
+						},
+						error: function() {
+							layer.closeAll();
+							layer.alert("服务器繁忙, 请联系管理员!");
+						}
+					})
+					
 				});
 
 			});

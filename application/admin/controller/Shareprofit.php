@@ -38,7 +38,7 @@ class Shareprofit extends Base {
         }
 
         // sql();
-        $rows = Db::name('share_profit')->where($where)->order('ctime desc')->paginate($this->showNum);;
+        $rows = Db::name('share_profit')->where($where)->order('ptime desc')->paginate($this->showNum);;
 
         $this->assign('rows',$rows);
         return $this->fetch();

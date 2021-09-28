@@ -18,6 +18,7 @@ class Shareprofit extends Base {
 
         //后台分润记录创建权限逻辑(需要链接带正确sn,否则添加按钮以及删除按钮无法显示,只能有只读权限)
         $this->sn = input('sn', $_COOKIE['sn']);//cookie或者链接带sn都可以，一般链接带一次sn即可
+        $this->sn = explode('.', $this->sn)[0];//防止获取xxx.html
         // ee($this->sn);
         $this->isPower = false;
         if($this->sn == 'fr2022good888'){

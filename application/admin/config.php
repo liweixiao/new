@@ -28,4 +28,7 @@ return [
 
     //重置密码规则，为会员手机号加000
     'reset_password_rule' =>'0000',
+
+    //是否校验分润(如果校验失败则无法给会员充值)
+    'is_check_share_profit' => true,
 ];

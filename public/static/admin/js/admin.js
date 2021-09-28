@@ -354,19 +354,6 @@ go.showMenu = function (dom) {
     })
 }
 
-//弹出确认操作
-go.del = function(url, title) {
-    art.dialog({
-        lock: true,
-        background: '#300', // 背景色
-        opacity: 0.87, // 透明度
-        content: title,
-        ok: function () {
-            // return window.location.href = url;
-        },
-        cancel: true
-    });
-}
 
 // 修改指定表的指定字段值 包括有按钮点击切换是否 或者 排序 或者输入框文字
 go.changeTableVal = function(table, id_name, id_value, field, obj,yes,no) {
@@ -438,6 +425,26 @@ go.setUserPrice = function(obj){
 
 }
 
+
+//弹出确认删除操作
+go.del = function(dom, id) {
+    var url = $(dom).attr('url');
+    art.dialog({
+        lock: true,
+        background: '#300', // 背景色
+        opacity: 0.87, // 透明度
+        content: "确认要删除『 id="+ id +" 』这条记录吗？",
+        ok: function () {
+            return window.location.href = url;
+        },
+        cancel: true
+    });
+}
+
+//设置cookie
+go.cookie = function(key, value) {
+    $.cookie(key, value, { expires: 500 , path: '/' });
+}
 
 
 

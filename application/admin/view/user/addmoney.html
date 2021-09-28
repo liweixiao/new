@@ -29,6 +29,8 @@ function checkSubmit(){
             layer.close(layerindex);
             if(res.error == 1){
                 layer.msg(res.msg);
+            }else if(res.error == 2){
+                layer.alert(res.msg, {icon: 5});
             }else{
                 layer.msg(res.msg);
                 setTimeout(function(){location.reload()}, 1000);

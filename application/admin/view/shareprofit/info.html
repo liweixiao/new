@@ -1,0 +1,74 @@
+<div class="page-content">
+    <div class="col-sm-6 pull-right">
+        <button class="btn btn-sm btn-primary pull-right" onclick="javascript:window.location.href = '{:url("index")}'">
+            返回列表
+            <i class="icon-reply icon-only"></i>
+        </button>
+    </div>
+
+    <div class="page-header">
+        <h1>
+            {:model('menu')->getParentNname()}
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                {:input('id')?'编辑':'新增'}分润
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <form class="form-horizontal" role="form" action="{:U('info')}"  method="post" name="myfrom" >
+                <input type="hidden" value="{$row.id}" name="id">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right tit"><em>*</em>月份</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5 date-picker" value="{$row.ptime|default=$cmonth}" name="ptime" class="layui-input w80">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right tit"><em>*</em>分润金额</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="money" value="{$row.money|default=''}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right tit">总利润</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="col-xs-10 col-sm-5"  name="total_money" value="{$row.total_money|default=''}"/>
+                    </div>
+                </div>
+
+                <div class="clearfix form-actions">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button class="btn btn-info mr30" type="button" onclick="myfrom.submit()">
+                            <i class="ace-icon fa fa-check bigger-110"></i>
+                            提交
+                        </button>
+                        <button class="btn" type="reset">
+                            <i class="ace-icon fa fa-undo bigger-110"></i>
+                            重置
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->
+<script type="text/javascript">
+$(function(){
+    //日期范围
+    layui.laydate.render({
+        elem: '.date-picker',
+        type: 'month',
+        format: 'yyyy-MM'
+    });
+
+    //小于零数字不高亮显示
+    $('.infobox-data-number[num=0]').addClass('gray');
+});
+</script>

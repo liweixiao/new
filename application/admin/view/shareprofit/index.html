@@ -1,0 +1,96 @@
+<div class="page-content">
+    {if $isPower}
+    <div class="col-sm-6 pull-right">
+        <a class="btn btn-sm btn-primary pull-right" href="{:U('Admin/Shareprofit/info')}">
+            添加
+            <i class="icon-reply icon-only"></i>
+        </a>
+    </div>
+    {/if}
+
+    <div class="page-header">
+        <h1>
+            {:model('menu')->getName()} 
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <div class="row">
+                <div class="col-xs-12 table-box">
+                    <form class="my-form form-inline mb10"  method="get" action="{:U('Admin/Shareprofit/index')}">
+                        <div class="sdiv">
+                            <input type="text" class="qsbox w150" id="input-order-id" placeholder="日期" value="{$Think.get.keyword}" name="keyword">
+                            <input type="submit" class="btn btn-primary btn-xs" value="搜索">
+                        </div>
+                    </form>
+
+                    <table id="simple-table" class="table  table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="detail-col">序号</th>
+                                <th>总利润</th>
+                                <th>分润金额</th>
+                                <th>月份</th>
+                                <th>分润时间</th>
+                                {if $isPower}
+                                <th>操作</th>
+                                {/if}
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        <form action="" method="post" name="myform">
+                            {volist name="rows" id="vo"}
+                            <tr>
+                                <td>{$vo.id}</td>
+                                <td>{$vo.total_money}</td>
+                                <td>{$vo.money}</td>
+                                <td>{$vo.ptime}</td>
+                                <td>{$vo.ctime}</td>
+                                {if $isPower}
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+                                        <a href="{:url('info', ['id'=>$vo.id])}"> 
+                                           <span class="btn btn-xs btn-info">
+                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                            </span>
+                                        </a>
+
+                                        <a href='javascript:void(0)' url="{:url('del',['id'=>$vo.id])}" onclick="return go.del(this, {$vo.id});">
+                                           <span class="btn btn-xs btn-danger" >
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </td>
+                                {/if}
+
+                            </tr>
+                            {/volist}  
+                        </form>
+                        </tbody>
+                    </table>
+                    <div class="pagebox">{$rows->render()}</div>
+                </div><!-- /.span -->
+            </div><!-- /.row -->
+
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->
+<script type="text/javascript">
+{if $isPower}
+    var sn = '{$sn}';
+    var csn = $.cookie('sn');//已经存在的cookie
+    if(csn != sn){
+        go.cookie('sn', sn)
+    }
+{/if}
+</script>
+
+
+

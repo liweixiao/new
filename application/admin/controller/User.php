@@ -155,6 +155,14 @@ class User extends Base {
         $user_id = input('user_id');
         $recharge = input('recharge');//充值金额
 
+        //校验分润是否合法
+        $checkRes = model('Shareprofit')->checkShareProfit();
+        if ($checkRes['error']) {
+            $res = ['error'=>2, 'msg'=>$checkRes['msg']];
+            $this->ajaxReturn($res);
+        }
+
+
         if (empty($user_id)) {
             $res = ['error'=>1, 'msg'=>'错误，用户id参数不能为空！'];
             $this->ajaxReturn($res);

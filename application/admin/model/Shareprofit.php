@@ -18,6 +18,7 @@ class Shareprofit extends Model {
     /**
      * 校验分润
      * 校验逻辑(8号之前校验前6个月分润情况,8号之后则校验当月的分润情况)
+     * 说明:如果想快速跳过验证有两个方法,1修改admin配置,2添加分润月份
      * @return type
      */
     public function checkShareProfit() {

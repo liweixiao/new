@@ -659,22 +659,26 @@ class BaseLogic {
 
     /**
     * qq消息推送
+    * 私聊消息推送接口：https://qmsg.zendee.cn/send/您的KEY
+    * 群消息推送接口：https://qmsg.zendee.cn/group/您的KEY
     * @param array $params
     */
     public function qqpusher($params = []){
 
         $res = ['error' => 0, 'msg' => '操作成功'];
-        $url_api = 'http://api.qqpusher.yanxianjun.com/send_private_msg';
+        $url_api = 'https://qmsg.zendee.cn/send/7d95b44065ccf1702dd42970f6351559';
         $headers = [
-            'token:27c631a69783252726649d1fe6cbe834',
+            // 'token:27c631a69783252726649d1fe6cbe834',
         ];
 
-        $qq = $params['qq'];
+        $kefu_qq_arr = config('kefu_qq');
+        $kefu_qq_str = implode(',', $kefu_qq_arr);
+
+        $qq = empty($params['qq']) ? $kefu_qq_str : $params['qq'];
         $msg = $params['msg'];
         $postdatas = [
-            'user_id' => $qq,//对方QQ号
-            'message' => $msg,//要发送的内容
-            'auto_escape' => true,// 默认值：false 消息内容是否作为纯文本发送（即不解析 CQ 码），只在 message 字段是字符串时有效
+            'qq' => $qq,//对方QQ号
+            'msg' => $msg,//要发送的内容
         ];
 
         $res_api = apiget($url_api, $postdatas, 'post', [], $headers);
@@ -747,11 +751,11 @@ class BaseLogic {
         }
 
         //开始提醒
-        $kefu_qq_arr = config('kefu_qq');
-        foreach ($kefu_qq_arr as$qq) {
-            $res_push = $this->qqpusher(['qq'=> $qq, 'msg'=>$msg]);
-        }
-
+        // $kefu_qq_arr = config('kefu_qq');
+        // foreach ($kefu_qq_arr as$qq) {
+        //     $res_push = $this->qqpusher(['msg'=>$msg]);
+        // }
+        $res_push = $this->qqpusher(['msg'=>$msg]);
         return $res;
     }
 

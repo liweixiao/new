@@ -88,10 +88,7 @@ class ToolsLogic extends BaseLogic{
         }
 
         //开始提醒
-        $kefu_qq_arr = config('kefu_qq');
-        foreach ($kefu_qq_arr as$qq) {
-            $res_push = $this->qqpusher(['qq'=> $qq, 'msg'=>$msg]);
-        }
+        $res_push = $this->qqpusher(['qq'=> $qq, 'msg'=>$msg]);
 
         return $res;
     }
